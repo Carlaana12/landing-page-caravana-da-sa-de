@@ -11,7 +11,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: false,
+    sourcemap: true,
     minify: 'terser',
     rollupOptions: {
       output: {
@@ -28,25 +28,11 @@ export default defineConfig({
           ]
         }
       }
-    },
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace']
-      }
     }
   },
   server: {
     port: 3000,
-    host: true,
-    proxy: {
-      '/api': {
-        target: 'https://tmhkepakeovbzspxllkx.supabase.co',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
-      }
-    }
+    host: true
   },
   preview: {
     port: 3000
