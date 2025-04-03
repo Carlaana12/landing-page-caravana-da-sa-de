@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Mail, Phone, LogIn, UserCircle, Stethoscope } from 'lucide-react';
 import { AUTH_URLS } from '../lib/constants';
+import LogoAnimada from './LogoAnimada';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -80,8 +81,8 @@ const Navbar = () => {
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <Link to="/" className="text-xl md:text-2xl font-bold shine-text">
-                Anuário de Saúde
+              <Link to="/" className="text-xl md:text-2xl font-bold">
+                <LogoAnimada />
               </Link>
             </div>
 
