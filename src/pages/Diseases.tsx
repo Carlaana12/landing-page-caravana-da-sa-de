@@ -284,6 +284,600 @@ const diseases: Disease[] = [
     treatments: ['Tratamento hormonal', 'Mudanças no estilo de vida', 'Tratamento das causas subjacentes'],
     letter: 'A',
     image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '31',
+    name: 'Bulimia Nervosa',
+    description: 'Transtorno alimentar caracterizado por episódios de compulsão alimentar seguidos por comportamentos compensatórios (vômitos, laxantes, etc.).',
+    symptoms: ['Compulsão alimentar', 'Vômitos autoinduzidos', 'Uso de laxantes/diuréticos', 'Preocupação excessiva com peso/forma corporal'],
+    treatments: ['Psicoterapia', 'Terapia nutricional', 'Medicamentos antidepressivos', 'Grupos de apoio'],
+    letter: 'B',
+    image: 'https://images.unsplash.com/photo-1579047064810-807c6a7651b2?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '32',
+    name: 'Bursite',
+    description: 'Inflamação da bursa, uma pequena bolsa cheia de líquido que atua como amortecedor entre ossos, tendões e músculos.',
+    symptoms: ['Dor articular', 'Inchaço', 'Sensibilidade', 'Vermelhidão', 'Movimento limitado'],
+    treatments: ['Repouso', 'Gelo', 'Anti-inflamatórios', 'Fisioterapia', 'Injeções de corticosteroides'],
+    letter: 'B',
+    image: 'https://images.unsplash.com/photo-1581595219315-a187dd40c322?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '33',
+    name: 'Câncer',
+    description: 'Grupo de doenças caracterizadas pelo crescimento descontrolado de células anormais que podem invadir outras partes do corpo.',
+    symptoms: ['Variam amplamente dependendo do tipo e localização', 'Perda de peso inexplicada', 'Fadiga', 'Dor', 'Alterações na pele'],
+    treatments: ['Cirurgia', 'Quimioterapia', 'Radioterapia', 'Imunoterapia', 'Terapia-alvo'],
+    letter: 'C',
+    image: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '34',
+    name: 'Catarata',
+    description: 'Opacificação do cristalino do olho, que leva à diminuição progressiva da visão.',
+    symptoms: ['Visão embaçada ou nublada', 'Dificuldade para enxergar à noite', 'Sensibilidade à luz', 'Visão dupla'],
+    treatments: ['Cirurgia para substituir o cristalino opaco por uma lente artificial', 'Óculos (em fases iniciais)'],
+    letter: 'C',
+    image: 'https://images.unsplash.com/photo-1577401239170-897942555fb3?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '35',
+    name: 'Cirrose',
+    description: 'Estágio final de cicatrização (fibrose) do fígado causada por várias formas de doenças hepáticas.',
+    symptoms: ['Fadiga', 'Perda de apetite', 'Náusea', 'Inchaço abdominal (ascite)', 'Icterícia'],
+    treatments: ['Tratamento da causa subjacente', 'Dieta balanceada', 'Evitar álcool', 'Medicamentos para complicações', 'Transplante de fígado'],
+    letter: 'C',
+    image: 'https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&q=80&w=300' // Imagem genérica de saúde
+  },
+  {
+    id: '36',
+    name: 'Diabetes Mellitus',
+    description: 'Doença metabólica caracterizada por níveis elevados de glicose no sangue (açúcar no sangue).',
+    symptoms: ['Aumento da sede', 'Aumento da fome', 'Micção frequente', 'Perda de peso inexplicada', 'Fadiga', 'Visão turva'],
+    treatments: ['Insulina', 'Medicamentos orais', 'Monitoramento da glicose', 'Dieta saudável', 'Exercícios físicos'],
+    letter: 'D',
+    image: 'https://images.unsplash.com/photo-1523741543342-41d93a13b8a5?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '37',
+    name: 'Depressão',
+    description: 'Transtorno de humor que causa um sentimento persistente de tristeza e perda de interesse.',
+    symptoms: ['Humor deprimido', 'Perda de interesse ou prazer', 'Alterações no apetite/peso', 'Problemas de sono', 'Fadiga', 'Sentimentos de inutilidade'],
+    treatments: ['Psicoterapia', 'Medicamentos antidepressivos', 'Exercícios físicos', 'Mudanças no estilo de vida'],
+    letter: 'D',
+    image: 'https://images.unsplash.com/photo-1541199249251-f713e6145474?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '38',
+    name: 'Dermatite',
+    description: 'Termo geral para inflamação da pele.',
+    symptoms: ['Pele seca', 'Coceira', 'Vermelhidão', 'Inchaço', 'Bolhas ou crostas (em alguns tipos)'],
+    treatments: ['Cremes/pomadas de corticosteroides', 'Anti-histamínicos', 'Hidratantes', 'Evitar gatilhos'],
+    letter: 'D',
+    image: 'https://images.unsplash.com/photo-1513165533842-511b7f2ef356?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '39',
+    name: 'Epilepsia',
+    description: 'Distúrbio neurológico caracterizado por convulsões recorrentes.',
+    symptoms: ['Convulsões', 'Perda de consciência', 'Movimentos involuntários', 'Sensações estranhas', 'Confusão pós-convulsão'],
+    treatments: ['Medicamentos anticonvulsivantes', 'Dieta cetogênica', 'Cirurgia', 'Estimulação do nervo vago'],
+    letter: 'E',
+    image: 'https://images.unsplash.com/photo-1559757148-3c050d252070?auto=format&fit=crop&q=80&w=300' // Imagem genérica neuro
+  },
+  {
+    id: '40',
+    name: 'Esclerose Múltipla',
+    description: 'Doença autoimune que afeta o cérebro e a medula espinhal, causando danos à mielina.',
+    symptoms: ['Fadiga', 'Dificuldade para andar', 'Formigamento ou dormência', 'Problemas de visão', 'Espasmos musculares'],
+    treatments: ['Medicamentos modificadores da doença', 'Corticosteroides', 'Fisioterapia', 'Terapia ocupacional'],
+    letter: 'E',
+    image: 'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '41',
+    name: 'Endometriose',
+    description: 'Condição em que o tecido semelhante ao revestimento do útero cresce fora do útero.',
+    symptoms: ['Dor pélvica intensa (especialmente durante a menstruação)', 'Dor durante a relação sexual', 'Sangramento menstrual intenso', 'Infertilidade'],
+    treatments: ['Analgésicos', 'Terapia hormonal', 'Cirurgia conservadora', 'Histerectomia em casos graves'],
+    letter: 'E',
+    image: 'https://images.unsplash.com/photo-1600443299762-7a743123645d?auto=format&fit=crop&q=80&w=300' // Imagem genérica sistema reprodutivo
+  },
+  {
+    id: '42',
+    name: 'Fibromialgia',
+    description: 'Distúrbio caracterizado por dor musculoesquelética generalizada acompanhada por fadiga, sono, problemas de memória e humor.',
+    symptoms: ['Dor generalizada', 'Fadiga', 'Dificuldades cognitivas (névoa de fibro)', 'Distúrbios do sono', 'Dores de cabeça'],
+    treatments: ['Analgésicos', 'Antidepressivos', 'Anticonvulsivantes', 'Exercícios', 'Técnicas de gerenciamento de estresse'],
+    letter: 'F',
+    image: 'https://images.unsplash.com/photo-1581595219315-a187dd40c322?auto=format&fit=crop&q=80&w=300' // Imagem genérica dor/fadiga
+  },
+  {
+    id: '43',
+    name: 'Faringite',
+    description: 'Inflamação da faringe, geralmente causando dor de garganta.',
+    symptoms: ['Dor de garganta', 'Dificuldade para engolir', 'Gânglios linfáticos inchados', 'Febre', 'Dor de cabeça'],
+    treatments: ['Analgésicos', 'Anti-inflamatórios', 'Pastilhas para garganta', 'Antibióticos (se bacteriana)', 'Repouso'],
+    letter: 'F',
+    image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300' // Imagem genérica garganta/respiração
+  },
+  {
+    id: '44',
+    name: 'Gastrite',
+    description: 'Inflamação do revestimento do estômago.',
+    symptoms: ['Dor ou queimação no estômago', 'Náusea', 'Vômito', 'Sensação de plenitude após comer', 'Perda de apetite'],
+    treatments: ['Antiácidos', 'Inibidores da bomba de prótons', 'Antibióticos (se H. pylori)', 'Mudanças na dieta'],
+    letter: 'G',
+    image: 'https://images.unsplash.com/photo-1579165466741-7f35e4755183?auto=format&fit=crop&q=80&w=300' // Imagem genérica sistema digestivo
+  },
+  {
+    id: '45',
+    name: 'Glaucoma',
+    description: 'Grupo de doenças oculares que danificam o nervo óptico, geralmente devido ao aumento da pressão intraocular.',
+    symptoms: ['Perda gradual da visão periférica', 'Visão em túnel (em estágios avançados)', 'Dores de cabeça', 'Visão turva', 'Halos ao redor das luzes'],
+    treatments: ['Colírios para reduzir a pressão ocular', 'Tratamento a laser', 'Cirurgia'],
+    letter: 'G',
+    image: 'https://images.unsplash.com/photo-1577401239170-897942555fb3?auto=format&fit=crop&q=80&w=300' // Imagem olho
+  },
+  {
+    id: '46',
+    name: 'Gota',
+    description: 'Forma de artrite inflamatória causada pelo acúmulo de cristais de ácido úrico nas articulações.',
+    symptoms: ['Dor articular intensa (geralmente no dedão do pé)', 'Inchaço', 'Vermelhidão', 'Calor na articulação afetada', 'Sensibilidade extrema'],
+    treatments: ['Anti-inflamatórios não esteroides (AINEs)', 'Colchicina', 'Corticosteroides', 'Medicamentos para reduzir o ácido úrico'],
+    letter: 'G',
+    image: 'https://images.unsplash.com/photo-1616091238212-aca6808e3cf5?auto=format&fit=crop&q=80&w=300' // Imagem articulação
+  },
+  {
+    id: '47',
+    name: 'Hepatite',
+    description: 'Inflamação do fígado, geralmente causada por vírus, toxinas ou condições autoimunes.',
+    symptoms: ['Icterícia (pele e olhos amarelados)', 'Dor abdominal', 'Fadiga', 'Náuseas e vômitos', 'Urina escura'],
+    treatments: ['Repouso', 'Hidratação adequada', 'Antivirais (dependendo do tipo)', 'Transplante hepático (casos graves)'],
+    letter: 'H',
+    image: 'https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '48',
+    name: 'Hipertensão',
+    description: 'Pressão arterial elevada e persistente nas artérias, aumentando o risco de várias doenças cardiovasculares.',
+    symptoms: ['Geralmente assintomática', 'Dores de cabeça', 'Tontura', 'Visão embaçada', 'Sangramento nasal'],
+    treatments: ['Diuréticos', 'Betabloqueadores', 'Inibidores da ECA', 'Dieta com baixo teor de sódio', 'Atividade física regular'],
+    letter: 'H',
+    image: 'https://images.unsplash.com/photo-1559757175-7b21e5afae2a?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '49',
+    name: 'Hérnia de Disco',
+    description: 'Deslocamento de parte do disco intervertebral, comprimindo nervos próximos e causando dor.',
+    symptoms: ['Dor nas costas ou pescoço', 'Dor irradiando para braços ou pernas', 'Formigamento', 'Fraqueza muscular'],
+    treatments: ['Repouso', 'Fisioterapia', 'Medicamentos para dor', 'Injeções de corticosteroides', 'Cirurgia em casos graves'],
+    letter: 'H',
+    image: 'https://images.unsplash.com/photo-1581595219315-a187dd40c322?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '50',
+    name: 'Hipotireoidismo',
+    description: 'Condição em que a glândula tireoide não produz hormônios suficientes.',
+    symptoms: ['Fadiga', 'Sensibilidade ao frio', 'Constipação', 'Pele seca', 'Ganho de peso', 'Depressão'],
+    treatments: ['Reposição hormonal (Levotiroxina)', 'Monitoramento regular dos níveis hormonais', 'Ajustes na dieta'],
+    letter: 'H',
+    image: 'https://images.unsplash.com/photo-1559757148-3c050d252070?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '51',
+    name: 'Insuficiência Cardíaca',
+    description: 'Condição em que o coração não consegue bombear sangue suficiente para atender às necessidades do corpo.',
+    symptoms: ['Falta de ar', 'Fadiga', 'Inchaço nas pernas e tornozelos', 'Batimentos cardíacos acelerados', 'Tosse persistente'],
+    treatments: ['Inibidores da ECA', 'Betabloqueadores', 'Diuréticos', 'Dispositivos cardíacos', 'Transplante cardíaco em casos graves'],
+    letter: 'I',
+    image: 'https://images.unsplash.com/photo-1559757175-7b21e5afae2a?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '52',
+    name: 'Insônia',
+    description: 'Distúrbio do sono caracterizado pela dificuldade em adormecer ou permanecer dormindo.',
+    symptoms: ['Dificuldade para adormecer', 'Acordar durante a noite', 'Acordar muito cedo', 'Sonolência diurna', 'Irritabilidade'],
+    treatments: ['Terapia cognitivo-comportamental', 'Medicamentos hipnóticos', 'Higiene do sono', 'Técnicas de relaxamento'],
+    letter: 'I',
+    image: 'https://images.unsplash.com/photo-1541199249251-f713e6145474?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '53',
+    name: 'Infarto do Miocárdio',
+    description: 'Morte do tecido cardíaco resultante da interrupção do fluxo sanguíneo para o coração.',
+    symptoms: ['Dor ou pressão no peito', 'Dor irradiando para o braço, mandíbula ou costas', 'Falta de ar', 'Náusea', 'Suor frio'],
+    treatments: ['Trombolíticos', 'Angioplastia', 'Stents coronários', 'Cirurgia de revascularização', 'Medicamentos cardiovasculares'],
+    letter: 'I',
+    image: 'https://images.unsplash.com/photo-1559757175-7b21e5afae2a?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '54',
+    name: 'Infecção Urinária',
+    description: 'Infecção que afeta qualquer parte do sistema urinário, incluindo rins, bexiga, ureteres e uretra.',
+    symptoms: ['Micção frequente', 'Sensação de queimação ao urinar', 'Urina turva ou com odor forte', 'Dor pélvica', 'Sangue na urina'],
+    treatments: ['Antibióticos', 'Analgésicos', 'Aumento da ingestão de líquidos', 'Probióticos'],
+    letter: 'I',
+    image: 'https://images.unsplash.com/photo-1600443299762-7a743123645d?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '55',
+    name: 'Joanete',
+    description: 'Deformidade óssea que se desenvolve na articulação na base do dedão do pé.',
+    symptoms: ['Protuberância óssea na base do dedão', 'Dor e sensibilidade', 'Vermelhidão e inflamação', 'Movimento limitado do dedão'],
+    treatments: ['Calçados adequados', 'Protetores de joanete', 'Anti-inflamatórios', 'Cirurgia em casos graves'],
+    letter: 'J',
+    image: 'https://images.unsplash.com/photo-1616091238212-aca6808e3cf5?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '56',
+    name: 'Jejum Intermitente',
+    description: 'Não é uma doença, mas um padrão alimentar que alterna entre períodos de alimentação e jejum.',
+    symptoms: ['Pode causar irritabilidade', 'Fome', 'Fadiga inicial', 'Dificuldade de concentração'],
+    treatments: ['Acompanhamento nutricional', 'Monitoramento médico', 'Hidratação adequada', 'Não recomendado para certas condições médicas'],
+    letter: 'J',
+    image: 'https://images.unsplash.com/photo-1579165466741-7f35e4755183?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '57',
+    name: 'Klebsiella',
+    description: 'Infecção bacteriana causada por bactérias Klebsiella, geralmente afetando os pulmões ou o trato urinário.',
+    symptoms: ['Febre', 'Calafrios', 'Tosse com expectoração', 'Dificuldade respiratória', 'Dor ao urinar (infecções urinárias)'],
+    treatments: ['Antibióticos específicos', 'Hidratação', 'Oxigenoterapia (casos respiratórios graves)', 'Tratamento hospitalar em casos graves'],
+    letter: 'K',
+    image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '58',
+    name: 'Kernicterus',
+    description: 'Forma rara de dano cerebral causado por níveis muito altos de bilirrubina em bebês recém-nascidos.',
+    symptoms: ['Icterícia intensa', 'Letargia', 'Tônus muscular anormal', 'Febre', 'Choro agudo'],
+    treatments: ['Fototerapia intensiva', 'Exsanguineotransfusão', 'Tratamento precoce da hiperbilirrubinemia', 'Suporte neurológico'],
+    letter: 'K',
+    image: 'https://images.unsplash.com/photo-1559757148-3c050d252070?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '59',
+    name: 'Labirintite',
+    description: 'Inflamação do labirinto do ouvido interno, afetando o equilíbrio e a audição.',
+    symptoms: ['Tontura intensa', 'Vertigem', 'Náusea', 'Vômito', 'Perda de equilíbrio', 'Zumbido no ouvido'],
+    treatments: ['Medicamentos antivertiginosos', 'Antieméticos', 'Repouso', 'Exercícios de reabilitação vestibular'],
+    letter: 'L',
+    image: 'https://images.unsplash.com/photo-1577401239170-897942555fb3?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '60',
+    name: 'Lúpus Eritematoso Sistêmico',
+    description: 'Doença autoimune crônica em que o sistema imunológico ataca os próprios tecidos e órgãos do corpo.',
+    symptoms: ['Erupção cutânea em forma de borboleta no rosto', 'Fadiga', 'Dor articular', 'Fotossensibilidade', 'Febre'],
+    treatments: ['Anti-inflamatórios', 'Corticosteroides', 'Imunossupressores', 'Antimaláricos', 'Terapia biológica'],
+    letter: 'L',
+    image: 'https://images.unsplash.com/photo-1513165533842-511b7f2ef356?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '61',
+    name: 'Leucemia',
+    description: 'Câncer que afeta as células sanguíneas, geralmente começando na medula óssea.',
+    symptoms: ['Fadiga persistente', 'Infecções frequentes', 'Febre', 'Sangramentos ou hematomas facilmente', 'Perda de peso'],
+    treatments: ['Quimioterapia', 'Radioterapia', 'Transplante de medula óssea', 'Imunoterapia', 'Terapia direcionada'],
+    letter: 'L',
+    image: 'https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '62',
+    name: 'Meningite',
+    description: 'Inflamação das membranas (meninges) que revestem o cérebro e a medula espinhal.',
+    symptoms: ['Febre alta', 'Dor de cabeça severa', 'Rigidez no pescoço', 'Fotofobia (sensibilidade à luz)', 'Náusea e vômito'],
+    treatments: ['Antibióticos (meningite bacteriana)', 'Antivirais (meningite viral)', 'Corticosteroides', 'Terapia de suporte'],
+    letter: 'M',
+    image: 'https://images.unsplash.com/photo-1559757148-3c050d252070?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '63',
+    name: 'Mal de Parkinson',
+    description: 'Distúrbio neurodegenerativo progressivo que afeta o movimento e frequentemente causa tremores.',
+    symptoms: ['Tremor em repouso', 'Rigidez muscular', 'Bradicinesia (lentidão de movimento)', 'Instabilidade postural', 'Alterações na fala'],
+    treatments: ['Levodopa', 'Agonistas dopaminérgicos', 'Inibidores da MAO-B', 'Estimulação cerebral profunda', 'Fisioterapia'],
+    letter: 'M',
+    image: 'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '64',
+    name: 'Miocardite',
+    description: 'Inflamação do músculo cardíaco (miocárdio), geralmente causada por infecção viral.',
+    symptoms: ['Dor no peito', 'Fadiga', 'Falta de ar', 'Palpitações', 'Inchaço nas pernas'],
+    treatments: ['Repouso', 'Medicamentos para insuficiência cardíaca', 'Anti-inflamatórios', 'Imunossupressores em casos específicos'],
+    letter: 'M',
+    image: 'https://images.unsplash.com/photo-1559757175-7b21e5afae2a?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '65',
+    name: 'Mononucleose',
+    description: 'Infecção viral comumente causada pelo vírus Epstein-Barr (EBV), afetando principalmente adolescentes e adultos jovens.',
+    symptoms: ['Fadiga extrema', 'Dor de garganta', 'Febre', 'Gânglios linfáticos inchados', 'Baço aumentado'],
+    treatments: ['Repouso', 'Analgésicos', 'Hidratação', 'Evitar atividades físicas intensas durante a recuperação'],
+    letter: 'M',
+    image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '66',
+    name: 'Nefrite',
+    description: 'Inflamação dos rins, geralmente causada por infecções, doenças autoimunes ou reações a medicamentos.',
+    symptoms: ['Inchaço (edema)', 'Urina com sangue', 'Pressão arterial alta', 'Fadiga', 'Náusea'],
+    treatments: ['Medicamentos anti-inflamatórios', 'Imunossupressores', 'Antibióticos (se infecciosa)', 'Controle da pressão arterial'],
+    letter: 'N',
+    image: 'https://images.unsplash.com/photo-1600443299762-7a743123645d?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '67',
+    name: 'Neuralgia do Trigêmeo',
+    description: 'Distúrbio nervoso que causa dor facial intensa, breve e recorrente.',
+    symptoms: ['Dor facial aguda e lancinante', 'Episódios de dor desencadeados por atividades cotidianas', 'Dor em áreas específicas do rosto'],
+    treatments: ['Medicamentos anticonvulsivantes', 'Relaxantes musculares', 'Procedimentos cirúrgicos', 'Bloqueios nervosos'],
+    letter: 'N',
+    image: 'https://images.unsplash.com/photo-1559757148-3c050d252070?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '68',
+    name: 'Narcolepsia',
+    description: 'Distúrbio do sono crônico caracterizado por sonolência diurna excessiva e episódios repentinos de sono.',
+    symptoms: ['Sonolência diurna excessiva', 'Cataplexia (perda súbita do tônus muscular)', 'Alucinações hipnagógicas', 'Paralisia do sono'],
+    treatments: ['Estimulantes', 'Antidepressivos', 'Oxibato de sódio', 'Terapia comportamental do sono'],
+    letter: 'N',
+    image: 'https://images.unsplash.com/photo-1541199249251-f713e6145474?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '69',
+    name: 'Obesidade',
+    description: 'Condição médica caracterizada pelo acúmulo excessivo de gordura corporal, representando risco para a saúde.',
+    symptoms: ['IMC acima de 30', 'Circunferência abdominal aumentada', 'Dificuldade respiratória', 'Dores articulares', 'Fadiga'],
+    treatments: ['Dieta balanceada', 'Exercícios físicos regulares', 'Terapia comportamental', 'Medicamentos para perda de peso', 'Cirurgia bariátrica em casos graves'],
+    letter: 'O',
+    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '70',
+    name: 'Otite',
+    description: 'Inflamação ou infecção do ouvido, podendo afetar o ouvido externo, médio ou interno.',
+    symptoms: ['Dor de ouvido', 'Febre', 'Diminuição da audição', 'Secreção no ouvido', 'Tontura (em alguns casos)'],
+    treatments: ['Antibióticos (se bacteriana)', 'Analgésicos', 'Gotas otológicas', 'Drenagem (em casos graves)'],
+    letter: 'O',
+    image: 'https://images.unsplash.com/photo-1577401239170-897942555fb3?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '71',
+    name: 'Osteoporose',
+    description: 'Doença que enfraquece os ossos, tornando-os frágeis e mais propensos a fraturas.',
+    symptoms: ['Geralmente assintomática até ocorrer fratura', 'Dor nas costas', 'Perda de altura', 'Postura curvada', 'Fraturas ósseas com trauma mínimo'],
+    treatments: ['Suplementos de cálcio e vitamina D', 'Medicamentos para aumentar a densidade óssea', 'Exercícios de fortalecimento', 'Prevenção de quedas'],
+    letter: 'O',
+    image: 'https://images.unsplash.com/photo-1581595219315-a187dd40c322?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '72',
+    name: 'Pneumonia',
+    description: 'Infecção que inflama os sacos aéreos em um ou ambos os pulmões, podendo ser causada por bactérias, vírus ou fungos.',
+    symptoms: ['Tosse com catarro', 'Febre', 'Calafrios', 'Dificuldade respiratória', 'Dor torácica ao respirar ou tossir'],
+    treatments: ['Antibióticos (pneumonia bacteriana)', 'Antivirais (pneumonia viral)', 'Antifúngicos (pneumonia fúngica)', 'Oxigenoterapia', 'Repouso'],
+    letter: 'P',
+    image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '73',
+    name: 'Psoríase',
+    description: 'Doença autoimune crônica que acelera o ciclo de vida das células da pele, causando acúmulo de células na superfície da pele.',
+    symptoms: ['Placas de pele espessas e avermelhadas', 'Escamas prateadas na pele', 'Pele seca e rachada', 'Coceira', 'Unhas engrossadas'],
+    treatments: ['Corticosteroides tópicos', 'Retinoides', 'Fototerapia', 'Imunossupressores', 'Agentes biológicos'],
+    letter: 'P',
+    image: 'https://images.unsplash.com/photo-1513165533842-511b7f2ef356?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '74',
+    name: 'Pancreatite',
+    description: 'Inflamação do pâncreas, que pode ser aguda ou crônica.',
+    symptoms: ['Dor abdominal intensa', 'Náusea', 'Vômito', 'Febre', 'Frequência cardíaca acelerada'],
+    treatments: ['Jejum', 'Analgésicos', 'Hidratação intravenosa', 'Tratamento da causa subjacente', 'Cirurgia em casos graves'],
+    letter: 'P',
+    image: 'https://images.unsplash.com/photo-1579165466741-7f35e4755183?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '75',
+    name: 'Queimadura',
+    description: 'Lesão na pele ou outros tecidos causada por calor, frio, eletricidade, produtos químicos, radiação ou fricção.',
+    symptoms: ['Dor', 'Vermelhidão', 'Inchaço', 'Bolhas', 'Pele esbranquiçada ou carbonizada (em queimaduras graves)'],
+    treatments: ['Resfriamento da área', 'Analgésicos', 'Tratamento antimicrobiano', 'Curativos especializados', 'Enxerto de pele em casos graves'],
+    letter: 'Q',
+    image: 'https://images.unsplash.com/photo-1513165533842-511b7f2ef356?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '76',
+    name: 'Quadro Depressivo',
+    description: 'Estado de depressão que pode variar em intensidade e duração, afetando o humor, os pensamentos e o comportamento.',
+    symptoms: ['Tristeza persistente', 'Perda de interesse', 'Alterações no sono', 'Fadiga', 'Pensamentos suicidas'],
+    treatments: ['Psicoterapia', 'Antidepressivos', 'Terapia eletroconvulsiva (casos graves)', 'Atividade física', 'Mindfulness'],
+    letter: 'Q',
+    image: 'https://images.unsplash.com/photo-1541199249251-f713e6145474?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '77',
+    name: 'Rinite',
+    description: 'Inflamação do revestimento mucoso do nariz, frequentemente causada por alergias ou infecções.',
+    symptoms: ['Congestão nasal', 'Coriza', 'Espirros', 'Coceira no nariz', 'Olhos lacrimejantes'],
+    treatments: ['Anti-histamínicos', 'Corticosteroides nasais', 'Descongestionantes', 'Imunoterapia (em rinite alérgica)', 'Evitar alérgenos'],
+    letter: 'R',
+    image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '78',
+    name: 'Reumatismo',
+    description: 'Termo que se refere a várias condições que causam dor e inflamação nos músculos, articulações, ossos e ligamentos.',
+    symptoms: ['Dor articular', 'Rigidez', 'Inchaço', 'Limitação de movimento', 'Deformidade (em casos avançados)'],
+    treatments: ['Anti-inflamatórios', 'Analgésicos', 'Fisioterapia', 'Terapia ocupacional', 'Medicamentos antirreumáticos'],
+    letter: 'R',
+    image: 'https://images.unsplash.com/photo-1581595219315-a187dd40c322?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '79',
+    name: 'Retinopatia Diabética',
+    description: 'Complicação do diabetes que afeta os vasos sanguíneos da retina, podendo levar à perda de visão.',
+    symptoms: ['Visão embaçada', 'Flutuações na visão', 'Manchas escuras', 'Dificuldade para ver à noite', 'Perda de visão'],
+    treatments: ['Controle do diabetes', 'Fotocoagulação a laser', 'Medicamentos intravitreos', 'Vitrectomia', 'Exames oftalmológicos regulares'],
+    letter: 'R',
+    image: 'https://images.unsplash.com/photo-1577401239170-897942555fb3?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '80',
+    name: 'Síndrome do Intestino Irritável',
+    description: 'Distúrbio intestinal crônico que causa dor abdominal, inchaço, diarreia e/ou constipação.',
+    symptoms: ['Dor abdominal', 'Alterações nos hábitos intestinais', 'Inchaço', 'Gases', 'Sensação de evacuação incompleta'],
+    treatments: ['Mudanças na dieta', 'Medicamentos para dor e cólicas', 'Antidepressivos', 'Terapia comportamental', 'Probióticos'],
+    letter: 'S',
+    image: 'https://images.unsplash.com/photo-1579165466741-7f35e4755183?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '81',
+    name: 'Sarampo',
+    description: 'Doença viral altamente contagiosa caracterizada por erupção cutânea, febre e sintomas respiratórios.',
+    symptoms: ['Erupção cutânea vermelha', 'Febre alta', 'Tosse', 'Coriza', 'Conjuntivite', 'Manchas de Koplik (manchas brancas na boca)'],
+    treatments: ['Não há tratamento específico', 'Repouso', 'Hidratação', 'Analgésicos', 'Vitamina A', 'Vacinação preventiva'],
+    letter: 'S',
+    image: 'https://images.unsplash.com/photo-1513165533842-511b7f2ef356?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '82',
+    name: 'Síndrome de Down',
+    description: 'Condição genética causada pela presença de um cromossomo 21 extra, resultando em características físicas distintas e deficiência intelectual.',
+    symptoms: ['Características faciais distintas', 'Hipotonia muscular', 'Baixa estatura', 'Atraso no desenvolvimento', 'Anomalias cardíacas congênitas'],
+    treatments: ['Intervenção precoce', 'Fisioterapia', 'Fonoaudiologia', 'Educação especial', 'Tratamento de condições associadas'],
+    letter: 'S',
+    image: 'https://images.unsplash.com/photo-1559223607-a43c990c692c?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '83',
+    name: 'Tuberculose',
+    description: 'Doença infecciosa causada pela bactéria Mycobacterium tuberculosis, afetando principalmente os pulmões.',
+    symptoms: ['Tosse persistente (mais de três semanas)', 'Expectoração com sangue', 'Dor no peito', 'Febre', 'Perda de peso', 'Suores noturnos'],
+    treatments: ['Antibióticos específicos por 6-9 meses', 'Isolamento em casos ativos', 'Terapia diretamente observada', 'Suporte nutricional'],
+    letter: 'T',
+    image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '84',
+    name: 'Transtorno de Ansiedade',
+    description: 'Grupo de transtornos mentais caracterizados por sentimentos de medo e ansiedade intensos e persistentes.',
+    symptoms: ['Preocupação excessiva', 'Inquietação', 'Fadiga', 'Dificuldade de concentração', 'Tensão muscular', 'Distúrbios do sono'],
+    treatments: ['Psicoterapia', 'Medicamentos ansiolíticos', 'Técnicas de relaxamento', 'Mudanças no estilo de vida', 'Exercícios físicos'],
+    letter: 'T',
+    image: 'https://images.unsplash.com/photo-1541199249251-f713e6145474?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '85',
+    name: 'Trombose',
+    description: 'Formação de coágulo sanguíneo dentro de um vaso sanguíneo, obstruindo o fluxo de sangue.',
+    symptoms: ['Dor local', 'Inchaço', 'Vermelhidão', 'Sensação de calor', 'Dificuldade para respirar (trombose pulmonar)'],
+    treatments: ['Anticoagulantes', 'Trombolíticos', 'Filtros de veia cava', 'Meias de compressão', 'Mudanças no estilo de vida'],
+    letter: 'T',
+    image: 'https://images.unsplash.com/photo-1559757175-7b21e5afae2a?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '86',
+    name: 'Úlcera Péptica',
+    description: 'Ferida aberta na mucosa do estômago, esôfago inferior ou duodeno, causada por ácido estomacal.',
+    symptoms: ['Dor abdominal', 'Azia', 'Náusea', 'Sensação de plenitude', 'Sangue nas fezes ou vômito'],
+    treatments: ['Inibidores da bomba de prótons', 'Antibióticos (se H. pylori)', 'Antiácidos', 'Evitar alimentos irritantes', 'Cirurgia em casos graves'],
+    letter: 'U',
+    image: 'https://images.unsplash.com/photo-1579165466741-7f35e4755183?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '87',
+    name: 'Urticária',
+    description: 'Reação cutânea alérgica caracterizada por elevações avermelhadas e pruriginosas na pele.',
+    symptoms: ['Manchas avermelhadas na pele', 'Coceira intensa', 'Inchaço', 'Sensação de queimação', 'Angioedema (em casos graves)'],
+    treatments: ['Anti-histamínicos', 'Corticosteroides', 'Epinefrina (casos graves)', 'Evitar alérgenos', 'Compressas frias'],
+    letter: 'U',
+    image: 'https://images.unsplash.com/photo-1513165533842-511b7f2ef356?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '88',
+    name: 'Varizes',
+    description: 'Veias dilatadas e tortuosas, geralmente nas pernas, causadas por válvulas venosas danificadas ou fracas.',
+    symptoms: ['Veias visíveis e protuberantes', 'Dor nas pernas', 'Sensação de peso', 'Coceira', 'Cãibras musculares', 'Edema'],
+    treatments: ['Meias de compressão', 'Escleroterapia', 'Terapia a laser', 'Cirurgia', 'Elevação das pernas', 'Exercícios'],
+    letter: 'V',
+    image: 'https://images.unsplash.com/photo-1581595219315-a187dd40c322?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '89',
+    name: 'Vitiligo',
+    description: 'Doença autoimune que causa a perda de pigmento da pele em áreas irregulares.',
+    symptoms: ['Manchas brancas na pele', 'Perda de cor no cabelo', 'Descoloração da boca e nariz', 'Perda de cor nas retinas'],
+    treatments: ['Corticosteroides tópicos', 'Inibidores de calcineurina', 'Fototerapia', 'Transplante de melanócitos', 'Maquiagem corretiva'],
+    letter: 'V',
+    image: 'https://images.unsplash.com/photo-1513165533842-511b7f2ef356?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '90',
+    name: 'Vaginite',
+    description: 'Inflamação ou infecção da vagina que pode causar corrimento, coceira e dor.',
+    symptoms: ['Corrimento vaginal anormal', 'Coceira', 'Ardência', 'Odor desagradável', 'Dor durante a relação sexual'],
+    treatments: ['Antibióticos (vaginose bacteriana)', 'Antifúngicos (candidíase)', 'Anti-protozoários (tricomoníase)', 'Higiene adequada'],
+    letter: 'V',
+    image: 'https://images.unsplash.com/photo-1600443299762-7a743123645d?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '91',
+    name: 'Xeroftalmia',
+    description: 'Condição ocular caracterizada pela secura anormal da conjuntiva e da córnea, frequentemente causada por deficiência de vitamina A.',
+    symptoms: ['Olhos secos', 'Sensação de areia nos olhos', 'Coceira', 'Ardência', 'Sensibilidade à luz', 'Dificuldade para enxergar à noite'],
+    treatments: ['Suplementação de vitamina A', 'Lágrimas artificiais', 'Mudanças na dieta', 'Umidificadores ambientais', 'Controle de doenças subjacentes'],
+    letter: 'X',
+    image: 'https://images.unsplash.com/photo-1577401239170-897942555fb3?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '92',
+    name: 'Xantoma',
+    description: 'Depósitos de gordura amarelados que se desenvolvem sob a pele, frequentemente associados a distúrbios no metabolismo dos lipídios.',
+    symptoms: ['Caroços amarelados sob a pele', 'Manchas elevadas nas pálpebras', 'Nódulos nos tendões', 'Geralmente indolores'],
+    treatments: ['Tratamento da condição subjacente (como hipercolesterolemia)', 'Estatinas', 'Remoção cirúrgica', 'Dieta com baixo teor de gordura'],
+    letter: 'X',
+    image: 'https://images.unsplash.com/photo-1513165533842-511b7f2ef356?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '93',
+    name: 'Yellow Nail Syndrome',
+    description: 'Síndrome rara caracterizada por unhas amareladas e espessas, problemas respiratórios e inchaço nos membros.',
+    symptoms: ['Unhas amareladas e espessas', 'Crescimento lento das unhas', 'Inchaço nos membros', 'Problemas respiratórios crônicos', 'Sinusite'],
+    treatments: ['Tratamento da condição subjacente', 'Antibióticos para infecções', 'Vitamina E', 'Drenagem linfática', 'Terapia antifúngica'],
+    letter: 'Y',
+    image: 'https://images.unsplash.com/photo-1585751119414-ef2636f8aede?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '94',
+    name: 'Yersiniose',
+    description: 'Infecção bacteriana intestinal causada pela bactéria Yersinia, geralmente contraída por consumo de alimentos contaminados.',
+    symptoms: ['Dor abdominal', 'Febre', 'Diarreia', 'Náusea', 'Vômito', 'Dor nas articulações (em alguns casos)'],
+    treatments: ['Antibióticos', 'Hidratação', 'Repouso', 'Tratamento sintomático', 'Medidas de segurança alimentar'],
+    letter: 'Y',
+    image: 'https://images.unsplash.com/photo-1579165466741-7f35e4755183?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '95',
+    name: 'Zika',
+    description: 'Doença viral transmitida principalmente por mosquitos, que pode causar malformações congênitas em bebês de mães infectadas durante a gravidez.',
+    symptoms: ['Febre leve', 'Erupção cutânea', 'Dor nas articulações', 'Conjuntivite', 'Dor de cabeça', 'Dor muscular'],
+    treatments: ['Não há tratamento específico', 'Repouso', 'Hidratação', 'Analgésicos', 'Prevenção de picadas de mosquito'],
+    letter: 'Z',
+    image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: '96',
+    name: 'Zoonose',
+    description: 'Doenças infecciosas que podem ser transmitidas entre animais e humanos, como raiva, leptospirose ou doença de Lyme.',
+    symptoms: ['Variam dependendo da doença específica', 'Febre', 'Fadiga', 'Dores musculares', 'Sintomas específicos da doença'],
+    treatments: ['Tratamento específico para cada doença', 'Antibióticos', 'Antivirais', 'Vacinação preventiva', 'Controle de vetores'],
+    letter: 'Z',
+    image: 'https://images.unsplash.com/photo-1628595351029-c2bf17511435?auto=format&fit=crop&q=80&w=300'
   }
 ];
 
@@ -321,7 +915,7 @@ const diseaseIcons: Record<string, React.ElementType> = {
 };
 
 const Diseases = () => {
-  const [selectedLetter, setSelectedLetter] = useState<string>('');
+  const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredDiseases, setFilteredDiseases] = useState<Disease[]>(diseases);
   const [showLetterIntro, setShowLetterIntro] = useState(false);
@@ -349,16 +943,16 @@ const Diseases = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <HeroParallax
-        title="Doenças e Tratamentos"
-        description="Informações detalhadas sobre condições médicas e seus tratamentos"
-        image="https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?auto=format&fit=crop&w=2000"
+        title="Doenças e Especialidades"
+        description="Encontre informações sobre diversas condições médicas"
+        image="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=2000"
         typeSequence={[
-          'Pesquise por Condições',
-          2000,
+          'Busque por Sintomas',
+          '2000',
           'Encontre Tratamentos',
-          2000,
-          'Informe-se sobre Sintomas',
-          2000
+          '2000',
+          'Entenda sua Saúde',
+          '2000'
         ]}
       />
 
@@ -381,7 +975,7 @@ const Diseases = () => {
                 key={letter}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedLetter(letter === selectedLetter ? '' : letter)}
+                onClick={() => setSelectedLetter(letter === selectedLetter ? null : letter)}
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
                   letter === selectedLetter
                     ? 'bg-verde-cia text-white'
@@ -434,26 +1028,18 @@ const Diseases = () => {
             {filteredDiseases.map((disease) => (
               <motion.div
                 key={disease.id}
-                layout
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
               >
-                {/* Disease Image */}
-                <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src={disease.image || `https://source.unsplash.com/300x200/?medical,${disease.name.toLowerCase()}`} 
-                    alt={disease.name} 
-                    className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute top-0 left-0 w-12 h-12 bg-verde-cia text-white flex items-center justify-center font-bold text-xl">
-                    {disease.letter}
-                  </div>
-                </div>
-                
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-3 text-verde-cia">{disease.name}</h3>
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-xl font-semibold text-verde-cia">{disease.name}</h3>
+                    <div className="w-8 h-8 bg-verde-cia text-white flex items-center justify-center font-bold text-lg rounded-full">
+                      {disease.letter}
+                    </div>
+                  </div>
                   <p className="text-gray-600 mb-4">{disease.description}</p>
                   
                   <div className="mb-4">
