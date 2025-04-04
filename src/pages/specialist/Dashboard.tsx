@@ -408,7 +408,7 @@ const SpecialistDashboard = () => {
                   <span>{profile?.public_profile_complete ? 'Completo' : 'Incompleto'}</span>
                 </div>
                 <Link
-                  to="/medico/${profile?.slug || profile?.name?.toLowerCase().replace(/\s+/g, '-')}"
+                  to={`/medico/${profile?.slug || (profile?.name ? profile.name.toLowerCase().replace(/\s+/g, '-') : 'perfil')}`}
                   target="_blank"
                   className="text-sm text-blue-600 hover:underline flex items-center mt-2"
                 >

@@ -71,9 +71,9 @@ const DoctorProfile = () => {
       if (data) {
         // Converter os dados do banco para o formato esperado pelo componente
         const formattedDoctor: Specialist = {
-          id: data.id,
-          name: data.name,
-          specialty: data.specialty,
+          id: data.id || '',
+          name: data.name || '',
+          specialty: data.specialty || '',
           city: data.city || 'São Paulo, SP',
           consultationType: data.consultation_type || 'presencial',
           teleconsultation: data.teleconsultation || false,
@@ -86,12 +86,13 @@ const DoctorProfile = () => {
           phone: data.phone,
           email: data.email,
           bio: data.bio || 'Informações não disponíveis',
-          experience: data.experience?.join(', ') || 'Mais de 10 anos',
+          experience: data.experience ? (Array.isArray(data.experience) ? data.experience.join(', ') : data.experience) : 'Mais de 10 anos',
           availability: data.availability || ['Segunda a Sexta, 8h às 18h'],
           insurance: data.insurance || ['Unimed', 'Bradesco Saúde'],
           languages: data.languages || ['Português', 'Inglês'],
           education: data.education || [],
-          achievements: data.achievements || []
+          achievements: data.achievements || [],
+          slug: doctorSlug // Garantir que o slug está preenchido
         };
 
         setDoctor(formattedDoctor);
@@ -106,9 +107,9 @@ const DoctorProfile = () => {
 
         if (!relatedError && relatedData) {
           const formattedRelated = relatedData.map(doc => ({
-            id: doc.id,
-            name: doc.name,
-            specialty: doc.specialty,
+            id: doc.id || '',
+            name: doc.name || '',
+            specialty: doc.specialty || '',
             city: doc.city || 'São Paulo, SP',
             consultationType: doc.consultation_type || 'presencial',
             teleconsultation: doc.teleconsultation || false,
@@ -124,7 +125,8 @@ const DoctorProfile = () => {
             experience: doc.experience,
             availability: doc.availability || ['Segunda a Sexta'],
             insurance: doc.insurance || ['Unimed'],
-            languages: doc.languages
+            languages: doc.languages,
+            slug: doc.slug || doc.name?.toLowerCase().replace(/\s+/g, '-') || ''
           })) as Specialist[];
           
           setRelatedDoctors(formattedRelated);

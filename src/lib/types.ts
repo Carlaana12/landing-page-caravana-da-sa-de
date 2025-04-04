@@ -87,6 +87,11 @@ export interface Specialist {
   experience?: string;
   education?: string[];
   achievements?: string[];
+  slug?: string;
+  availability_slots?: Array<{day: number, startTime: string, endTime: string}>;
+  consultation_duration?: number;
+  public_profile_complete?: boolean;
+  view_count?: number;
 }
 
 export interface Exam {
