@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Users, Clock, Star, FileText, Settings, Edit, Save, X } from 'lucide-react';
+import { Calendar, Users, Clock, Star, FileText, Settings, Edit, Save, X, Globe, BookText, PlusCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 
 const SpecialistDashboard = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -17,6 +18,7 @@ const SpecialistDashboard = () => {
     address: '',
     working_hours: ''
   });
+  const [articles, setArticles] = useState<any[]>([]);
 
   const stats = [
     {
@@ -61,8 +63,30 @@ const SpecialistDashboard = () => {
     }
   ];
 
+  const fetchArticles = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('articles')
+        .select('*')
+        .eq('author_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching articles:', error);
+      } else if (data) {
+        setArticles(data);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   useEffect(() => {
     fetchProfile();
+    fetchArticles();
   }, []);
 
   const fetchProfile = async () => {
@@ -317,27 +341,152 @@ const SpecialistDashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <QuickAction
-            icon={Calendar}
-            title="Agenda"
-            description="Visualize seus compromissos"
-          />
-          <QuickAction
-            icon={Users}
-            title="Pacientes"
-            description="Gerencie seus pacientes"
-          />
-          <QuickAction
-            icon={FileText}
-            title="Documentos"
-            description="Emita documentos médicos"
-          />
-          <QuickAction
-            icon={Settings}
-            title="Configurações"
-            description="Ajuste suas preferências"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          <Link to="/especialista/perfil-publico">
+            <QuickAction
+              icon={Globe}
+              title="Editar Perfil Público"
+              description="Atualize informações visíveis aos pacientes"
+            />
+          </Link>
+          
+          <Link to="/especialista/disponibilidade">
+            <QuickAction
+              icon={Calendar}
+              title="Configurar Disponibilidade"
+              description="Defina horários disponíveis para consultas"
+            />
+          </Link>
+          
+          <Link to="/especialista/artigos/novo">
+            <QuickAction
+              icon={BookText}
+              title="Criar Artigo"
+              description="Compartilhe seu conhecimento no blog"
+            />
+          </Link>
+        </div>
+
+        {/* Novo Card: Perfil Público */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <div className="flex justify-between items-start mb-6">
+            <h2 className="text-xl font-semibold flex items-center">
+              <Globe className="w-5 h-5 mr-2 text-verde-cia" />
+              Meu Perfil Público
+            </h2>
+            <Link
+              to="/especialista/perfil-publico"
+              className="flex items-center text-verde-cia hover:text-verde-cia-escuro"
+            >
+              <Edit className="w-5 h-5 mr-1" />
+              <span>Editar Perfil Público</span>
+            </Link>
+          </div>
+          
+          <div className="p-4 border rounded-lg bg-gray-50">
+            <p className="text-gray-600 mb-4">
+              Seu perfil público é o que os pacientes veem quando visitam sua página no site.
+              Mantenha-o atualizado para atrair mais pacientes.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <h3 className="font-medium mb-2">Informações visíveis ao público:</h3>
+                <ul className="list-disc list-inside text-gray-600 space-y-1">
+                  <li>Nome e especialidade</li>
+                  <li>Foto de perfil</li>
+                  <li>Biografia profissional</li>
+                  <li>Formação e experiência</li>
+                  <li>Convênios e formas de pagamento</li>
+                </ul>
+              </div>
+              
+              <div className="flex-1">
+                <h3 className="font-medium mb-2">Status do perfil:</h3>
+                <div className="flex items-center mb-2">
+                  <div className={`w-3 h-3 rounded-full ${profile?.public_profile_complete ? 'bg-green-500' : 'bg-yellow-500'} mr-2`}></div>
+                  <span>{profile?.public_profile_complete ? 'Completo' : 'Incompleto'}</span>
+                </div>
+                <Link
+                  to="/medico/${profile?.slug || profile?.name?.toLowerCase().replace(/\s+/g, '-')}"
+                  target="_blank"
+                  className="text-sm text-blue-600 hover:underline flex items-center mt-2"
+                >
+                  <span>Visualizar meu perfil público</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Novo Card: Meus Artigos */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <div className="flex justify-between items-start mb-6">
+            <h2 className="text-xl font-semibold flex items-center">
+              <BookText className="w-5 h-5 mr-2 text-verde-cia" />
+              Meus Artigos
+            </h2>
+            <Link
+              to="/especialista/artigos/novo"
+              className="flex items-center bg-verde-cia text-white px-3 py-2 rounded-lg hover:bg-verde-cia-escuro transition-colors"
+            >
+              <PlusCircle className="w-5 h-5 mr-1" />
+              <span>Criar Novo Artigo</span>
+            </Link>
+          </div>
+          
+          {articles.length === 0 ? (
+            <div className="text-center py-8 border rounded-lg">
+              <BookText className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+              <h3 className="text-lg font-medium text-gray-700 mb-2">Nenhum artigo publicado</h3>
+              <p className="text-gray-500 max-w-md mx-auto mb-4">
+                Compartilhe seu conhecimento escrevendo artigos para o blog. 
+                Isso aumenta sua visibilidade e credibilidade profissional.
+              </p>
+              <Link
+                to="/especialista/artigos/novo"
+                className="inline-flex items-center text-verde-cia hover:text-verde-cia-escuro"
+              >
+                <span>Escrever meu primeiro artigo</span>
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {articles.map((article) => (
+                <div key={article.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex justify-between">
+                    <div>
+                      <h3 className="font-medium">{article.title}</h3>
+                      <p className="text-sm text-gray-500 mb-2 line-clamp-2">{article.excerpt}</p>
+                      <div className="flex items-center text-xs text-gray-500 space-x-4">
+                        <span>Publicado em: {new Date(article.published_at).toLocaleDateString('pt-BR')}</span>
+                        <span>Status: {article.status === 'published' ? 'Publicado' : 'Rascunho'}</span>
+                        <span>Visualizações: {article.view_count || 0}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Link
+                        to={`/especialista/artigos/${article.id}`}
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-full"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
+              <div className="text-center mt-4">
+                {/* Comentado até que tenhamos uma rota válida para listar todos os artigos */}
+                {/* <Link
+                  to="/especialista/artigos"
+                  className="text-sm text-verde-cia hover:underline"
+                >
+                  Ver todos os artigos
+                </Link> */}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Today's Schedule */}

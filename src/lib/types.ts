@@ -70,6 +70,7 @@ export interface Specialist {
   name: string;
   specialty: string;
   city: string;
+  location?: string;
   consultationType: 'presencial' | 'domiciliar' | 'ambos';
   teleconsultation: boolean;
   exams: string[];
@@ -84,6 +85,8 @@ export interface Specialist {
   languages?: string[];
   insurance?: string[];
   experience?: string;
+  education?: string[];
+  achievements?: string[];
 }
 
 export interface Exam {

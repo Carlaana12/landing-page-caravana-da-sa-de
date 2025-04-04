@@ -25,6 +25,8 @@ import DoctorAbout from '../components/DoctorAbout';
 import DoctorServices from '../components/DoctorServices';
 import DoctorReviews from '../components/DoctorReviews';
 import DoctorCard from '../components/DoctorCard';
+import { supabase } from '../lib/supabase';
+import AppointmentScheduler from '../components/AppointmentScheduler';
 
 const DoctorProfile = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -33,25 +35,109 @@ const DoctorProfile = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('about');
   const [liked, setLiked] = useState(false);
+  const [showAppointmentModal, setShowAppointmentModal] = useState(false);
 
   useEffect(() => {
     if (slug) {
       console.log("Slug recebido:", slug);
-      
-      // Find doctor by slug
-      const foundDoctor = getSpecialistBySlug(slug);
-      console.log("Médico encontrado:", foundDoctor);
-      
-      if (foundDoctor) {
-        setDoctor(foundDoctor);
-        // Get related doctors with same specialty
-        const related = getRelatedSpecialists(foundDoctor.specialty, foundDoctor.id);
-        setRelatedDoctors(related);
-      }
+      fetchDoctorFromDB(slug);
     }
     
     setLoading(false);
   }, [slug]);
+
+  const fetchDoctorFromDB = async (doctorSlug: string) => {
+    try {
+      // Primeiro, verificar se há um perfil público no Supabase com este slug
+      const { data, error } = await supabase
+        .from('public_profiles')
+        .select('*')
+        .eq('slug', doctorSlug)
+        .single();
+
+      if (error) {
+        console.error("Erro ao buscar médico no banco de dados:", error);
+        
+        // Fallback para dados mockados se não encontrar no banco
+        const fallbackDoctor = getSpecialistBySlug(doctorSlug);
+        if (fallbackDoctor) {
+          setDoctor(fallbackDoctor);
+          const related = getRelatedSpecialists(fallbackDoctor.specialty, fallbackDoctor.id);
+          setRelatedDoctors(related);
+        }
+        return;
+      }
+
+      if (data) {
+        // Converter os dados do banco para o formato esperado pelo componente
+        const formattedDoctor: Specialist = {
+          id: data.id,
+          name: data.name,
+          specialty: data.specialty,
+          city: data.city || 'São Paulo, SP',
+          consultationType: data.consultation_type || 'presencial',
+          teleconsultation: data.teleconsultation || false,
+          exams: data.exams || [],
+          location: data.location || 'São Paulo, SP',
+          imageUrl: data.image_url,
+          rating: data.rating || 4.8,
+          reviewCount: data.review_count || 120,
+          address: data.address,
+          phone: data.phone,
+          email: data.email,
+          bio: data.bio || 'Informações não disponíveis',
+          experience: data.experience?.join(', ') || 'Mais de 10 anos',
+          availability: data.availability || ['Segunda a Sexta, 8h às 18h'],
+          insurance: data.insurance || ['Unimed', 'Bradesco Saúde'],
+          languages: data.languages || ['Português', 'Inglês'],
+          education: data.education || [],
+          achievements: data.achievements || []
+        };
+
+        setDoctor(formattedDoctor);
+
+        // Buscar médicos relacionados pela especialidade
+        const { data: relatedData, error: relatedError } = await supabase
+          .from('public_profiles')
+          .select('*')
+          .eq('specialty', data.specialty)
+          .neq('id', data.id)
+          .limit(3);
+
+        if (!relatedError && relatedData) {
+          const formattedRelated = relatedData.map(doc => ({
+            id: doc.id,
+            name: doc.name,
+            specialty: doc.specialty,
+            city: doc.city || 'São Paulo, SP',
+            consultationType: doc.consultation_type || 'presencial',
+            teleconsultation: doc.teleconsultation || false,
+            exams: doc.exams || [],
+            location: doc.location || 'São Paulo, SP',
+            imageUrl: doc.image_url,
+            rating: doc.rating || 4.5,
+            reviewCount: doc.review_count || 80,
+            address: doc.address,
+            phone: doc.phone,
+            email: doc.email,
+            bio: doc.bio,
+            experience: doc.experience,
+            availability: doc.availability || ['Segunda a Sexta'],
+            insurance: doc.insurance || ['Unimed'],
+            languages: doc.languages
+          })) as Specialist[];
+          
+          setRelatedDoctors(formattedRelated);
+        } else {
+          // Fallback para dados mockados se não encontrar relacionados
+          const fallbackRelated = getRelatedSpecialists(data.specialty, data.id);
+          setRelatedDoctors(fallbackRelated);
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao processar dados do médico:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -151,7 +237,7 @@ const DoctorProfile = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div className="flex items-center text-gray-600">
                     <MapPin className="w-5 h-5 mr-2 text-gray-400" />
-                    <span>{doctor.address || doctor.city}</span>
+                    <span>{doctor.address || doctor.location || doctor.city}</span>
                   </div>
                   
                   {doctor.phone && (
@@ -181,6 +267,7 @@ const DoctorProfile = () => {
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    onClick={() => setShowAppointmentModal(true)}
                     className="flex-1 bg-verde-cia text-white py-3 rounded-lg hover:bg-verde-cia-escuro transition-colors flex items-center justify-center"
                   >
                     <Calendar className="w-5 h-5 mr-2" />
@@ -261,6 +348,14 @@ const DoctorProfile = () => {
           )}
         </div>
       </div>
+      
+      {/* Modal de Agendamento */}
+      {showAppointmentModal && doctor && (
+        <AppointmentScheduler 
+          doctor={doctor} 
+          onClose={() => setShowAppointmentModal(false)}
+        />
+      )}
     </div>
   );
 };

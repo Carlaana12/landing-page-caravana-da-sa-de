@@ -29,11 +29,11 @@ const About = () => {
         image="https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?auto=format&fit=crop&w=2000"
         typeSequence={[
           'Excelência em Saúde',
-          2000,
+          '2000',
           'Inovação Constante',
-          2000,
+          '2000',
           'Compromisso com o Bem-estar',
-          2000
+          '2000'
         ]}
       />
 

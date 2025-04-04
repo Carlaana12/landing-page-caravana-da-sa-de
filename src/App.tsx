@@ -36,6 +36,9 @@ import UserDashboard from './pages/user/Dashboard';
 // Specialist Pages
 import SpecialistLogin from './pages/Login';
 import SpecialistDashboard from './pages/specialist/Dashboard';
+import ProfileEditor from './pages/specialist/ProfileEditor';
+import ArticleEditor from './pages/specialist/ArticleEditor';
+import AvailabilityEditor from './pages/specialist/AvailabilityEditor';
 
 import { useAuthStore } from './lib/store';
 import { USER_TYPES } from './lib/constants';
@@ -176,6 +179,38 @@ function App() {
               element={
                 <SpecialistRoute>
                   <SpecialistDashboard />
+                </SpecialistRoute>
+              }
+            />
+            <Route
+              path="/especialista/perfil-publico"
+              element={
+                <SpecialistRoute>
+                  <ProfileEditor />
+                </SpecialistRoute>
+              }
+            />
+            <Route
+              path="/especialista/disponibilidade"
+              element={
+                <SpecialistRoute>
+                  <AvailabilityEditor />
+                </SpecialistRoute>
+              }
+            />
+            <Route
+              path="/especialista/artigos/novo"
+              element={
+                <SpecialistRoute>
+                  <ArticleEditor />
+                </SpecialistRoute>
+              }
+            />
+            <Route
+              path="/especialista/artigos/:id"
+              element={
+                <SpecialistRoute>
+                  <ArticleEditor />
                 </SpecialistRoute>
               }
             />

@@ -122,17 +122,10 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist, onClick }) 
         )}
 
         {/* Action Buttons */}
-        <div className="flex gap-2 mt-4">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="flex-1 bg-verde-cia text-white py-2 rounded-lg hover:bg-verde-cia-escuro transition-colors"
-          >
-            Agendar Consulta
-          </motion.button>
+        <div className="mt-4">
           <Link
             to={`/medico/${specialistSlug}`}
-            className="px-4 py-2 border-2 border-verde-cia text-verde-cia rounded-lg hover:bg-verde-cia hover:text-white transition-colors flex items-center justify-center"
+            className="w-full px-4 py-2 bg-verde-cia text-white rounded-lg hover:bg-verde-cia-escuro transition-colors flex items-center justify-center"
           >
             Ver Perfil
           </Link>
