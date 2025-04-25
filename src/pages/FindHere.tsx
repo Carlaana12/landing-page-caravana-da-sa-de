@@ -270,24 +270,29 @@ const FindHere = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <HeroParallax
-        title="Encontre Aqui"
-        description="Encontre o profissional ou serviço ideal para suas necessidades"
-        image="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=2000"
-        typeSequence={[
-          'Consultas Médicas',
-          2000,
-          'Teleconsultas',
-          2000,
-          'Exames',
-          2000,
-          'Cuidados Especializados',
-          2000
-        ]}
-      />
+      {/* Wrapper para o HeroParallax */}
+      <div className="md:w-screen md:relative md:left-1/2 md:right-1/2 md:-ml-[50vw] md:mr-[50vw] md:max-w-none">
+         <HeroParallax 
+           title="Encontre Aqui"
+           description="Localize clínicas, hospitais, laboratórios e outros serviços de saúde."
+           image="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=2000"
+           typeSequence={[
+             'Hospitais',
+             '2000',
+             'Clínicas',
+             '2000',
+             'Laboratórios',
+             '2000',
+             'Farmácias',
+             '2000'
+           ]}
+         />
+      </div>
 
-      <section className="max-w-7xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-xl shadow-lg p-6 -mt-20 relative z-10">
+      {/* Conteúdo principal com margem adicionada */}
+       <div className="max-w-7xl mx-auto px-4 py-12 md:ml-72">
+         {/* Search and Filters */}
+         <div className="bg-white rounded-xl shadow-lg p-6 mb-12 -mt-20 relative z-10">
           <div className="space-y-6">
             {/* Search Bar */}
             <div className="relative">
@@ -380,60 +385,68 @@ const FindHere = () => {
             </AnimatePresence>
           </div>
         </div>
-      </section>
 
-      {/* Results Section */}
-      <section className="max-w-7xl mx-auto px-4 py-12">
-        {hasSearched && (
-          <>
-            {selectedCategory === 'exams' ? (
+        {/* Results */}
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Map */} 
+          <div className="lg:col-span-1 h-[500px] lg:h-auto rounded-xl overflow-hidden shadow-lg">
+            {/* ... */}
+          </div>
+
+          {/* List */}
+          <div className="lg:col-span-2">
+            {hasSearched && (
               <>
-                <h2 className="text-2xl font-bold mb-6">Exames Encontrados ({searchResults.exams.length})</h2>
-                {searchResults.exams.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {searchResults.exams.map(exam => (
-                      <ExamCard key={exam.id} exam={exam} />
-                    ))}
-                  </div>
+                {selectedCategory === 'exams' ? (
+                  <>
+                    <h2 className="text-2xl font-bold mb-6">Exames Encontrados ({searchResults.exams.length})</h2>
+                    {searchResults.exams.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {searchResults.exams.map(exam => (
+                          <ExamCard key={exam.id} exam={exam} />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-yellow-50 p-6 rounded-lg flex items-center">
+                        <AlertTriangle className="w-6 h-6 text-yellow-500 mr-3" />
+                        <p>Nenhum exame encontrado com os critérios selecionados.</p>
+                      </div>
+                    )}
+                  </>
                 ) : (
-                  <div className="bg-yellow-50 p-6 rounded-lg flex items-center">
-                    <AlertTriangle className="w-6 h-6 text-yellow-500 mr-3" />
-                    <p>Nenhum exame encontrado com os critérios selecionados.</p>
-                  </div>
-                )}
-              </>
-            ) : (
-              <>
-                <h2 className="text-2xl font-bold mb-6">Especialistas Encontrados ({searchResults.specialists.length})</h2>
-                {searchResults.specialists.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {searchResults.specialists.map(specialist => (
-                      <SpecialistCard key={specialist.id} specialist={specialist} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="bg-yellow-50 p-6 rounded-lg flex items-center">
-                    <AlertTriangle className="w-6 h-6 text-yellow-500 mr-3" />
-                    <p>Nenhum especialista encontrado com os critérios selecionados.</p>
-                  </div>
+                  <>
+                    <h2 className="text-2xl font-bold mb-6">Especialistas Encontrados ({searchResults.specialists.length})</h2>
+                    {searchResults.specialists.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {searchResults.specialists.map(specialist => (
+                          <SpecialistCard key={specialist.id} specialist={specialist} />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-yellow-50 p-6 rounded-lg flex items-center">
+                        <AlertTriangle className="w-6 h-6 text-yellow-500 mr-3" />
+                        <p>Nenhum especialista encontrado com os critérios selecionados.</p>
+                      </div>
+                    )}
+                  </>
                 )}
               </>
             )}
-          </>
-        )}
-        
-        {!hasSearched && selectedCategory && (
-          <div className="text-center py-8">
-            <p className="text-gray-500">Selecione os filtros desejados e clique em "Buscar" para encontrar resultados.</p>
+            
+            {!hasSearched && selectedCategory && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">Selecione os filtros desejados e clique em "Buscar" para encontrar resultados.</p>
+              </div>
+            )}
+            
+            {!selectedCategory && !hasSearched && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">Selecione uma categoria acima para começar sua busca.</p>
+              </div>
+            )}
           </div>
-        )}
-        
-        {!selectedCategory && !hasSearched && (
-          <div className="text-center py-8">
-            <p className="text-gray-500">Selecione uma categoria acima para começar sua busca.</p>
-          </div>
-        )}
-      </section>
+        </div>
+      </div>
     </div>
   );
 };

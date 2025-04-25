@@ -53,7 +53,7 @@ const AdBanner = () => {
         className="whitespace-nowrap"
         style={{ width: '100%', overflow: 'hidden' }}
       >
-        <div className="inline-block animate-scroll">
+        <div className="inline-block animate-marquee">
           {[...ads, ...ads].map((ad, index) => (
             <span
               key={index}

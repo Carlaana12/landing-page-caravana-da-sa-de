@@ -279,87 +279,92 @@ const PublicUtilities = () => {
     <div className="min-h-screen bg-gray-50">
       <HeroParallax
         title="Utilidades Públicas"
-        description="Informações importantes e serviços de emergência"
-        image="https://images.unsplash.com/photo-1587574293340-e0011c4e8ecf?auto=format&fit=crop&w=2000"
+        description="Informações e serviços essenciais para sua saúde e bem-estar."
+        image="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=2000"
         typeSequence={[
-          'Serviços de Emergência',
+          'Emergência',
           '2000',
-          'Hospitais Próximos',
+          'Farmácia Popular',
           '2000',
-          'Farmácias de Plantão',
+          'Postos de Saúde',
+          '2000',
+          'Vacinação',
           '2000'
         ]}
       />
 
-      {/* Emergency Contacts */}
-      <section className="max-w-7xl mx-auto px-4 py-12">
-        <motion.div
-          ref={ref}
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="bg-white rounded-xl shadow-lg p-8 -mt-20 relative z-10"
-        >
-          <h2 className="text-2xl font-bold mb-6 text-center">Telefones de Emergência</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {emergencyContacts.map((contact, index) => (
-              <motion.div
-                key={contact.number}
-                initial={{ opacity: 0, y: 20 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="text-center"
-              >
-                <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-                  <contact.icon className="w-8 h-8 text-red-600" />
-                </div>
-                <h3 className="font-semibold mb-1">{contact.label}</h3>
-                <p className="text-2xl font-bold text-red-600">{contact.number}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </section>
+      {/* Container principal com margem adicionada */}
+      <div className="max-w-7xl mx-auto px-4 py-12 md:ml-72 space-y-12">
+        {/* Emergency Contacts */}
+        <section className="relative">
+          <motion.div
+            ref={ref}
+            initial={{ opacity: 0, y: 20 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6 }}
+            className="bg-white rounded-xl shadow-lg p-8 -mt-20 relative z-10"
+          >
+            <h2 className="text-2xl font-bold mb-6 text-center">Telefones de Emergência</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {emergencyContacts.map((contact, index) => (
+                <motion.div
+                  key={contact.number}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={inView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="text-center"
+                >
+                  <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+                    <contact.icon className="w-8 h-8 text-red-600" />
+                  </div>
+                  <h3 className="font-semibold mb-1">{contact.label}</h3>
+                  <p className="text-2xl font-bold text-red-600">{contact.number}</p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </section>
 
-      {/* Services Grid */}
-      <section className="max-w-7xl mx-auto px-4 py-12">
-        <h2 className="text-2xl font-bold mb-8">Serviços Disponíveis</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <ServiceCard
-            icon={HospitalIcon}
-            title="Hospitais Públicos"
-            description="Lista de hospitais da rede pública do DF"
-            onClick={() => setShowPublicHospitals(true)}
-          />
-          <ServiceCard
-            icon={Ambulance}
-            title="Pronto Socorro"
-            description="Unidades de emergência 24h"
-          />
-          <ServiceCard
-            icon={Pill}
-            title="Farmácias"
-            description="Farmácias de plantão (geral)"
-          />
-          <ServiceCard
-            icon={Health}
-            title="UBS"
-            description="Unidades Básicas de Saúde"
-          />
-          <ServiceCard
-            icon={Pill}
-            title="Farmácias Hospitalares"
-            description="Locais que fornecem materiais hospitalares"
-            onClick={() => setShowHospitalPharmacies(true)}
-          />
-          <ServiceCard
-            icon={Leaf}
-            title="Clínicas Homeopáticas"
-            description="Clínicas e farmácias de homeopatia"
-            onClick={() => setShowHomeopathicClinics(true)}
-          />
-        </div>
-      </section>
+        {/* Services Grid */}
+        <section>
+          <h2 className="text-2xl font-bold mb-8">Serviços Disponíveis</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <ServiceCard
+              icon={HospitalIcon}
+              title="Hospitais Públicos"
+              description="Lista de hospitais da rede pública do DF"
+              onClick={() => setShowPublicHospitals(true)}
+            />
+            <ServiceCard
+              icon={Ambulance}
+              title="Pronto Socorro"
+              description="Unidades de emergência 24h"
+            />
+            <ServiceCard
+              icon={Pill}
+              title="Farmácias"
+              description="Farmácias de plantão (geral)"
+            />
+            <ServiceCard
+              icon={Health}
+              title="UBS"
+              description="Unidades Básicas de Saúde"
+            />
+            <ServiceCard
+              icon={Pill}
+              title="Farmácias Hospitalares"
+              description="Locais que fornecem materiais hospitalares"
+              onClick={() => setShowHospitalPharmacies(true)}
+            />
+            <ServiceCard
+              icon={Leaf}
+              title="Clínicas Homeopáticas"
+              description="Clínicas e farmácias de homeopatia"
+              onClick={() => setShowHomeopathicClinics(true)}
+            />
+          </div>
+        </section>
+      </div>
 
       {/* Modal Farmácias Hospitalares */}
       {showHospitalPharmacies && (

@@ -1,362 +1,408 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
-import AdminLayout from '../../components/admin/AdminLayout';
-import { Plus, Trash2, Edit2, Save, X, ArrowUp, ArrowDown, Image as ImageIcon } from 'lucide-react';
-import toast from 'react-hot-toast';
-import MediaManager from '../../components/admin/MediaManager';
+import React, { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/lib/supabase';
+import { toast } from 'react-hot-toast';
+import {
+  Plus, Edit2, Trash2, Image, Link as LinkIcon,
+  Eye, EyeOff, Save, X, GripVertical
+} from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
-interface CarouselItem {
+interface CarouselSlide {
   id: string;
   title: string;
-  description: string | null;
+  subtitle?: string;
   image_url: string;
-  display_order: number;
-  active: boolean;
+  link_url?: string;
+  is_active: boolean;
+  order: number;
   created_at: string;
-  updated_at: string;
 }
 
-const CarouselManager = () => {
-  const [items, setItems] = useState<CarouselItem[]>([]);
+// Componente Sortable para cada slide
+interface SortableItemProps {
+  slide: CarouselSlide;
+  onEdit: (slide: CarouselSlide) => void;
+  onDelete: (id: string) => void;
+}
+
+const SortableItem: React.FC<SortableItemProps> = ({ slide, onEdit, onDelete }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: slide.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : 'auto',
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="bg-white rounded-lg shadow-sm border mb-4 flex items-center p-4">
+      <button
+        {...attributes}
+        {...listeners}
+        className="cursor-grab active:cursor-grabbing p-2 text-gray-400 hover:text-gray-600 mr-3"
+        aria-label="Mover slide"
+      >
+        <GripVertical className="w-5 h-5" />
+      </button>
+      <img src={slide.image_url} alt={slide.title} className="h-12 w-20 object-cover rounded mr-4" />
+      <div className="flex-grow">
+        <h3 className="text-sm font-medium text-gray-900">{slide.title}</h3>
+        {slide.subtitle && <p className="text-xs text-gray-500">{slide.subtitle}</p>}
+        {slide.link_url && <a href={slide.link_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline truncate block" style={{maxWidth: '200px'}}>{slide.link_url}</a>}
+      </div>
+      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full mx-4 ${
+        slide.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+      }`}>
+        {slide.is_active ? 'Ativo' : 'Inativo'}
+      </span>
+      <div className="flex space-x-2">
+        <button onClick={() => onEdit(slide)} className="text-blue-600 hover:text-blue-900" title="Editar">
+          <Edit2 className="w-5 h-5" />
+        </button>
+        <button onClick={() => onDelete(slide.id)} className="text-red-600 hover:text-red-900" title="Excluir">
+          <Trash2 className="w-5 h-5" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Componente Principal
+const CarouselManager: React.FC = () => {
+  const [slides, setSlides] = useState<CarouselSlide[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState<string | null>(null);
-  const [showMediaManager, setShowMediaManager] = useState(false);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    image_url: '',
-    active: true
-  });
+  const [showModal, setShowModal] = useState(false);
+  const [editingSlide, setEditingSlide] = useState<CarouselSlide | null>(null);
+  const [formData, setFormData] = useState<Partial<CarouselSlide>>({});
 
-  useEffect(() => {
-    fetchItems();
-  }, []);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
-  const fetchItems = async () => {
+  const fetchSlides = useCallback(async () => {
+    setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('carousel_items')
+        .from('carousel_slides')
         .select('*')
-        .order('display_order', { ascending: true });
+        .order('order', { ascending: true });
 
       if (error) throw error;
-      setItems(data || []);
+      setSlides(data || []);
     } catch (error) {
-      console.error('Error fetching carousel items:', error);
-      toast.error('Erro ao carregar itens do carrossel');
+      toast.error('Erro ao carregar slides do carrossel.');
+      console.error('Error fetching slides:', error);
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    fetchSlides();
+  }, [fetchSlides]);
+
+  const openModalForCreate = () => {
+    setEditingSlide(null);
+    setFormData({
+      title: '',
+      subtitle: '',
+      image_url: '',
+      link_url: '',
+      is_active: true,
+      order: (slides.length + 1) * 10, // Default order
+    });
+    setShowModal(true);
+  };
+
+  const openModalForEdit = (slide: CarouselSlide) => {
+    setEditingSlide(slide);
+    setFormData({ ...slide });
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setEditingSlide(null);
+    setFormData({});
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    const isCheckbox = type === 'checkbox';
+    const inputValue = isCheckbox ? (e.target as HTMLInputElement).checked : value;
+    const finalValue = name === 'order' ? parseInt(inputValue as string, 10) || 0 : inputValue;
+    setFormData(prev => ({ ...prev, [name]: finalValue }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.title || !formData.image_url) {
+      toast.error('Título e URL da Imagem são obrigatórios.');
+      return;
+    }
+
     setLoading(true);
-
     try {
-      if (editing) {
+      if (editingSlide) {
+        // Update
         const { error } = await supabase
-          .from('carousel_items')
-          .update(formData)
-          .eq('id', editing);
-
+          .from('carousel_slides')
+          .update({ ...formData, updated_at: new Date().toISOString() })
+          .eq('id', editingSlide.id);
         if (error) throw error;
-        toast.success('Item atualizado com sucesso');
+        toast.success('Slide atualizado com sucesso!');
       } else {
+        // Create
         const { error } = await supabase
-          .from('carousel_items')
-          .insert([{
-            ...formData,
-            display_order: items.length
-          }]);
-
+          .from('carousel_slides')
+          .insert([{ ...formData }]);
         if (error) throw error;
-        toast.success('Item adicionado com sucesso');
+        toast.success('Slide criado com sucesso!');
       }
-
-      setEditing(null);
-      setFormData({
-        title: '',
-        description: '',
-        image_url: '',
-        active: true
-      });
-      fetchItems();
+      closeModal();
+      await updateSlideOrder(slides.map(s => s.id)); // Garante a ordem após salvar
+      fetchSlides();
     } catch (error) {
-      console.error('Error saving carousel item:', error);
-      toast.error('Erro ao salvar item');
+      toast.error(`Erro ao salvar slide: ${(error as Error).message}`);
+      console.error('Error saving slide:', error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este item?')) return;
+    if (!window.confirm('Tem certeza que deseja excluir este slide?')) return;
 
+    setLoading(true);
     try {
       const { error } = await supabase
-        .from('carousel_items')
+        .from('carousel_slides')
         .delete()
         .eq('id', id);
 
       if (error) throw error;
-      toast.success('Item excluído com sucesso');
-      fetchItems();
+      toast.success('Slide excluído com sucesso!');
+      // Reordenar após deletar
+      const remainingSlides = slides.filter(s => s.id !== id);
+      await updateSlideOrder(remainingSlides.map(s => s.id));
+      fetchSlides();
     } catch (error) {
-      console.error('Error deleting carousel item:', error);
-      toast.error('Erro ao excluir item');
+      toast.error('Erro ao excluir slide.');
+      console.error('Error deleting slide:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleMove = async (id: string, direction: 'up' | 'down') => {
-    const currentIndex = items.findIndex(item => item.id === id);
-    if (
-      (direction === 'up' && currentIndex === 0) ||
-      (direction === 'down' && currentIndex === items.length - 1)
-    ) {
-      return;
-    }
-
-    const newItems = [...items];
-    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-    const [movedItem] = newItems.splice(currentIndex, 1);
-    newItems.splice(targetIndex, 0, movedItem);
-
+  // Função para atualizar a ordem no banco
+  const updateSlideOrder = async (orderedIds: string[]) => {
     try {
-      // Update display_order for all affected items
-      const updates = newItems.map((item, index) => ({
-        id: item.id,
-        display_order: index
-      }));
-
-      for (const update of updates) {
-        const { error } = await supabase
-          .from('carousel_items')
-          .update({ display_order: update.display_order })
-          .eq('id', update.id);
-
-        if (error) throw error;
-      }
-
-      setItems(newItems);
-      toast.success('Ordem atualizada com sucesso');
+      const updates = orderedIds.map((id, index) =>
+        supabase
+          .from('carousel_slides')
+          .update({ order: index * 10 })
+          .eq('id', id)
+      );
+      await Promise.all(updates);
     } catch (error) {
-      console.error('Error updating order:', error);
-      toast.error('Erro ao atualizar ordem');
-      fetchItems(); // Refresh to ensure consistent state
+      toast.error('Erro ao atualizar a ordem dos slides.');
+      console.error('Error updating slide order:', error);
+      // Opcional: reverter para a ordem anterior visualmente ou buscar novamente
+      fetchSlides();
     }
   };
 
-  const handleImageSelect = (url: string) => {
-    setFormData({ ...formData, image_url: url });
-    setShowMediaManager(false);
+  // Handler para o fim do drag-and-drop
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = slides.findIndex((s) => s.id === active.id);
+      const newIndex = slides.findIndex((s) => s.id === over.id);
+
+      const newSlides = arrayMove(slides, oldIndex, newIndex);
+      setSlides(newSlides);
+
+      // Atualizar a ordem no banco de dados
+      updateSlideOrder(newSlides.map(s => s.id));
+    }
   };
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-800">Gerenciar Carrossel</h1>
-          <button
-            onClick={() => {
-              setEditing(null);
-              setFormData({
-                title: '',
-                description: '',
-                image_url: '',
-                active: true
-              });
-              setShowMediaManager(true);
-            }}
-            className="px-4 py-2 bg-verde-cia text-white rounded-lg hover:bg-verde-cia-escuro transition-colors flex items-center"
+    <div className="space-y-6 p-6 bg-gray-100 min-h-screen">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-semibold text-gray-800">Gerenciamento do Carrossel</h1>
+        <button
+          onClick={openModalForCreate}
+          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <Plus className="w-5 h-5 mr-2" />
+          Novo Slide
+        </button>
+      </div>
+
+      {/* Lista de Slides com Drag and Drop */}
+      <div className="bg-white rounded-xl shadow-sm p-4">
+        {loading && slides.length === 0 ? (
+          <div className="flex items-center justify-center h-40">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        ) : slides.length === 0 ? (
+          <p className="text-center text-gray-500 py-8">Nenhum slide encontrado.</p>
+        ) : (
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
           >
-            <Plus className="h-5 w-5 mr-2" />
-            Novo Item
-          </button>
-        </div>
-
-        {/* Form */}
-        {(editing !== null || formData.title !== '' || formData.image_url !== '') && (
-          <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-sm">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SortableContext items={slides.map(s => s.id)} strategy={verticalListSortingStrategy}>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Título
-                </label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-md"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Imagem
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="url"
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    className="flex-1 px-3 py-2 border rounded-md"
-                    required
+                {slides.map(slide => (
+                  <SortableItem
+                    key={slide.id}
+                    slide={slide}
+                    onEdit={openModalForEdit}
+                    onDelete={handleDelete}
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowMediaManager(true)}
-                    className="px-3 py-2 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
-                  >
-                    <ImageIcon className="w-5 h-5" />
-                  </button>
-                </div>
+                ))}
               </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Descrição
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-md"
-                  rows={3}
-                />
-              </div>
-              <div className="flex items-center">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.active}
-                    onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
-                    className="rounded border-gray-300"
-                  />
-                  <span className="text-sm font-medium text-gray-700">Ativo</span>
-                </label>
-              </div>
-            </div>
-
-            <div className="mt-4 flex space-x-2">
-              <button
-                type="submit"
-                className="px-4 py-2 bg-verde-cia text-white rounded-md hover:bg-verde-cia-escuro transition-colors flex items-center"
-                disabled={loading}
-              >
-                <Save className="h-4 w-4 mr-2" />
-                {editing ? 'Atualizar' : 'Adicionar'}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setEditing(null);
-                  setFormData({
-                    title: '',
-                    description: '',
-                    image_url: '',
-                    active: true
-                  });
-                }}
-                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors flex items-center"
-              >
-                <X className="h-4 w-4 mr-2" />
-                Cancelar
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* Items List */}
-        <div className="grid grid-cols-1 gap-4">
-          {items.map((item, index) => (
-            <div
-              key={item.id}
-              className="bg-white p-4 rounded-lg shadow border hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-center space-x-4">
-                <img
-                  src={item.image_url}
-                  alt={item.title}
-                  className="w-24 h-24 object-cover rounded-md"
-                />
-                <div className="flex-1">
-                  <h3 className="font-semibold">{item.title}</h3>
-                  {item.description && (
-                    <p className="text-gray-600 text-sm mt-1">{item.description}</p>
-                  )}
-                  <div className="flex items-center mt-2">
-                    <span className={`text-sm ${item.active ? 'text-green-500' : 'text-red-500'}`}>
-                      {item.active ? 'Ativo' : 'Inativo'}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => handleMove(item.id, 'up')}
-                    disabled={index === 0}
-                    className={`p-2 rounded-md transition-colors ${
-                      index === 0
-                        ? 'text-gray-400 cursor-not-allowed'
-                        : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                    title="Mover para cima"
-                  >
-                    <ArrowUp className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => handleMove(item.id, 'down')}
-                    disabled={index === items.length - 1}
-                    className={`p-2 rounded-md transition-colors ${
-                      index === items.length - 1
-                        ? 'text-gray-400 cursor-not-allowed'
-                        : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                    title="Mover para baixo"
-                  >
-                    <ArrowDown className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => {
-                      setEditing(item.id);
-                      setFormData({
-                        title: item.title,
-                        description: item.description || '',
-                        image_url: item.image_url,
-                        active: item.active
-                      });
-                    }}
-                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                    title="Editar"
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                    title="Excluir"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {items.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
-              Nenhum item no carrossel
-            </div>
-          )}
-        </div>
-
-        {/* Media Manager Modal */}
-        {showMediaManager && (
-          <MediaManager
-            onSelect={handleImageSelect}
-            onClose={() => setShowMediaManager(false)}
-          />
+            </SortableContext>
+          </DndContext>
         )}
       </div>
-    </AdminLayout>
+
+      {/* Modal para Criar/Editar */}
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 relative max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <h2 className="text-xl font-semibold mb-6 text-gray-800">
+              {editingSlide ? 'Editar Slide' : 'Novo Slide'}
+            </h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">Título *</label>
+                <input
+                  type="text"
+                  id="title"
+                  name="title"
+                  value={formData.title || ''}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+               <div>
+                <label htmlFor="subtitle" className="block text-sm font-medium text-gray-700 mb-1">Subtítulo (Opcional)</label>
+                <input
+                  type="text"
+                  id="subtitle"
+                  name="subtitle"
+                  value={formData.subtitle || ''}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label htmlFor="image_url" className="block text-sm font-medium text-gray-700 mb-1">URL da Imagem *</label>
+                <input
+                  type="url"
+                  id="image_url"
+                  name="image_url"
+                  value={formData.image_url || ''}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="https://exemplo.com/imagem.jpg"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+                 {formData.image_url && <img src={formData.image_url} alt="Preview" className="mt-2 h-20 rounded" />}
+              </div>
+              <div>
+                <label htmlFor="link_url" className="block text-sm font-medium text-gray-700 mb-1">URL do Link (Opcional)</label>
+                <input
+                  type="url"
+                  id="link_url"
+                  name="link_url"
+                  value={formData.link_url || ''}
+                  onChange={handleInputChange}
+                  placeholder="https://exemplo.com/pagina-destino"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+               <div className="flex items-center pt-2">
+                  <input
+                    type="checkbox"
+                    id="is_active"
+                    name="is_active"
+                    checked={formData.is_active ?? true}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="is_active" className="ml-2 block text-sm text-gray-900">
+                    Ativo
+                  </label>
+              </div>
+              {/* Campo de ordem não é editável diretamente aqui, pois a ordem é gerenciada pelo Drag and Drop */}
+              <div className="pt-6 flex justify-end space-x-3 border-t border-gray-200 mt-6">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-md transition-colors ${
+                    loading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                  }`}
+                >
+                  {loading ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                  ) : (
+                    <Save className="w-4 h-4 mr-1" />
+                  )}
+                  Salvar Slide
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

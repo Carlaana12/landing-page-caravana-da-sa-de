@@ -21,6 +21,7 @@ export default {
         'shine': 'shine 3s linear infinite',
         'pulse-ring': 'pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite',
         'pulse-dot': 'pulse-dot 1.25s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite',
+        'marquee': 'marquee 40s linear infinite',
       },
       keyframes: {
         float: {
@@ -47,6 +48,10 @@ export default {
           '50%': { transform: 'scale(1)' },
           '100%': { transform: 'scale(0.8)' },
         },
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
       },
       typography: {
         DEFAULT: {
@@ -59,33 +64,15 @@ export default {
                 color: '#1a3d1a',
               },
             },
-            h1: {
-              color: 'inherit',
-            },
-            h2: {
-              color: 'inherit',
-            },
-            h3: {
-              color: 'inherit',
-            },
-            h4: {
-              color: 'inherit',
-            },
-            h5: {
-              color: 'inherit',
-            },
-            h6: {
-              color: 'inherit',
-            },
-            strong: {
-              color: 'inherit',
-            },
-            code: {
-              color: 'inherit',
-            },
-            figcaption: {
-              color: 'inherit',
-            },
+            h1: { color: 'inherit' },
+            h2: { color: 'inherit' },
+            h3: { color: 'inherit' },
+            h4: { color: 'inherit' },
+            h5: { color: 'inherit' },
+            h6: { color: 'inherit' },
+            strong: { color: 'inherit' },
+            code: { color: 'inherit' },
+            figcaption: { color: 'inherit' },
           },
         },
       },
@@ -94,4 +81,4 @@ export default {
   plugins: [
     require('@tailwindcss/typography'),
   ],
-}
+};

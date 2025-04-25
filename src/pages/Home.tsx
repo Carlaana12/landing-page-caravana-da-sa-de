@@ -15,9 +15,11 @@ import CTASection from '@/components/CTASection';
 
 const Home = () => {
   return (
-    <div className="min-h-screen">
-      <AdCarousel />
-      <div className="max-w-7xl mx-auto px-4 space-y-16 py-8">
+    <div className="min-h-screen overflow-x-hidden">
+      <div className="md:w-screen md:relative md:left-1/2 md:right-1/2 md:-ml-[50vw] md:mr-[50vw] md:max-w-none">
+        <AdCarousel />
+      </div>
+      <div className="max-w-7xl mx-auto px-4 space-y-16 py-8 md:ml-[240px]">
         <DoctorSearch />
         <FeatureHighlights />
         <DoctorGrid />
