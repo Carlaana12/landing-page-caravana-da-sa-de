@@ -1,110 +1,120 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
-import AdminLayout from '../../components/admin/AdminLayout';
-import { Save, Palette, Type, Layout as LayoutIcon, Loader } from 'lucide-react';
-import toast from 'react-hot-toast';
-import { useThemeStore, availableFonts } from '../../lib/theme';
-import FontSelector from '../../components/FontSelector';
+import React, { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/lib/supabase';
+import { toast } from 'react-hot-toast';
+import { Save, Palette, Image as ImageIcon, Type, Upload } from 'lucide-react';
 
 interface AppearanceSettings {
-  id: string;
-  theme_colors: {
-    primary: string;
-    secondary: string;
-    accent: string;
-    text: string;
-    background: string;
-  };
-  typography: {
-    headingFont: string;
-    bodyFont: string;
-    baseFontSize: string;
-    lineHeight: string;
-  };
-  spacing: {
-    containerPadding: string;
-    sectionSpacing: string;
-  };
+  id: number; // Geralmente 1
+  primary_color: string;
+  secondary_color: string;
+  logo_url: string;
+  favicon_url: string;
+  font_family: string;
+  // Adicione outros campos de aparência conforme necessário
 }
 
-const defaultSettings: Omit<AppearanceSettings, 'id'> = {
-  theme_colors: {
-    primary: '#408040',
-    secondary: '#1a3d1a',
-    accent: '#66b366',
-    text: '#1a1a1a',
-    background: '#ffffff'
-  },
-  typography: {
-    headingFont: 'Montserrat',
-    bodyFont: 'Inter',
-    baseFontSize: '16px',
-    lineHeight: '1.5'
-  },
-  spacing: {
-    containerPadding: '1rem',
-    sectionSpacing: '4rem'
-  }
-};
+const FONT_OPTIONS = [
+  'Inter', 'Roboto', 'Open Sans', 'Lato', 'Montserrat'
+  // Adicione outras fontes web-safe ou do seu projeto
+];
 
-const Appearance = () => {
-  const [settings, setSettings] = useState<AppearanceSettings | null>(null);
+const AppearancePage: React.FC = () => {
+  const [settings, setSettings] = useState<Partial<AppearanceSettings>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const { updateTheme } = useThemeStore();
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingFavicon, setUploadingFavicon] = useState(false);
+
+  const SETTINGS_ID = 1; // ID fixo
+  const BUCKET_NAME = 'theme'; // Bucket para logo/favicon
+
+  const fetchSettings = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('appearance_settings') // Nome da sua tabela de aparência
+        .select('*')
+        .eq('id', SETTINGS_ID)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { throw error; }
+      setSettings(data || {
+        primary_color: '#408040', // Verde CIA Padrão
+        secondary_color: '#666666', // Cinza Padrão
+        font_family: 'Inter', // Fonte Padrão
+      });
+    } catch (error) {
+      toast.error('Erro ao carregar configurações de aparência.');
+      console.error('Error fetching appearance settings:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchSettings();
-  }, []);
+  }, [fetchSettings]);
 
-  const fetchSettings = async () => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setSettings(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileUpload = async (file: File, type: 'logo' | 'favicon') => {
+    if (!file) return;
+
+    const isLogo = type === 'logo';
+    if (isLogo) setUploadingLogo(true); else setUploadingFavicon(true);
+
     try {
-      const { data, error } = await supabase
-        .from('site_appearance')
-        .select('*')
-        .single();
+      // Validação simples de tipo (pode ser mais robusta)
+      if (!file.type.startsWith('image/')) {
+        throw new Error('Tipo de arquivo inválido. Selecione uma imagem.');
+      }
 
-      if (error) throw error;
-      setSettings(data || { id: '', ...defaultSettings });
+      const fileName = `${type}_${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from(BUCKET_NAME)
+        .upload(fileName, file, { upsert: true }); // upsert para sobrescrever se necessário
+
+      if (uploadError) throw uploadError;
+
+      // Obter URL pública
+      const { data: publicUrlData } = supabase.storage
+        .from(BUCKET_NAME)
+        .getPublicUrl(fileName);
+
+      if (!publicUrlData?.publicUrl) {
+         throw new Error('Não foi possível obter a URL pública do arquivo.');
+      }
+
+      // Atualizar o estado
+      setSettings(prev => ({ ...prev, [isLogo ? 'logo_url' : 'favicon_url']: publicUrlData.publicUrl }));
+      toast.success(`${isLogo ? 'Logo' : 'Favicon'} enviado com sucesso!`);
+
     } catch (error) {
-      console.error('Erro ao carregar configurações:', error);
-      toast.error('Erro ao carregar configurações');
+      toast.error(`Erro ao enviar ${isLogo ? 'logo' : 'favicon'}: ${(error as Error).message}`);
+      console.error(`Error uploading ${type}:`, error);
     } finally {
-      setLoading(false);
+      if (isLogo) setUploadingLogo(false); else setUploadingFavicon(false);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!settings) return;
-
     setSaving(true);
     try {
-      await updateTheme({
-        colors: settings.theme_colors,
-        typography: settings.typography,
-        spacing: settings.spacing
-      });
-      toast.success('Configurações salvas com sucesso');
-    } catch (error) {
-      console.error('Erro ao salvar configurações:', error);
-      toast.error('Erro ao salvar configurações');
-    } finally {
-      setSaving(false);
-    }
-  };
+      const { error } = await supabase
+        .from('appearance_settings')
+        .upsert({ ...settings, id: SETTINGS_ID });
 
-  const handleReset = async () => {
-    if (!settings) return;
-    
-    setSaving(true);
-    try {
-      await updateTheme(defaultSettings);
-      setSettings({ ...settings, ...defaultSettings });
-      toast.success('Configurações restauradas para o padrão');
+      if (error) throw error;
+      toast.success('Configurações de aparência salvas com sucesso!');
+       // Opcional: Forçar recarregamento da página para aplicar mudanças visuais globais
+      // window.location.reload();
     } catch (error) {
-      console.error('Erro ao restaurar configurações:', error);
-      toast.error('Erro ao restaurar configurações');
+      toast.error(`Erro ao salvar configurações: ${(error as Error).message}`);
+      console.error('Error saving appearance settings:', error);
     } finally {
       setSaving(false);
     }
@@ -112,240 +122,186 @@ const Appearance = () => {
 
   if (loading) {
     return (
-      <AdminLayout>
-        <div className="flex items-center justify-center min-h-screen">
-          <Loader className="w-8 h-8 animate-spin text-verde-cia" />
-        </div>
-      </AdminLayout>
-    );
-  }
-
-  if (!settings) {
-    return (
-      <AdminLayout>
-        <div className="text-center py-4 text-red-600">
-          Erro ao carregar configurações
-        </div>
-      </AdminLayout>
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-800">Configurações de Aparência</h1>
+    <div className="space-y-6 p-6 bg-gray-100 min-h-screen">
+      <h1 className="text-2xl font-semibold text-gray-800 flex items-center">
+        <Palette className="w-6 h-6 mr-2" />
+        Aparência do Site
+      </h1>
+
+      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm p-6 space-y-6">
+
+        {/* Cores */}
+        <section>
+          <h2 className="text-lg font-medium text-gray-700 mb-4">Cores Principais</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="primary_color" className="block text-sm font-medium text-gray-700 mb-1">Cor Primária</label>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="color"
+                  id="primary_color"
+                  name="primary_color"
+                  value={settings.primary_color || '#408040'}
+                  onChange={handleInputChange}
+                  className="h-10 w-10 rounded border border-gray-300 cursor-pointer"
+                />
+                 <input
+                  type="text"
+                  value={settings.primary_color || '#408040'}
+                  onChange={handleInputChange}
+                  name="primary_color"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Usada em botões principais, links, etc.</p>
+            </div>
+            <div>
+              <label htmlFor="secondary_color" className="block text-sm font-medium text-gray-700 mb-1">Cor Secundária</label>
+               <div className="flex items-center space-x-2">
+                <input
+                  type="color"
+                  id="secondary_color"
+                  name="secondary_color"
+                  value={settings.secondary_color || '#666666'}
+                  onChange={handleInputChange}
+                  className="h-10 w-10 rounded border border-gray-300 cursor-pointer"
+                />
+                 <input
+                  type="text"
+                  value={settings.secondary_color || '#666666'}
+                  onChange={handleInputChange}
+                  name="secondary_color"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Usada em textos, bordas, elementos de suporte.</p>
+            </div>
+          </div>
+        </section>
+
+         {/* Fontes */}
+        <section>
+          <h2 className="text-lg font-medium text-gray-700 mb-4 flex items-center">
+             <Type className="w-5 h-5 mr-2"/>
+             Tipografia
+          </h2>
+          <div>
+             <label htmlFor="font_family" className="block text-sm font-medium text-gray-700 mb-1">Fonte Principal</label>
+             <select
+               id="font_family"
+               name="font_family"
+               value={settings.font_family || 'Inter'}
+               onChange={handleInputChange}
+               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-white"
+             >
+               {FONT_OPTIONS.map(font => (
+                 <option key={font} value={font}>{font}</option>
+               ))}
+             </select>
+             <p className="text-xs text-gray-500 mt-1">Fonte usada no corpo do texto e títulos.</p>
+          </div>
+        </section>
+
+        {/* Logo e Favicon */}
+        <section>
+          <h2 className="text-lg font-medium text-gray-700 mb-4 flex items-center">
+            <ImageIcon className="w-5 h-5 mr-2" />
+            Logo e Favicon
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Logo Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Logo</label>
+              <div className="flex items-center space-x-4">
+                {settings.logo_url ? (
+                  <img src={settings.logo_url} alt="Logo Preview" className="h-12 max-w-[150px] object-contain border p-1 rounded" />
+                ) : (
+                  <div className="h-12 w-24 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">Sem logo</div>
+                )}
+                <label htmlFor="logo-upload" className={`cursor-pointer flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 ${
+                    uploadingLogo ? 'opacity-50 cursor-not-allowed' : ''
+                }`}>
+                   {uploadingLogo ? (
+                     <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-blue-500 mr-2"></div>
+                   ) : (
+                     <Upload className="w-4 h-4 mr-2"/>
+                   )}
+                  {uploadingLogo ? 'Enviando...' : 'Trocar Logo'}
+                </label>
+                <input
+                    id="logo-upload"
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={(e) => e.target.files && handleFileUpload(e.target.files[0], 'logo')}
+                    disabled={uploadingLogo}
+                />
+              </div>
+               <p className="text-xs text-gray-500 mt-1">Envie o arquivo da sua logo (PNG, JPG, SVG).</p>
+            </div>
+
+             {/* Favicon Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Favicon</label>
+               <div className="flex items-center space-x-4">
+                {settings.favicon_url ? (
+                  <img src={settings.favicon_url} alt="Favicon Preview" className="h-8 w-8 object-contain border p-1 rounded" />
+                ) : (
+                  <div className="h-8 w-8 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">...</div>
+                )}
+                 <label htmlFor="favicon-upload" className={`cursor-pointer flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 ${
+                     uploadingFavicon ? 'opacity-50 cursor-not-allowed' : ''
+                 }`}>
+                    {uploadingFavicon ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-blue-500 mr-2"></div>
+                    ) : (
+                      <Upload className="w-4 h-4 mr-2"/>
+                    )}
+                   {uploadingFavicon ? 'Enviando...' : 'Trocar Favicon'}
+                 </label>
+                 <input
+                     id="favicon-upload"
+                     type="file"
+                     className="hidden"
+                     accept="image/png, image/x-icon, image/vnd.microsoft.icon"
+                     onChange={(e) => e.target.files && handleFileUpload(e.target.files[0], 'favicon')}
+                     disabled={uploadingFavicon}
+                 />
+               </div>
+              <p className="text-xs text-gray-500 mt-1">Ícone para a aba do navegador (ICO, PNG).</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Botão Salvar */}
+        <div className="pt-6 flex justify-end border-t border-gray-200 mt-6">
           <button
-            onClick={handleReset}
-            className="text-gray-600 hover:text-gray-800 transition-colors"
+            type="submit"
+            disabled={saving || uploadingLogo || uploadingFavicon}
+            className={`flex items-center justify-center px-6 py-2 text-sm font-medium text-white rounded-md transition-colors ${
+              saving || uploadingLogo || uploadingFavicon ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+            }`}
           >
-            Restaurar Padrões
+            {saving ? (
+              <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+            ) : (
+              <Save className="w-4 h-4 mr-2" />
+            )}
+            Salvar Aparência
           </button>
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Colors */}
-          <section className="bg-white p-6 rounded-xl shadow-sm">
-            <div className="flex items-center space-x-2 mb-6">
-              <Palette className="h-5 w-5 text-gray-600" />
-              <h2 className="text-lg font-semibold">Cores do Tema</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.entries(settings.theme_colors).map(([key, value]) => (
-                <div key={key}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
-                    {key.replace(/([A-Z])/g, ' $1').trim()}
-                  </label>
-                  <div className="flex space-x-2">
-                    <input
-                      type="color"
-                      value={value}
-                      onChange={(e) =>
-                        setSettings({
-                          ...settings,
-                          theme_colors: {
-                            ...settings.theme_colors,
-                            [key]: e.target.value
-                          }
-                        })
-                      }
-                      className="h-10 w-20"
-                    />
-                    <input
-                      type="text"
-                      value={value}
-                      onChange={(e) =>
-                        setSettings({
-                          ...settings,
-                          theme_colors: {
-                            ...settings.theme_colors,
-                            [key]: e.target.value
-                          }
-                        })
-                      }
-                      className="flex-1 px-3 py-2 border rounded-md"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Typography */}
-          <section className="bg-white p-6 rounded-xl shadow-sm">
-            <div className="flex items-center space-x-2 mb-6">
-              <Type className="h-5 w-5 text-gray-600" />
-              <h2 className="text-lg font-semibold">Tipografia</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Fonte dos Títulos
-                </label>
-                <FontSelector
-                  fonts={availableFonts.heading}
-                  selectedFont={settings.typography.headingFont}
-                  onChange={(font) =>
-                    setSettings({
-                      ...settings,
-                      typography: {
-                        ...settings.typography,
-                        headingFont: font
-                      }
-                    })
-                  }
-                  category="heading"
-                  previewText="Títulos e Cabeçalhos"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Fonte do Corpo
-                </label>
-                <FontSelector
-                  fonts={availableFonts.body}
-                  selectedFont={settings.typography.bodyFont}
-                  onChange={(font) =>
-                    setSettings({
-                      ...settings,
-                      typography: {
-                        ...settings.typography,
-                        bodyFont: font
-                      }
-                    })
-                  }
-                  category="body"
-                  previewText="Texto do corpo do site"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tamanho Base da Fonte
-                </label>
-                <select
-                  value={settings.typography.baseFontSize}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      typography: {
-                        ...settings.typography,
-                        baseFontSize: e.target.value
-                      }
-                    })
-                  }
-                  className="w-full px-3 py-2 border rounded-md"
-                >
-                  {['14px', '15px', '16px', '17px', '18px'].map((size) => (
-                    <option key={size} value={size}>
-                      {size}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Altura da Linha
-                </label>
-                <select
-                  value={settings.typography.lineHeight}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      typography: {
-                        ...settings.typography,
-                        lineHeight: e.target.value
-                      }
-                    })
-                  }
-                  className="w-full px-3 py-2 border rounded-md"
-                >
-                  {['1.4', '1.5', '1.6', '1.7', '1.8'].map((height) => (
-                    <option key={height} value={height}>
-                      {height}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </section>
-
-          {/* Spacing */}
-          <section className="bg-white p-6 rounded-xl shadow-sm">
-            <div className="flex items-center space-x-2 mb-6">
-              <LayoutIcon className="h-5 w-5 text-gray-600" />
-              <h2 className="text-lg font-semibold">Espaçamento</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(settings.spacing).map(([key, value]) => (
-                <div key={key}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
-                    {key.replace(/([A-Z])/g, ' $1').trim()}
-                  </label>
-                  <input
-                    type="text"
-                    value={value}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        spacing: {
-                          ...settings.spacing,
-                          [key]: e.target.value
-                        }
-                      })
-                    }
-                    className="w-full px-3 py-2 border rounded-md"
-                  />
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-6 py-2 bg-verde-cia text-white rounded-lg hover:bg-verde-cia-escuro transition-colors flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {saving ? (
-                <>
-                  <Loader className="h-5 w-5 animate-spin" />
-                  <span>Salvando...</span>
-                </>
-              ) : (
-                <>
-                  <Save className="h-5 w-5" />
-                  <span>Salvar Alterações</span>
-                </>
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
-    </AdminLayout>
+      </form>
+    </div>
   );
 };
 
-export default Appearance;
+export default AppearancePage;

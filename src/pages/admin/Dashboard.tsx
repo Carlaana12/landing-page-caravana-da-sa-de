@@ -1,196 +1,236 @@
-import React from 'react';
-import AdminLayout from '../../components/admin/AdminLayout';
-import {
-  Users,
-  Image as ImageIcon,
-  FileText,
-  Eye,
-  ArrowUp,
-  ArrowDown,
-  Edit3,
-  Layout,
-  Calendar,
-  Bell,
-  Settings,
-} from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/lib/supabase';
 import { Link } from 'react-router-dom';
+import {
+  LayoutDashboard, Users, FileText, Image as ImageIcon, Settings as SettingsIcon,
+  Palette, Calendar, Bell, BarChart2, AlertTriangle, CheckCircle,
+  ArrowUp, ArrowDown
+} from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
-const Dashboard = () => {
-  const contentSections = [
+// Interface para as estatísticas
+interface Stat {
+  label: string;
+  value: string;
+  icon: React.ElementType;
+  link?: string; // Link opcional para a página de gerenciamento
+}
+
+// Interface para as seções de gerenciamento
+interface ContentSection {
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  link: string;
+  count?: number; // Contagem de itens (opcional)
+}
+
+const AdminDashboard: React.FC = () => {
+  const [stats, setStats] = useState<Stat[]>([]);
+  const [loadingStats, setLoadingStats] = useState(true);
+  // Poderíamos adicionar mais estados para dados específicos do dashboard
+
+  // Função para buscar contagens
+  const fetchCounts = useCallback(async () => {
+    setLoadingStats(true);
+    try {
+      // Array de promessas para buscar contagens em paralelo
+      const promises = [
+        supabase.from('profiles').select('id', { count: 'exact', head: true }), // Contar usuários (usando profiles)
+        supabase.from('posts').select('id', { count: 'exact', head: true }), // Contar posts
+        supabase.from('events').select('id', { count: 'exact', head: true }), // Contar eventos
+        supabase.from('advertisements').select('id', { count: 'exact', head: true }), // Contar anúncios
+        supabase.storage.from('media').list('', { limit: 1 }), // Checar mídia (contagem é mais complexa no storage)
+      ];
+
+      const results = await Promise.allSettled(promises);
+
+      const getCountFromResult = (result: PromiseSettledResult<any>): number => {
+         if (result.status === 'fulfilled' && result.value.count !== null) {
+            return result.value.count;
+         }
+         return 0;
+      };
+
+       const mediaResult = results[4];
+       const mediaCount = mediaResult.status === 'fulfilled' ? '+' : '0'; // Storage count é impreciso assim
+
+      setStats([
+        {
+          label: 'Usuários',
+          value: getCountFromResult(results[0]).toString(),
+          icon: Users,
+          link: '/arearestrita/usuarios'
+        },
+        {
+          label: 'Posts do Blog',
+          value: getCountFromResult(results[1]).toString(),
+          icon: FileText,
+          link: '/arearestrita/posts'
+        },
+        {
+          label: 'Eventos',
+          value: getCountFromResult(results[2]).toString(),
+          icon: Calendar,
+          link: '/arearestrita/eventos'
+        },
+         {
+          label: 'Anúncios',
+          value: getCountFromResult(results[3]).toString(),
+          icon: Bell,
+          link: '/arearestrita/anuncios'
+        },
+        {
+          label: 'Mídia',
+          value: mediaCount, // Usar contagem simplificada
+          icon: ImageIcon,
+          link: '/arearestrita/media'
+        },
+        // Adicione mais stats se necessário
+      ]);
+
+    } catch (error) {
+      toast.error('Erro ao carregar estatísticas do dashboard.');
+      console.error('Error fetching dashboard stats:', error);
+      // Definir stats padrão em caso de erro?
+      setStats([
+         { label: 'Usuários', value: '-', icon: Users, link: '/arearestrita/usuarios' },
+         { label: 'Posts', value: '-', icon: FileText, link: '/arearestrita/posts' },
+         { label: 'Eventos', value: '-', icon: Calendar, link: '/arearestrita/eventos' },
+         { label: 'Anúncios', value: '-', icon: Bell, link: '/arearestrita/anuncios' },
+         { label: 'Mídia', value: '-', icon: ImageIcon, link: '/arearestrita/media' },
+      ]);
+    } finally {
+      setLoadingStats(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCounts();
+  }, [fetchCounts]);
+
+  // Seções de gerenciamento com links corretos
+  const contentSections: ContentSection[] = [
+     {
+      title: 'Usuários',
+      description: 'Gerencie administradores, especialistas e usuários',
+      icon: Users,
+      link: '/arearestrita/usuarios'
+    },
     {
+      title: 'Posts do Blog',
+      description: 'Crie e edite artigos e notícias do blog',
+      icon: FileText,
+      link: '/arearestrita/posts'
+    },
+    {
+      title: 'Mídia',
+      description: 'Faça upload e gerencie imagens, vídeos e documentos',
+      icon: ImageIcon,
+      link: '/arearestrita/media'
+    },
+     {
       title: 'Carrossel Principal',
       description: 'Gerencie os slides do carrossel da página inicial',
-      icon: Layout,
-      link: '/admin/carousel',
-      items: 5,
-      lastUpdate: '2 horas atrás'
+      icon: LayoutDashboard, // Ícone mais apropriado
+      link: '/arearestrita/carousel'
     },
     {
       title: 'Destaques',
-      description: 'Edite os destaques e estatísticas',
-      icon: Edit3,
-      link: '/admin/highlights',
-      items: 4,
-      lastUpdate: '1 dia atrás'
+      description: 'Edite os itens de destaque exibidos no site',
+      icon: BarChart2, // Ícone mais apropriado
+      link: '/arearestrita/destaques'
     },
     {
       title: 'Eventos',
-      description: 'Gerencie eventos e calendário',
+      description: 'Gerencie os próximos eventos e o calendário',
       icon: Calendar,
-      link: '/admin/events',
-      items: 3,
-      lastUpdate: '3 dias atrás'
+      link: '/arearestrita/eventos'
     },
     {
       title: 'Anúncios',
-      description: 'Configure banners e anúncios',
+      description: 'Configure banners e espaços publicitários',
       icon: Bell,
-      link: '/admin/ads',
-      items: 2,
-      lastUpdate: '5 dias atrás'
-    }
-  ];
-
-  const stats = [
-    {
-      label: 'Páginas',
-      value: '23',
-      icon: FileText,
-      change: '+15%',
-      trend: 'up',
+      link: '/arearestrita/anuncios'
     },
     {
-      label: 'Mídia',
-      value: '567',
-      icon: ImageIcon,
-      change: '+8%',
-      trend: 'up',
+      title: 'Aparência',
+      description: 'Personalize cores, fontes e logo do site',
+      icon: Palette,
+      link: '/arearestrita/aparencia'
     },
     {
-      label: 'Usuários',
-      value: '1,234',
-      icon: Users,
-      change: '+12%',
-      trend: 'up',
-    },
-    {
-      label: 'Visualizações',
-      value: '45.2k',
-      icon: Eye,
-      change: '-3%',
-      trend: 'down',
+      title: 'Configurações',
+      description: 'Ajuste configurações gerais e de contato',
+      icon: SettingsIcon,
+      link: '/arearestrita/configuracoes'
     },
   ];
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
-          <Link
-            to="/admin/settings"
-            className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-          >
-            <Settings className="h-5 w-5 text-gray-600" />
-            <span className="text-gray-600">Configurações</span>
-          </Link>
-        </div>
+    // Removido AdminLayout, pois o layout é aplicado pela rota em App.tsx
+    <div className="space-y-6">
+       <h1 className="text-2xl font-semibold text-gray-800">Dashboard Administrativo</h1>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
-            >
-              <div className="flex items-center justify-between">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          {loadingStats ? (
+            Array.from({ length: 5 }).map((_, index) => (
+              <div key={index} className="bg-white p-4 rounded-xl shadow-sm animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
+                <div className="h-8 bg-gray-300 rounded w-1/2"></div>
+              </div>
+            ))
+          ) : (
+            stats.map((stat) => (
+              <Link
+                key={stat.label}
+                to={stat.link || '#'} // Link para a página de gerenciamento
+                className={`bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center space-x-4 ${
+                    stat.link ? 'cursor-pointer' : 'cursor-default'
+                }`}
+              >
+                 <div className={`p-3 rounded-lg bg-blue-100 text-blue-600`}> {/* Cor dinâmica se necessário */}
+                  <stat.icon className="h-6 w-6" />
+                </div>
                 <div>
                   <p className="text-sm text-gray-500">{stat.label}</p>
                   <p className="text-2xl font-semibold text-gray-800">
                     {stat.value}
                   </p>
                 </div>
-                <div className="p-3 bg-gray-100 rounded-lg">
-                  <stat.icon className="h-6 w-6 text-gray-600" />
-                </div>
-              </div>
-              <div className="mt-4 flex items-center">
-                {stat.trend === 'up' ? (
-                  <ArrowUp className="h-4 w-4 text-green-500" />
-                ) : (
-                  <ArrowDown className="h-4 w-4 text-red-500" />
-                )}
-                <span
-                  className={`ml-1 text-sm ${
-                    stat.trend === 'up'
-                      ? 'text-green-500'
-                      : 'text-red-500'
-                  }`}
-                >
-                  {stat.change}
-                </span>
-              </div>
-            </div>
-          ))}
+              </Link>
+            ))
+          )}
         </div>
 
         {/* Content Management Sections */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {contentSections.map((section) => (
             <Link
               key={section.title}
               to={section.link}
-              className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
+              className="block bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02]"
             >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-verde-cia/10 rounded-lg">
-                      <section.icon className="h-6 w-6 text-verde-cia" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-800">
-                      {section.title}
-                    </h3>
-                  </div>
-                  <p className="mt-2 text-gray-600">{section.description}</p>
-                  <div className="mt-4 flex items-center space-x-4 text-sm text-gray-500">
-                    <span>{section.items} itens</span>
-                    <span>•</span>
-                    <span>Última atualização: {section.lastUpdate}</span>
-                  </div>
+              <div className="flex items-center space-x-3 mb-3">
+                 <div className={`p-2 rounded-lg bg-blue-100 text-blue-600`}> {/* Cor dinâmica */}
+                  <section.icon className="h-6 w-6" />
                 </div>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  {section.title}
+                </h3>
               </div>
+              <p className="text-sm text-gray-600">{section.description}</p>
+              {/* Poderíamos adicionar contagem aqui se fosse fácil/rápido buscar */}
             </Link>
           ))}
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
-            Ações Rápidas
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button className="p-4 text-center rounded-lg border-2 border-dashed border-gray-300 hover:border-verde-cia hover:text-verde-cia transition-colors">
-              <FileText className="h-6 w-6 mx-auto mb-2" />
-              <span className="text-sm">Nova Página</span>
-            </button>
-            <button className="p-4 text-center rounded-lg border-2 border-dashed border-gray-300 hover:border-verde-cia hover:text-verde-cia transition-colors">
-              <ImageIcon className="h-6 w-6 mx-auto mb-2" />
-              <span className="text-sm">Upload de Mídia</span>
-            </button>
-            <button className="p-4 text-center rounded-lg border-2 border-dashed border-gray-300 hover:border-verde-cia hover:text-verde-cia transition-colors">
-              <Calendar className="h-6 w-6 mx-auto mb-2" />
-              <span className="text-sm">Novo Evento</span>
-            </button>
-            <button className="p-4 text-center rounded-lg border-2 border-dashed border-gray-300 hover:border-verde-cia hover:text-verde-cia transition-colors">
-              <Bell className="h-6 w-6 mx-auto mb-2" />
-              <span className="text-sm">Novo Anúncio</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </AdminLayout>
+         {/* TODO: Adicionar seções de Ações Rápidas, Atividade Recente, Status do Sistema, etc. */}
+         {/* Mantendo simples por enquanto para focar na funcionalidade principal */}
+
+    </div>
   );
 };
 
-export default Dashboard;
+export default AdminDashboard;

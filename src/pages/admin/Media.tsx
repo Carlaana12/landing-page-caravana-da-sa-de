@@ -1,356 +1,222 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
-import AdminLayout from '../../components/admin/AdminLayout';
-import { Plus, Trash2, Edit2, Save, X, Image as ImageIcon, Video, File, Filter, Loader, Upload } from 'lucide-react';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/lib/supabase';
+import { toast } from 'react-hot-toast';
+import { Upload, Trash2, FileText, Image, Video, Music } from 'lucide-react';
+import { FileObject } from '@supabase/storage-js';
 
-interface MediaItem {
-  id: string;
-  title: string;
-  type: string;
-  description: string | null;
-  url: string;
-  active: boolean;
-  created_at: string;
-  updated_at: string;
+interface MediaFile extends Omit<FileObject, 'metadata'> {
+  metadata: {
+    mimetype?: string;
+    size?: number;
+    [key: string]: any;
+  };
 }
 
-const MEDIA_TYPES = ['image', 'video', 'document'];
-const ALLOWED_FILE_TYPES = {
-  image: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
-  video: ['video/mp4', 'video/webm'],
-  document: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
-};
-
-const Media = () => {
-  const [items, setItems] = useState<MediaItem[]>([]);
+const MediaPage: React.FC = () => {
+  const [files, setFiles] = useState<FileObject[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [editing, setEditing] = useState<string | null>(null);
-  const [selectedType, setSelectedType] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [formData, setFormData] = useState({
-    title: '',
-    type: 'image',
-    description: '',
-    url: '',
-    active: true
-  });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  useEffect(() => {
-    fetchItems();
-  }, []);
+  const BUCKET_NAME = 'media';
 
-  const fetchItems = async () => {
+  const listFiles = useCallback(async () => {
+    setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('media_items')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const { data, error } = await supabase.storage.from(BUCKET_NAME).list('', {
+        limit: 100,
+        offset: 0,
+        sortBy: { column: 'created_at', order: 'desc' },
+      });
 
       if (error) throw error;
-      setItems(data || []);
+      setFiles(data || []);
     } catch (error) {
-      console.error('Erro ao carregar itens de mídia:', error);
-      toast.error('Erro ao carregar itens de mídia');
+      toast.error('Erro ao listar arquivos de mídia.');
+      console.error('Error listing files:', error);
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    listFiles();
+  }, [listFiles]);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      setSelectedFile(event.target.files[0]);
+    }
   };
 
-  const handleFileUpload = async (file: File) => {
-    if (!file) return;
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      toast.error('Selecione um arquivo para enviar.');
+      return;
+    }
 
     setUploading(true);
     try {
-      // Validar tipo do arquivo
-      const fileType = MEDIA_TYPES.find(type => 
-        ALLOWED_FILE_TYPES[type as keyof typeof ALLOWED_FILE_TYPES].includes(file.type)
-      );
+      const fileName = `${Date.now()}_${selectedFile.name.replace(/\s+/g, '_')}`;
+      const { error } = await supabase.storage
+        .from(BUCKET_NAME)
+        .upload(fileName, selectedFile);
 
-      if (!fileType) {
-        throw new Error('Tipo de arquivo não suportado');
-      }
+      if (error) throw error;
 
-      // Gerar nome único para o arquivo
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `${fileType}/${fileName}`;
-
-      // Upload do arquivo
-      const { error: uploadError } = await supabase.storage
-        .from('media')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      // Obter URL pública
-      const { data: { publicUrl } } = supabase.storage
-        .from('media')
-        .getPublicUrl(filePath);
-
-      // Criar registro no banco
-      const { error: dbError } = await supabase
-        .from('media_items')
-        .insert([{
-          title: file.name,
-          type: fileType,
-          url: publicUrl,
-          active: true
-        }]);
-
-      if (dbError) throw dbError;
-
-      toast.success('Arquivo enviado com sucesso');
-      fetchItems();
+      toast.success('Arquivo enviado com sucesso!');
+      setSelectedFile(null);
+      const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+      listFiles();
     } catch (error) {
-      console.error('Erro no upload:', error);
-      toast.error('Erro ao enviar arquivo');
+      toast.error('Erro ao enviar arquivo.');
+      console.error('Error uploading file:', error);
     } finally {
       setUploading(false);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const handleDelete = async (fileName: string) => {
+    if (!window.confirm(`Tem certeza que deseja excluir o arquivo ${fileName}?`)) {
+      return;
+    }
 
     try {
-      if (editing) {
-        const { error } = await supabase
-          .from('media_items')
-          .update({
-            ...formData,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', editing);
+      const { error } = await supabase.storage
+        .from(BUCKET_NAME)
+        .remove([fileName]);
 
-        if (error) throw error;
-        toast.success('Item atualizado com sucesso');
-      } else {
-        const { error } = await supabase
-          .from('media_items')
-          .insert([{
-            ...formData,
-            created_at: new Date().toISOString()
-          }]);
+      if (error) throw error;
 
-        if (error) throw error;
-        toast.success('Item adicionado com sucesso');
-      }
-
-      setEditing(null);
-      setFormData({
-        title: '',
-        type: 'image',
-        description: '',
-        url: '',
-        active: true
-      });
-      fetchItems();
+      toast.success('Arquivo excluído com sucesso!');
+      listFiles();
     } catch (error) {
-      console.error('Erro ao salvar item:', error);
-      toast.error('Erro ao salvar item');
-    } finally {
-      setLoading(false);
+      toast.error('Erro ao excluir arquivo.');
+      console.error('Error deleting file:', error);
     }
   };
 
-  const handleEdit = (item: MediaItem) => {
-    setEditing(item.id);
-    setFormData({
-      title: item.title,
-      type: item.type,
-      description: item.description || '',
-      url: item.url,
-      active: item.active
-    });
-  };
+  const getFileIcon = (metadata?: Record<string, any>) => {
+    const mimeType = metadata?.mimetype as string | undefined;
+    if (!mimeType) return <FileText className="w-6 h-6 text-gray-500" />;
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este item?')) return;
-
-    try {
-      // Primeiro, obter o item para pegar a URL
-      const { data: item, error: fetchError } = await supabase
-        .from('media_items')
-        .select('url')
-        .eq('id', id)
-        .single();
-
-      if (fetchError) throw fetchError;
-
-      // Extrair o caminho do arquivo da URL
-      const filePath = new URL(item.url).pathname.split('/').slice(-2).join('/');
-      
-      // Deletar o arquivo do storage
-      const { error: storageError } = await supabase.storage
-        .from('media')
-        .remove([filePath]);
-
-      if (storageError) throw storageError;
-
-      // Deletar o registro do banco
-      const { error: dbError } = await supabase
-        .from('media_items')
-        .delete()
-        .eq('id', id);
-
-      if (dbError) throw dbError;
-
-      toast.success('Item excluído com sucesso');
-      fetchItems();
-    } catch (error) {
-      console.error('Erro ao excluir item:', error);
-      toast.error('Erro ao excluir item');
+    if (mimeType.startsWith('image/')) {
+      return <Image className="w-6 h-6 text-blue-500" />;
     }
-  };
-
-  const filteredItems = items.filter(item => {
-    const matchesType = selectedType === 'all' || item.type === selectedType;
-    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (item.description?.toLowerCase() || '').includes(searchTerm.toLowerCase());
-    return matchesType && matchesSearch;
-  });
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'image':
-        return <ImageIcon className="h-6 w-6" />;
-      case 'video':
-        return <Video className="h-6 w-6" />;
-      default:
-        return <File className="h-6 w-6" />;
+    if (mimeType.startsWith('video/')) {
+      return <Video className="w-6 h-6 text-red-500" />;
     }
+    if (mimeType.startsWith('audio/')) {
+      return <Music className="w-6 h-6 text-purple-500" />;
+    }
+    return <FileText className="w-6 h-6 text-gray-500" />;
   };
 
-  if (loading) {
-    return (
-      <AdminLayout>
-        <div className="flex items-center justify-center min-h-screen">
-          <Loader className="w-8 h-8 animate-spin text-verde-cia" />
-        </div>
-      </AdminLayout>
-    );
-  }
+  const formatBytes = (metadata?: Record<string, any>, decimals = 2) => {
+    const bytes = metadata?.size as number | undefined;
+    if (bytes === undefined || bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  };
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-800">Gerenciamento de Mídia</h1>
-          <label className="px-4 py-2 bg-verde-cia text-white rounded-lg hover:bg-verde-cia-escuro transition-colors flex items-center cursor-pointer">
-            <input
-              type="file"
-              className="hidden"
-              onChange={(e) => e.target.files && handleFileUpload(e.target.files[0])}
-              accept={Object.values(ALLOWED_FILE_TYPES).flat().join(',')}
-            />
-            <Upload className="h-5 w-5 mr-2" />
-            {uploading ? 'Enviando...' : 'Enviar Arquivo'}
+    <div className="space-y-6 p-6 bg-gray-100 min-h-screen">
+      <h1 className="text-2xl font-semibold text-gray-800">Gerenciamento de Mídia</h1>
+
+      <div className="bg-white rounded-xl shadow-sm p-6">
+        <h2 className="text-lg font-medium text-gray-700 mb-4">Upload de Arquivo</h2>
+        <div className="flex items-center space-x-4">
+          <label htmlFor="file-upload" className="cursor-pointer bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors">
+            Selecionar Arquivo
           </label>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-white p-4 rounded-lg shadow-sm">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <input
-                type="text"
-                placeholder="Pesquisar mídia..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg"
-              />
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setSelectedType('all')}
-                className={`px-4 py-2 rounded-lg ${
-                  selectedType === 'all'
-                    ? 'bg-verde-cia text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Todos
-              </button>
-              {MEDIA_TYPES.map(type => (
-                <button
-                  key={type}
-                  onClick={() => setSelectedType(type)}
-                  className={`px-4 py-2 rounded-lg ${
-                    selectedType === type
-                      ? 'bg-verde-cia text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Media Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredItems.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white p-4 rounded-lg shadow border hover:shadow-md transition-shadow"
-            >
-              <div className="relative h-48 mb-4 rounded-lg overflow-hidden bg-gray-100">
-                {item.type === 'image' ? (
-                  <img
-                    src={item.url}
-                    alt={item.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    {getTypeIcon(item.type)}
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="font-semibold">{item.title}</h3>
-                  <div className="flex items-center space-x-2 text-sm text-gray-500">
-                    <span className="flex items-center">
-                      {getTypeIcon(item.type)}
-                      <span className="ml-1">
-                        {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
-                      </span>
-                    </span>
-                    <span>•</span>
-                    <span className={item.active ? 'text-green-500' : 'text-red-500'}>
-                      {item.active ? 'Ativo' : 'Inativo'}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleEdit(item)}
-                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-              {item.description && (
-                <p className="text-gray-600 text-sm">{item.description}</p>
-              )}
-            </div>
-          ))}
+          <input id="file-upload" type="file" className="hidden" onChange={handleFileChange} />
+          {selectedFile && (
+            <span className="text-sm text-gray-600">{selectedFile.name}</span>
+          )}
+          <button
+            onClick={handleUpload}
+            disabled={!selectedFile || uploading}
+            className={`flex items-center px-4 py-2 rounded-lg transition-colors text-white ${
+              !selectedFile || uploading
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-700'
+            }`}
+          >
+            {uploading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                Enviando...
+              </>
+            ) : (
+              <>
+                <Upload className="w-5 h-5 mr-2" />
+                Enviar
+              </>
+            )}
+          </button>
         </div>
       </div>
-    </AdminLayout>
+
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <h2 className="text-lg font-medium text-gray-700 px-6 py-4 border-b border-gray-200">Arquivos Enviados</h2>
+        {loading ? (
+          <div className="flex items-center justify-center h-40">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        ) : files.length === 0 ? (
+          <p className="text-center text-gray-500 py-8">Nenhum arquivo encontrado.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tamanho</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Enviado em</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {files.map((file) => (
+                  <tr key={file.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="mr-3 flex-shrink-0">
+                          {getFileIcon(file.metadata)}
+                        </div>
+                        <span className="text-sm font-medium text-gray-900 truncate" style={{maxWidth: '300px'}} title={file.name}>
+                          {file.name}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{file.metadata?.mimetype ?? 'N/A'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatBytes(file.metadata)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {file.created_at ? new Date(file.created_at).toLocaleDateString('pt-BR') : 'N/A'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button
+                        onClick={() => handleDelete(file.name)}
+                        className="text-red-600 hover:text-red-900"
+                        title="Excluir"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
-export default Media;
+export default MediaPage;
