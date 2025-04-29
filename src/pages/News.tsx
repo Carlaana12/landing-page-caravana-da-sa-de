@@ -1,22 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Search, Calendar, User, Tag, ArrowRight, X } from 'lucide-react';
 import HeroParallax from '@/components/HeroParallax';
-
-// Define interface NewsArticle locally
-interface NewsArticle {
-  id: number;
-  title: string;
-  excerpt: string;
-  content: string;
-  image: string;
-  date: string;
-  author: string;
-  category: string;
-  readTime: string;
-}
 
 const categories = ['Todas', 'Medicina', 'Pesquisa', 'Tecnologia', 'Saúde Pública', 'Bem-estar'];
 
@@ -421,126 +408,118 @@ const News = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Wrapper para o HeroParallax */}
-      <div className="md:w-screen md:relative md:left-1/2 md:right-1/2 md:-ml-[50vw] md:mr-[50vw] md:max-w-none">
-         <HeroParallax 
-           title="Notícias"
-           description="Acompanhe as últimas notícias e atualizações do setor da saúde."
-           image="https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?auto=format&fit=crop&w=2000"
-           typeSequence={[
-             'Pesquisas',
-             '2000',
-             'Descobertas',
-             '2000',
-             'Inovações',
-             '2000',
-             'Avanços',
-             '2000'
-           ]}
-         />
-      </div>
+      <HeroParallax
+        title="Notícias e Atualizações"
+        description="Fique por dentro das últimas novidades do mundo da saúde"
+        image="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=2000"
+        typeSequence={[
+          'Últimas Notícias',
+          '2000',
+          'Avanços Médicos',
+          '2000',
+          'Pesquisas Inovadoras',
+          '2000'
+        ]}
+      />
 
-      {/* Container principal com margem adicionada */}
-      <div className="max-w-7xl mx-auto px-4 py-8 md:ml-72">
-        {/* Search and Filters */}
-        <section className="relative">
-          <div className="bg-white rounded-xl shadow-lg p-6 -mt-20 relative z-10">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Buscar notícias..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 focus:ring-verde-cia focus:border-transparent"
-                />
-              </div>
-              <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
-                      selectedCategory === category
-                        ? 'bg-verde-cia text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
+      {/* Search and Filters */}
+      <section className="max-w-7xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-xl shadow-lg p-6 -mt-20 relative z-10">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Buscar notícias..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 focus:ring-verde-cia focus:border-transparent"
+              />
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
+                    selectedCategory === category
+                      ? 'bg-verde-cia text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* News Grid */}
-        <section className="pt-12">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={selectedCategory + searchTerm}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
-            >
-              {filteredNews.map((item) => (
-                <motion.article
-                  key={item.id}
-                  layout
-                  className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                >
-                  <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full object-contain p-4"
-                    />
-                    <div className="absolute top-4 right-4 bg-verde-cia text-white px-3 py-1 rounded-full text-sm">
-                      {item.category}
-                    </div>
+      {/* News Grid */}
+      <section className="max-w-7xl mx-auto px-4 py-12">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedCategory + searchTerm}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
+          >
+            {filteredNews.map((item) => (
+              <motion.article
+                key={item.id}
+                layout
+                className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-contain p-4"
+                  />
+                  <div className="absolute top-4 right-4 bg-verde-cia text-white px-3 py-1 rounded-full text-sm">
+                    {item.category}
                   </div>
-                  <div className="p-6">
-                    <div className="flex items-center text-sm text-gray-500 mb-4 space-x-4">
-                      <span className="flex items-center">
-                        <Calendar className="w-4 h-4 mr-1" />
-                        {format(new Date(item.date), 'dd MMM yyyy', { locale: ptBR })}
-                      </span>
-                      <span className="flex items-center">
-                        <User className="w-4 h-4 mr-1" />
-                        {item.author}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-semibold mb-3 line-clamp-2">{item.title}</h3>
-                    <p className="text-gray-600 mb-4 line-clamp-3">{item.excerpt}</p>
-                    <div className="flex justify-between items-center">
-                      <button 
-                        className="text-verde-cia hover:text-verde-cia-escuro font-medium flex items-center transition-colors"
-                        onClick={() => setSelectedArticle(item)}
-                      >
-                        Ler mais
-                        <ArrowRight className="ml-2 w-4 h-4" />
-                      </button>
-                      <span className="text-sm text-gray-500">{item.readTime} de leitura</span>
-                    </div>
+                </div>
+                <div className="p-6">
+                  <div className="flex items-center text-sm text-gray-500 mb-4 space-x-4">
+                    <span className="flex items-center">
+                      <Calendar className="w-4 h-4 mr-1" />
+                      {format(new Date(item.date), 'dd MMM yyyy', { locale: ptBR })}
+                    </span>
+                    <span className="flex items-center">
+                      <User className="w-4 h-4 mr-1" />
+                      {item.author}
+                    </span>
                   </div>
-                </motion.article>
-              ))}
-            </motion.div>
-          </AnimatePresence>
+                  <h3 className="text-xl font-semibold mb-3 line-clamp-2">{item.title}</h3>
+                  <p className="text-gray-600 mb-4 line-clamp-3">{item.excerpt}</p>
+                  <div className="flex justify-between items-center">
+                    <button 
+                      className="text-verde-cia hover:text-verde-cia-escuro font-medium flex items-center transition-colors"
+                      onClick={() => setSelectedArticle(item)}
+                    >
+                      Ler mais
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </button>
+                    <span className="text-sm text-gray-500">{item.readTime} de leitura</span>
+                  </div>
+                </div>
+              </motion.article>
+            ))}
+          </motion.div>
+        </AnimatePresence>
 
-          {filteredNews.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center text-gray-500 py-12"
-            >
-              Nenhuma notícia encontrada com os critérios selecionados.
-            </motion.div>
-          )}
-        </section>
-      </div>
+        {filteredNews.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center text-gray-500 py-12"
+          >
+            Nenhuma notícia encontrada com os critérios selecionados.
+          </motion.div>
+        )}
+      </section>
 
       {/* Article Modal */}
       <AnimatePresence>

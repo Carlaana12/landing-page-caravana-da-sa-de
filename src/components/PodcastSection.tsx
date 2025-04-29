@@ -112,7 +112,7 @@ const PodcastSection = () => {
                 className="w-full h-full object-cover"
                 loop
                 playsInline
-                // src="https://player.vimeo.com/progressive_redirect/playback/735428933/rendition/720p/file.mp4" // Temporariamente comentado para evitar erro
+                src="https://player.vimeo.com/progressive_redirect/playback/735428933/rendition/720p/file.mp4"
               />
               
               {/* Video Overlay */}

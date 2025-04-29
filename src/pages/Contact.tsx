@@ -8,7 +8,7 @@ import 'leaflet/dist/leaflet.css';
 const contactInfo = {
   phone: '(61) 98192-6686',
   email: 'ciacomunicacaointegrada@gmail.com',
-  address: 'SIBS Núcleo Bandeirante DF',
+  address: 'SIBIS Núcleo Bandeirante DF',
   hours: 'Segunda a Sexta: 9h às 18h'
 };
 

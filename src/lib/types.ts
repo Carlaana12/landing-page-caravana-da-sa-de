@@ -155,16 +155,3 @@ export interface Appointment {
   notes?: string;
   createdAt: string;
 }
-
-export interface Utility {
-  id: string;
-  name: string;
-  type: 'emergency' | 'publicHospital' | 'hospitalPharmacy' | 'homeopathicClinic';
-  address?: string | null;
-  phone?: string | null;
-  email?: string | null;
-  observations?: string | null;
-  city?: string;
-  number?: string; // Para contatos de emergência
-  label?: string; // Para contatos de emergência
-}

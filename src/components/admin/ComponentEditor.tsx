@@ -316,14 +316,11 @@ const ComponentEditor: React.FC<ComponentEditorProps> = ({
                     checked={component.settings.formFields?.includes(field)}
                     onChange={(e) => {
                       const fields = component.settings.formFields || [];
-                      let updatedFields: string[];
                       if (e.target.checked) {
-                        updatedFields = [...fields, field];
+                        handleSettingChange('formFields', [...fields, field]);
                       } else {
-                        const filterCallback = (f: string): boolean => f !== field;
-                        updatedFields = fields.filter(filterCallback);
+                        handleSettingChange('formFields', fields.filter(f => f !== field));
                       }
-                      handleSettingChange('formFields', updatedFields);
                     }}
                     className="rounded border-gray-300"
                   />

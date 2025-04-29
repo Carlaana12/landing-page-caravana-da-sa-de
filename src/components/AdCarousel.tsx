@@ -89,16 +89,16 @@ const AdCarousel = () => {
 
   if (loading) {
     return (
-      <div className="relative w-full" id="ad-carousel">
-        <div className="h-[500px] bg-gray-200 animate-pulse" />
+      <div className="relative max-w-7xl mx-auto px-4 py-8">
+        <div className="h-[500px] bg-gray-200 rounded-2xl animate-pulse" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="relative w-full" id="ad-carousel">
-        <div className="h-[500px] bg-red-50 flex items-center justify-center px-4">
+      <div className="relative max-w-7xl mx-auto px-4 py-8">
+        <div className="h-[500px] rounded-2xl bg-red-50 flex items-center justify-center">
           <p className="text-red-600">{error}</p>
         </div>
       </div>
@@ -107,8 +107,8 @@ const AdCarousel = () => {
 
   if (items.length === 0) {
     return (
-      <div className="relative w-full" id="ad-carousel">
-        <div className="h-[500px] bg-gray-50 flex items-center justify-center px-4">
+      <div className="relative max-w-7xl mx-auto px-4 py-8">
+        <div className="h-[500px] rounded-2xl bg-gray-50 flex items-center justify-center">
           <p className="text-gray-500">No carousel items available</p>
         </div>
       </div>
@@ -116,8 +116,8 @@ const AdCarousel = () => {
   }
 
   return (
-    <div className="relative" id="ad-carousel">
-      <div ref={sliderRef} className="keen-slider overflow-hidden">
+    <div className="relative max-w-7xl mx-auto px-4 py-8">
+      <div ref={sliderRef} className="keen-slider rounded-2xl overflow-hidden shadow-2xl">
         {items.map((item, idx) => (
           <a
             key={item.id}
@@ -151,14 +151,14 @@ const AdCarousel = () => {
         <>
           <button
             onClick={() => instanceRef.current?.prev()}
-            className="absolute left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/30 flex items-center justify-center transition-all duration-300 hover:scale-110 z-10"
+            className="absolute left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/30 flex items-center justify-center transition-all duration-300 hover:scale-110"
           >
             <ChevronLeft className="w-6 h-6 text-white" />
           </button>
 
           <button
             onClick={() => instanceRef.current?.next()}
-            className="absolute right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/30 flex items-center justify-center transition-all duration-300 hover:scale-110 z-10"
+            className="absolute right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/30 flex items-center justify-center transition-all duration-300 hover:scale-110"
           >
             <ChevronRight className="w-6 h-6 text-white" />
           </button>
@@ -167,7 +167,7 @@ const AdCarousel = () => {
 
       {/* Progress Indicators */}
       {loaded && instanceRef.current && items.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
           {items.map((_, idx) => (
             <button
               key={idx}

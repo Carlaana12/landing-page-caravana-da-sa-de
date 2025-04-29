@@ -50,131 +50,128 @@ const Events = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <HeroParallax
-        title="Eventos"
-        description="Fique por dentro dos principais eventos e congressos da área da saúde."
-        image="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=2000"
+        title="Eventos e Congressos"
+        description="Participe dos principais eventos da área da saúde"
+        image="https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?auto=format&fit=crop&w=2000"
         typeSequence={[
-          'Congressos',
-          '2000',
-          'Palestras',
-          '2000',
-          'Workshops',
-          '2000',
+          'Congressos Médicos',
+          2000,
           'Simpósios',
-          '2000'
+          2000,
+          'Workshops',
+          2000,
+          'Palestras',
+          2000
         ]}
       />
 
-      {/* Container principal com margem adicionada */}
-      <div className="max-w-7xl mx-auto px-4 py-8 md:ml-72">
-        {/* Search and Filters */}
-        <section className="relative">
-          <div className="bg-white rounded-xl shadow-lg p-6 -mt-20 relative z-10">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Buscar eventos..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 focus:ring-verde-cia focus:border-transparent"
-                />
-              </div>
-              <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
-                      selectedCategory === category
-                        ? 'bg-verde-cia text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
+      {/* Search and Filters */}
+      <section className="max-w-7xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-xl shadow-lg p-6 -mt-20 relative z-10">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Buscar eventos..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 focus:ring-verde-cia focus:border-transparent"
+              />
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
+                    selectedCategory === category
+                      ? 'bg-verde-cia text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Events Grid */}
-        <section className="pt-12">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={selectedCategory + searchTerm}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
-            >
-              {filteredEvents.map((event) => (
-                <motion.article
-                  key={event.id}
-                  layout
-                  className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                >
-                  <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute top-4 right-4 bg-verde-cia text-white px-3 py-1 rounded-full text-sm">
-                      {event.category}
+      {/* Events Grid */}
+      <section className="max-w-7xl mx-auto px-4 py-12">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedCategory + searchTerm}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
+          >
+            {filteredEvents.map((event) => (
+              <motion.article
+                key={event.id}
+                layout
+                className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={event.image}
+                    alt={event.title}
+                    className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute top-4 right-4 bg-verde-cia text-white px-3 py-1 rounded-full text-sm">
+                    {event.category}
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold mb-3">{event.title}</h3>
+                  <p className="text-gray-600 mb-4 line-clamp-2">{event.description}</p>
+                  
+                  <div className="space-y-2 text-sm text-gray-500">
+                    <div className="flex items-center">
+                      <Calendar className="w-4 h-4 mr-2" />
+                      <span>
+                        {format(new Date(event.date), 'dd MMM yyyy', { locale: ptBR })}
+                        {event.endDate && ` - ${format(new Date(event.endDate), 'dd MMM yyyy', { locale: ptBR })}`}
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <Clock className="w-4 h-4 mr-2" />
+                      <span>{event.time}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <MapPin className="w-4 h-4 mr-2" />
+                      <span>{event.location}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Users className="w-4 h-4 mr-2" />
+                      <span>Capacidade: {event.capacity} pessoas</span>
                     </div>
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold mb-3">{event.title}</h3>
-                    <p className="text-gray-600 mb-4 line-clamp-2">{event.description}</p>
-                    
-                    <div className="space-y-2 text-sm text-gray-500">
-                      <div className="flex items-center">
-                        <Calendar className="w-4 h-4 mr-2" />
-                        <span>
-                          {format(new Date(event.date), 'dd MMM yyyy', { locale: ptBR })}
-                          {event.endDate && ` - ${format(new Date(event.endDate), 'dd MMM yyyy', { locale: ptBR })}`}
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <Clock className="w-4 h-4 mr-2" />
-                        <span>{event.time}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <MapPin className="w-4 h-4 mr-2" />
-                        <span>{event.location}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Users className="w-4 h-4 mr-2" />
-                        <span>Capacidade: {event.capacity} pessoas</span>
-                      </div>
-                    </div>
 
-                    <div className="mt-6 flex justify-between items-center">
-                      <span className="font-semibold text-verde-cia">{event.price}</span>
-                      <button className="bg-verde-cia hover:bg-verde-cia-escuro text-white px-4 py-2 rounded-lg transition-colors">
-                        Inscrever-se
-                      </button>
-                    </div>
+                  <div className="mt-6 flex justify-between items-center">
+                    <span className="font-semibold text-verde-cia">{event.price}</span>
+                    <button className="bg-verde-cia hover:bg-verde-cia-escuro text-white px-4 py-2 rounded-lg transition-colors">
+                      Inscrever-se
+                    </button>
                   </div>
-                </motion.article>
-              ))}
-            </motion.div>
-          </AnimatePresence>
+                </div>
+              </motion.article>
+            ))}
+          </motion.div>
+        </AnimatePresence>
 
-          {filteredEvents.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center text-gray-500 py-12"
-            >
-              Nenhum evento encontrado com os critérios selecionados.
-            </motion.div>
-          )}
-        </section>
-      </div>
+        {filteredEvents.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center text-gray-500 py-12"
+          >
+            Nenhum evento encontrado com os critérios selecionados.
+          </motion.div>
+        )}
+      </section>
     </div>
   );
 };

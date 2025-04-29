@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React from 'react';
 import {
   Facebook,
   Twitter,
@@ -11,9 +11,9 @@ import {
 import { Link } from 'react-router-dom';
 import { PUBLIC_URLS } from '../lib/constants';
 
-const Footer = forwardRef<HTMLElement>((props, ref) => {
+const Footer = () => {
   return (
-    <footer ref={ref} className="bg-verde-cia-escuro text-white">
+    <footer className="bg-verde-cia-escuro text-white">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           <div className="float-animation">
@@ -100,7 +100,7 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
       </div>
     </footer>
   );
-});
+};
 
 const SocialLink = ({
   href,

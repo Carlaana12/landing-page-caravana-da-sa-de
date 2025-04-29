@@ -1,67 +1,66 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import * as LucideIcons from 'lucide-react';
-import HeroParallax from '../components/HeroParallax';
+import { useInView } from 'react-intersection-observer';
+import { Heart, Brain, Eye, Stethoscope, Baby, Bone, Settings as Lungs, Pill, Syringe, Activity } from 'lucide-react';
+import HeroParallax from '@/components/HeroParallax';
 
 const specialties = [
   {
-    icon: LucideIcons.Heart,
+    icon: Heart,
     name: 'Cardiologia',
     description: 'Tratamento de doenças do coração e sistema circulatório.',
     procedures: ['Cateterismo', 'Ecocardiograma', 'Holter']
   },
   {
-    icon: LucideIcons.Brain,
+    icon: Brain,
     name: 'Neurologia',
     description: 'Diagnóstico e tratamento de doenças do sistema nervoso.',
     procedures: ['Eletroencefalograma', 'Ressonância Magnética', 'Tomografia']
   },
   {
-    icon: LucideIcons.Eye,
+    icon: Eye,
     name: 'Oftalmologia',
     description: 'Cuidados com a saúde dos olhos e visão.',
     procedures: ['Exame de Vista', 'Cirurgia de Catarata', 'Tratamento de Glaucoma']
   },
   {
-    icon: LucideIcons.Stethoscope,
+    icon: Stethoscope,
     name: 'Clínica Geral',
     description: 'Atendimento médico primário e preventivo.',
     procedures: ['Check-up', 'Consultas de Rotina', 'Prevenção de Doenças']
   },
   {
-    icon: LucideIcons.Baby,
+    icon: Baby,
     name: 'Pediatria',
     description: 'Cuidados com a saúde de crianças e adolescentes.',
     procedures: ['Vacinação', 'Acompanhamento do Crescimento', 'Tratamento de Doenças Infantis']
   },
   {
-    icon: LucideIcons.Bone,
+    icon: Bone,
     name: 'Ortopedia',
     description: 'Tratamento de problemas musculoesqueléticos.',
     procedures: ['Cirurgia Ortopédica', 'Fisioterapia', 'Tratamento de Fraturas']
   },
   {
-    icon: LucideIcons.Lungs,
+    icon: Lungs,
     name: 'Pneumologia',
     description: 'Tratamento de doenças respiratórias.',
     procedures: ['Espirometria', 'Broncoscopia', 'Tratamento de Asma']
   },
   {
-    icon: LucideIcons.Pill,
+    icon: Pill,
     name: 'Endocrinologia',
     description: 'Tratamento de distúrbios hormonais.',
     procedures: ['Controle de Diabetes', 'Tratamento de Tireoide', 'Obesidade']
   },
   {
-    icon: LucideIcons.Syringe,
+    icon: Syringe,
     name: 'Dermatologia',
     description: 'Cuidados com a saúde da pele.',
     procedures: ['Tratamentos Estéticos', 'Cirurgias Dermatológicas', 'Tratamento de Acne']
   },
   {
-    icon: LucideIcons.Activity,
+    icon: Activity,
     name: 'Cardiologia',
     description: 'Diagnóstico e tratamento de doenças cardíacas.',
     procedures: ['Eletrocardiograma', 'Teste Ergométrico', 'Angioplastia']
@@ -97,28 +96,25 @@ const Specialties = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Wrapper para o HeroParallax */}
-      <div className="md:w-screen md:relative md:left-1/2 md:right-1/2 md:-ml-[50vw] md:mr-[50vw] md:max-w-none">
-        <HeroParallax 
-          title="Especialidades Médicas"
-          description="Conheça as diversas áreas de atuação e encontre o especialista certo."
-          image="https://images.unsplash.com/photo-1551192422-a9ca9a2c41e1?auto=format&fit=crop&w=2000"
-          typeSequence={[
-            'Cardiologia',
-            '2000',
-            'Neurologia',
-            '2000',
-            'Oftalmologia',
-            '2000',
-            'Pediatria',
-            '2000'
-          ]}
-        />
-      </div>
+      <HeroParallax
+        title="Especialidades Médicas"
+        description="Conheça todas as especialidades disponíveis em nossa rede de profissionais"
+        image="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=2000"
+        typeSequence={[
+          'Cardiologia',
+          1500,
+          'Neurologia',
+          1500,
+          'Oftalmologia',
+          1500,
+          'Pediatria',
+          1500
+        ]}
+      />
 
-      {/* Conteúdo restante DENTRO do container padrão */}
-       <div className="max-w-7xl mx-auto px-4 py-12">
-          {/* Specialties Grid */}
+      {/* Specialties Grid */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4">
           <motion.div
             ref={ref}
             variants={containerVariants}
@@ -150,7 +146,8 @@ const Specialties = () => {
               </motion.div>
             ))}
           </motion.div>
-       </div>
+        </div>
+      </section>
     </div>
   );
 };
