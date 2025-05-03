@@ -1,8 +1,12 @@
+import { UserType } from './constants';
+
 // Registration Types
 export interface PatientRegistration {
   fullName: string;
   email: string;
   password: string;
+  confirmPassword: string;
+  cpf: string;
   phone: string;
   birthDate: string;
   termsAccepted: boolean;
@@ -26,42 +30,42 @@ export interface ProfessionalRegistration {
 // Profile Types
 export interface UserProfile {
   id: string;
-  userId: string;
-  fullName: string;
+  user_id: string;
+  full_name: string;
   email: string;
   phone: string;
-  birthDate: string;
-  termsAccepted: boolean;
-  termsAcceptedAt?: string;
-  emailVerified: boolean;
-  emailVerifiedAt?: string;
-  createdAt: string;
-  updatedAt: string;
+  birth_date: string;
+  terms_accepted: boolean;
+  terms_accepted_at?: string;
+  email_verified: boolean;
+  email_verified_at?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface PartnerProfile {
   id: string;
-  userId: string;
-  fullName: string;
+  user_id: string;
+  full_name: string;
   email: string;
   phone: string;
-  registrationType: string;
-  registrationNumber: string;
-  registrationState: string;
-  registrationExpiry?: string;
+  registration_type: string;
+  registration_number: string;
+  registration_state: string;
+  registration_expiry?: string;
   specialty: string;
   location?: string;
-  documentUrl?: string;
-  termsAccepted: boolean;
-  termsAcceptedAt?: string;
-  emailVerified: boolean;
-  emailVerifiedAt?: string;
-  verificationStatus: 'pending' | 'approved' | 'rejected';
-  verificationNotes?: string;
-  verifiedAt?: string;
-  verifiedBy?: string;
-  createdAt: string;
-  updatedAt: string;
+  document_url?: string;
+  terms_accepted: boolean;
+  terms_accepted_at?: string;
+  email_verified: boolean;
+  email_verified_at?: string;
+  verification_status: 'pending' | 'approved' | 'rejected';
+  verification_notes?: string;
+  verified_at?: string;
+  verified_by?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 // Specialist Types
@@ -154,4 +158,11 @@ export interface Appointment {
   type: 'in-person' | 'teleconsultation';
   notes?: string;
   createdAt: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  name?: string;
+  userType?: UserType;
 }

@@ -5,10 +5,10 @@ import {
   signInPatient, 
   signInProfessional,
   signUpPatient,
-  signUpProfessional,
   resetPasswordPatient,
   resetPasswordProfessional,
-  signOut 
+  signOut,
+  signUpProfessional
 } from '../lib/auth';
 import { USER_TYPES, UserType } from '../lib/constants';
 import toast from 'react-hot-toast';
@@ -47,6 +47,7 @@ const Login = () => {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [birthDate, setBirthDate] = useState('');
+  const [cpf, setCpf] = useState('');
   const [registrationType, setRegistrationType] = useState<'CRM' | 'CRO' | 'CREFITO' | 'CRP' | 'COREN' | 'OUTRO'>('CRM');
   const [registrationNumber, setRegistrationNumber] = useState('');
   const [registrationState, setRegistrationState] = useState('');
@@ -90,6 +91,24 @@ const Login = () => {
 
   const { title, redirect } = getLoginInfo();
 
+  // Adicionar a função de formatação do telefone
+  const formatPhone = (value: string) => {
+    const numbers = value.replace(/\D/g, '');
+    if (numbers.length <= 2) return numbers;
+    if (numbers.length <= 6) return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+    if (numbers.length <= 10) return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 6)}-${numbers.slice(6)}`;
+    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
+  };
+
+  // Adicionar a função de formatação do CPF
+  const formatCPF = (value: string) => {
+    const numbers = value.replace(/\D/g, '');
+    if (numbers.length <= 3) return numbers;
+    if (numbers.length <= 6) return `${numbers.slice(0, 3)}.${numbers.slice(3)}`;
+    if (numbers.length <= 9) return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6)}`;
+    return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6, 9)}-${numbers.slice(9, 11)}`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -102,6 +121,7 @@ const Login = () => {
           }
 
           if (userType === USER_TYPES.SPECIALIST) {
+            // Chamada direta restaurada
             await signUpProfessional({
               fullName,
               email,
@@ -115,17 +135,21 @@ const Login = () => {
               documentUrl,
               termsAccepted
             });
-          } else {
+            toast.success('Cadastro realizado com sucesso! Verifique seu email para confirmar sua conta.');
+
+          } else { // Cadastro de Paciente
             await signUpPatient({
               fullName,
               email,
               password,
+              confirmPassword,
+              cpf,
               phone,
               birthDate,
               termsAccepted
             });
+            toast.success('Cadastro realizado com sucesso! Verifique seu email para confirmar sua conta.');
           }
-          toast.success('Cadastro realizado com sucesso! Faça login para continuar.');
           setMode('login');
           break;
 
@@ -140,19 +164,52 @@ const Login = () => {
           break;
 
         default:
+          let authResult;
           if (userType === USER_TYPES.ADMIN) {
-            await signInAdmin(email, password);
+            authResult = await signInAdmin(email, password);
           } else if (userType === USER_TYPES.SPECIALIST) {
-            await signInProfessional(email, password);
-          } else {
-            await signInPatient(email, password);
+            authResult = await signInProfessional(email, password);
+          } else { // Assumindo Paciente
+            console.log('Tentando login como Paciente...');
+            authResult = await signInPatient(email, password);
+            console.log('Resultado de signInPatient:', authResult);
           }
-          navigate(redirect);
+
           toast.success('Login realizado com sucesso!');
+          
+          // Redirecionar baseado no tipo de usuário
+          if (authResult && authResult.userType === USER_TYPES.PATIENT) {
+            console.log('Redirecionando para /paciente/dashboard...');
+            navigate('/paciente/dashboard');
+          } else if (authResult && authResult.userType === USER_TYPES.SPECIALIST) {
+            console.log('Redirecionando para /especialista/dashboard...');
+            navigate('/especialista/dashboard');
+          } else if (authResult && authResult.userType === USER_TYPES.ADMIN) {
+            console.log('Redirecionando para /arearestrita...');
+            navigate('/arearestrita');
+          } else {
+            console.error('Não foi possível determinar o tipo de usuário ou authResult está inesperado:', authResult);
+            // Fallback: talvez redirecionar para home ou exibir erro?
+            navigate('/'); 
+          }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro:', error);
-      toast.error(error instanceof Error ? error.message : 'Erro ao processar sua solicitação');
+      
+      // Tratamento específico de erros
+      if (error.message.includes('Email not confirmed')) {
+        toast.error('Por favor, verifique seu email antes de fazer login.');
+      } else if (error.message.includes('Invalid login credentials')) {
+        toast.error('Email ou senha incorretos.');
+      } else if (error.message.includes('User already registered')) {
+        toast.error('Este email já está cadastrado.');
+      } else if (error.message.includes('Password should be at least 6 characters')) {
+        toast.error('A senha deve ter pelo menos 6 caracteres.');
+      } else if (error.message.includes('Acesso permitido apenas para')) {
+        toast.error(error.message);
+      } else {
+        toast.error(error.message || 'Erro ao processar sua solicitação');
+      }
     } finally {
       setLoading(false);
     }
@@ -162,6 +219,28 @@ const Login = () => {
   const canRegister = userType !== USER_TYPES.ADMIN;
   // Não mostrar opção de recuperar senha para admin
   const canResetPassword = userType !== USER_TYPES.ADMIN;
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { userType } = await signInPatient(email, password);
+      toast.success('Login realizado com sucesso');
+      
+      if (userType === USER_TYPES.PATIENT) {
+        navigate('/paciente/dashboard');
+      } else if (userType === USER_TYPES.SPECIALIST) {
+        navigate('/especialista/dashboard');
+      } else if (userType === USER_TYPES.ADMIN) {
+        navigate('/admin/dashboard');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Erro ao fazer login');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-verde-cia/5 to-white flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -230,6 +309,24 @@ const Login = () => {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
+                        CPF
+                      </label>
+                      <div className="relative">
+                        <FileText className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input
+                          type="text"
+                          value={cpf}
+                          onChange={(e) => setCpf(formatCPF(e.target.value))}
+                          placeholder="000.000.000-00"
+                          maxLength={14}
+                          className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-verde-cia focus:border-transparent"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                         Telefone
                       </label>
                       <div className="relative">
@@ -237,15 +334,14 @@ const Login = () => {
                         <input
                           type="tel"
                           value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
+                          onChange={(e) => setPhone(formatPhone(e.target.value))}
+                          placeholder="(99) 99999-9999"
                           className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-verde-cia focus:border-transparent"
                           required
                         />
-                      </div>
                     </div>
                   </div>
 
-                  {userType === USER_TYPES.USER && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Data de Nascimento
@@ -261,7 +357,7 @@ const Login = () => {
                         />
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 {userType === USER_TYPES.SPECIALIST && (

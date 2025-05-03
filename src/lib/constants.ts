@@ -27,6 +27,7 @@ export const PUBLIC_URLS = {
 export const USER_TYPES = {
   ADMIN: 'admin',
   SPECIALIST: 'specialist',
+  PATIENT: 'patient',
   USER: 'user'
 } as const;
 

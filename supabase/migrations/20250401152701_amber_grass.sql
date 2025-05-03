@@ -140,15 +140,17 @@ CREATE TRIGGER partner_verification_trigger
   WHEN (NEW.verification_status IS DISTINCT FROM OLD.verification_status)
   EXECUTE FUNCTION handle_professional_verification();
 
--- Update RLS policies
+-- Enable RLS
 ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE partner_profiles ENABLE ROW LEVEL SECURITY;
 
 -- Drop existing policies
 DROP POLICY IF EXISTS "Users can view own profile" ON user_profiles;
 DROP POLICY IF EXISTS "Users can update own profile" ON user_profiles;
+DROP POLICY IF EXISTS "Users can create profile" ON user_profiles;
 DROP POLICY IF EXISTS "Specialists can view own profile" ON partner_profiles;
 DROP POLICY IF EXISTS "Specialists can update own profile" ON partner_profiles;
+DROP POLICY IF EXISTS "Specialists can create profile" ON partner_profiles;
 DROP POLICY IF EXISTS "Admins can manage all profiles" ON partner_profiles;
 
 -- Create new policies
@@ -165,6 +167,12 @@ CREATE POLICY "Users can update own profile"
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+CREATE POLICY "Users can create profile"
+  ON user_profiles
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (auth.uid() = user_id);
+
 CREATE POLICY "Specialists can view own profile"
   ON partner_profiles
   FOR SELECT
@@ -176,6 +184,12 @@ CREATE POLICY "Specialists can update own profile"
   FOR UPDATE
   TO authenticated
   USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Specialists can create profile"
+  ON partner_profiles
+  FOR INSERT
+  TO authenticated
   WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Admins can manage all profiles"

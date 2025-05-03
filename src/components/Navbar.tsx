@@ -1,13 +1,56 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Mail, Phone, LogIn, UserCircle, Stethoscope } from 'lucide-react';
-import { AUTH_URLS } from '../lib/constants';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, Mail, Phone, LogIn, UserCircle, Stethoscope, LogOut } from 'lucide-react';
+import { AUTH_URLS, USER_TYPES } from '../lib/constants';
+import { useAuthStore } from '../lib/store';
+import { signOut } from '../lib/auth';
 import LogoAnimada from './LogoAnimada';
+import toast from 'react-hot-toast';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAuthMenuOpen, setIsAuthMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, userType } = useAuthStore();
+
+  const handleLogout = async () => {
+    const currentUserType = useAuthStore.getState().userType;
+    try {
+      await signOut();
+      setIsAuthMenuOpen(false);
+      let redirectPath = '/login';
+      if (currentUserType === USER_TYPES.PATIENT) {
+        redirectPath = AUTH_URLS.USER_LOGIN;
+      } else if (currentUserType === USER_TYPES.SPECIALIST) {
+        redirectPath = AUTH_URLS.SPECIALIST_LOGIN;
+      } else if (currentUserType === USER_TYPES.ADMIN) {
+        redirectPath = AUTH_URLS.ADMIN_LOGIN;
+      }
+      
+      navigate(redirectPath);
+      toast.success('Logout realizado com sucesso.');
+    } catch (error) {
+      console.error("Erro ao fazer logout (Navbar):", error);
+      toast.error('Erro ao fazer logout. Por favor, tente novamente.');
+    }
+  };
+
+  const getUserTypeLabel = () => {
+    switch (userType) {
+      case USER_TYPES.USER:
+        return 'Paciente';
+      case USER_TYPES.SPECIALIST:
+        return 'Profissional de Saúde';
+      default:
+        return 'Usuário';
+    }
+  };
+
+  const getUserFullName = () => {
+    if (!user) return 'Acessar';
+    return user.user_metadata?.full_name || 'Usuário';
+  };
 
   return (
     <nav className="bg-verde-cia-escuro text-white shadow-lg">
@@ -31,19 +74,64 @@ const Navbar = () => {
                 (61)98192-6686
               </a>
             </div>
-            <div className="flex items-center space-x-2">
+            
               {/* Auth Menu */}
               <div className="relative">
                 <button
                   onClick={() => setIsAuthMenuOpen(!isAuthMenuOpen)}
                   className="flex items-center text-sm hover:text-green-200 transition-all hover:scale-105 bg-white/10 px-3 py-1 rounded-full"
                 >
+                {user ? (
+                  <>
+                    <UserCircle className="h-4 w-4 mr-1" />
+                    <span className="max-w-[200px] truncate">{getUserFullName()}</span>
+                  </>
+                ) : (
+                  <>
                   <LogIn className="h-4 w-4 mr-1" />
                   <span>Acessar</span>
+                  </>
+                )}
                 </button>
                 
                 {isAuthMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 z-50">
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl py-2 z-50">
+                  {user ? (
+                    <>
+                      {/* Cabeçalho do dropdown com nome e tipo de usuário */}
+                      <div className="px-4 py-3 border-b border-gray-100">
+                        <div className="font-medium text-gray-900">{getUserFullName()}</div>
+                        <div className="text-xs text-gray-500">{getUserTypeLabel()}</div>
+                      </div>
+
+                      <Link
+                        to={userType === USER_TYPES.PATIENT ? AUTH_URLS.USER_DASHBOARD : AUTH_URLS.SPECIALIST_DASHBOARD}
+                        className="block px-4 py-3 text-gray-800 hover:bg-gray-100 flex items-center group"
+                        onClick={() => setIsAuthMenuOpen(false)}
+                      >
+                        <div className="p-2 rounded-full bg-blue-50 group-hover:bg-blue-100 transition-colors">
+                          <UserCircle className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <div className="ml-3">
+                          <div className="font-medium">Meu Perfil</div>
+                          <div className="text-xs text-gray-500">Acesse seu perfil e configurações</div>
+                        </div>
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full block px-4 py-3 text-gray-800 hover:bg-gray-100 flex items-center group"
+                      >
+                        <div className="p-2 rounded-full bg-red-50 group-hover:bg-red-100 transition-colors">
+                          <LogOut className="h-5 w-5 text-red-600" />
+                        </div>
+                        <div className="ml-3">
+                          <div className="font-medium">Sair</div>
+                          <div className="text-xs text-gray-500">Fazer logout da sua conta</div>
+                        </div>
+                      </button>
+                    </>
+                  ) : (
+                    <>
                     <Link
                       to={AUTH_URLS.USER_LOGIN}
                       className="block px-4 py-3 text-gray-800 hover:bg-gray-100 flex items-center group"
@@ -70,9 +158,10 @@ const Navbar = () => {
                         <div className="text-xs text-gray-500">Área exclusiva para profissionais de saúde</div>
                       </div>
                     </Link>
+                    </>
+                  )}
                   </div>
                 )}
-              </div>
             </div>
           </div>
         </div>
@@ -208,8 +297,8 @@ const NavLink = ({
 }) => (
   <Link
     to={to}
-    className={`text-sm font-medium transition-all hover:scale-105 hover:-translate-y-0.5 ${
-      active ? 'text-green-200' : 'hover:text-green-200'
+    className={`text-sm font-medium transition-colors ${
+      active ? 'text-white' : 'text-white/80 hover:text-white'
     }`}
   >
     {children}
@@ -227,8 +316,8 @@ const MobileNavLink = ({
 }) => (
   <Link
     to={to}
-    className={`block px-3 py-2 text-base font-medium rounded-md transition-all hover:scale-105 ${
-      active ? 'bg-green-800 text-white' : 'hover:bg-green-800'
+    className={`block px-3 py-2 rounded-md text-base font-medium ${
+      active ? 'bg-green-800 text-white' : 'text-white/80 hover:bg-green-800 hover:text-white'
     }`}
   >
     {children}

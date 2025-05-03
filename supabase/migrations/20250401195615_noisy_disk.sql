@@ -178,6 +178,9 @@ DROP POLICY IF EXISTS "Users can update own profile" ON user_profiles;
 DROP POLICY IF EXISTS "Specialists can view own profile" ON partner_profiles;
 DROP POLICY IF EXISTS "Specialists can update own profile" ON partner_profiles;
 DROP POLICY IF EXISTS "Admins can manage all profiles" ON partner_profiles;
+DROP POLICY IF EXISTS "Permitir inserções em partner_profiles" ON partner_profiles;
+DROP POLICY IF EXISTS "Permitir leitura em partner_profiles" ON partner_profiles;
+DROP POLICY IF EXISTS "Permitir atualizações em partner_profiles" ON partner_profiles;
 
 -- Create new policies
 CREATE POLICY "Users can view own profile"
@@ -193,29 +196,19 @@ CREATE POLICY "Users can update own profile"
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Specialists can view own profile"
+-- Políticas para partner_profiles
+CREATE POLICY "Professionals can view own profile"
   ON partner_profiles
   FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
 
-CREATE POLICY "Specialists can update own profile"
+CREATE POLICY "Professionals can update own profile"
   ON partner_profiles
   FOR UPDATE
   TO authenticated
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Admins can manage all profiles"
-  ON partner_profiles
-  FOR ALL
-  TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM admin_users
-      WHERE admin_users.user_id = auth.uid()
-    )
-  );
 
 -- Set up test account
 DO $$

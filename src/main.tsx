@@ -13,7 +13,7 @@ if (!rootElement) {
 
 const root = createRoot(rootElement);
 
-function Root() {
+function AppWrapper() {
   useAuth();
   return (
     <StrictMode>
@@ -25,4 +25,4 @@ function Root() {
 }
 
 // Use automatic batching for all updates
-root.render(<Root />);
+root.render(<AppWrapper />);

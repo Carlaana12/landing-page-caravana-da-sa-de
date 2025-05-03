@@ -16,6 +16,7 @@ import {
 import { useAuthStore } from '../../lib/store';
 import { signOut } from '../../lib/auth';
 import toast from 'react-hot-toast';
+import { AUTH_URLS } from '../../lib/constants';
 
 const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -69,10 +70,11 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const handleLogout = async () => {
     try {
       await signOut();
-      navigate('/arearestrita/login');
       toast.success('Logout realizado com sucesso');
+      navigate(AUTH_URLS.ADMIN_LOGIN);
     } catch (error) {
-      toast.error('Erro ao fazer logout');
+      console.error("Erro ao fazer logout:", error);
+      toast.error('Erro ao fazer logout.');
     }
   };
 

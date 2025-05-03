@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import AdBanner from './components/AdBanner';
 import Navbar from './components/Navbar';
@@ -41,34 +41,54 @@ import ArticleEditor from './pages/specialist/ArticleEditor';
 import AvailabilityEditor from './pages/specialist/AvailabilityEditor';
 
 import { useAuthStore } from './lib/store';
-import { USER_TYPES } from './lib/constants';
+import { USER_TYPES, AUTH_URLS } from './lib/constants';
 
 // Import styles
 import './styles/animations.css';
 
+import PatientDashboard from './pages/patient/Dashboard';
+import PatientLayout from './components/patient/PatientLayout';
+import ScheduleAppointment from './pages/patient/ScheduleAppointment';
+import Exams from './pages/patient/Exams';
+import MedicalHistory from './pages/patient/MedicalHistory';
+import Profile from './pages/patient/Profile';
+
 function App() {
-  const { user, userType } = useAuthStore();
+  // Remover a leitura do estado aqui, pois será feita dentro dos guards
+  // const { user, userType } = useAuthStore(); 
 
   // Protected route wrapper for admin routes
   const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+    const { user, userType } = useAuthStore(); // Ler o estado DENTRO do guard
+    const location = useLocation(); // Para passar o local de origem
     if (!user || userType !== USER_TYPES.ADMIN) {
-      return <Navigate to="/arearestrita/login" replace />;
+      // Adiciona log para depuração
+      console.log(`AdminRoute: Redirecting. User: ${!!user}, UserType: ${userType}`);
+      return <Navigate to="/arearestrita/login" state={{ from: location }} replace />;
     }
     return <>{children}</>;
   };
 
-  // Protected route wrapper for user routes
+  // Protected route wrapper for user/patient routes
   const UserRoute = ({ children }: { children: React.ReactNode }) => {
-    if (!user || userType !== USER_TYPES.USER) {
-      return <Navigate to="/usuario/login" replace />;
+    const { user, userType } = useAuthStore(); // Ler o estado DENTRO do guard
+    const location = useLocation(); // Para passar o local de origem
+    if (!user || userType !== USER_TYPES.PATIENT) { 
+      // Adiciona log para depuração
+      console.log(`UserRoute: Redirecting. User: ${!!user}, UserType: ${userType}`);
+      return <Navigate to={AUTH_URLS.USER_LOGIN} state={{ from: location }} replace />;
     }
     return <>{children}</>;
   };
 
   // Protected route wrapper for specialist routes
   const SpecialistRoute = ({ children }: { children: React.ReactNode }) => {
+    const { user, userType } = useAuthStore(); // Ler o estado DENTRO do guard
+    const location = useLocation(); // Para passar o local de origem
     if (!user || userType !== USER_TYPES.SPECIALIST) {
-      return <Navigate to="/especialista/login" replace />;
+      // Adiciona log para depuração
+      console.log(`SpecialistRoute: Redirecting. User: ${!!user}, UserType: ${userType}`);
+      return <Navigate to="/especialista/login" state={{ from: location }} replace />;
     }
     return <>{children}</>;
   };
@@ -96,124 +116,33 @@ function App() {
             
             {/* Admin Routes */}
             <Route path="/arearestrita/login" element={<AdminLogin />} />
-            <Route
-              path="/arearestrita"
-              element={
-                <AdminRoute>
-                  <AdminDashboard />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/arearestrita/media"
-              element={
-                <AdminRoute>
-                  <Media />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/arearestrita/appearance"
-              element={
-                <AdminRoute>
-                  <Appearance />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/arearestrita/settings"
-              element={
-                <AdminRoute>
-                  <Settings />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/arearestrita/carousel"
-              element={
-                <AdminRoute>
-                  <CarouselManager />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/arearestrita/destaques"
-              element={
-                <AdminRoute>
-                  <HighlightsManager />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/arearestrita/events"
-              element={
-                <AdminRoute>
-                  <EventsManager />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/arearestrita/ads"
-              element={
-                <AdminRoute>
-                  <AdsManager />
-                </AdminRoute>
-              }
-            />
+            <Route path="/arearestrita" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            <Route path="/arearestrita/media" element={<AdminRoute><Media /></AdminRoute>} />
+            <Route path="/arearestrita/aparencia" element={<AdminRoute><Appearance /></AdminRoute>} />
+            <Route path="/arearestrita/configuracoes" element={<AdminRoute><Settings /></AdminRoute>} />
+            <Route path="/arearestrita/carrossel" element={<AdminRoute><CarouselManager /></AdminRoute>} />
+            <Route path="/arearestrita/destaques" element={<AdminRoute><HighlightsManager /></AdminRoute>} />
+            <Route path="/arearestrita/eventos" element={<AdminRoute><EventsManager /></AdminRoute>} />
+            <Route path="/arearestrita/anuncios" element={<AdminRoute><AdsManager /></AdminRoute>} />
 
             {/* User Routes */}
             <Route path="/usuario/login" element={<UserLogin />} />
-            <Route
-              path="/usuario/dashboard"
-              element={
-                <UserRoute>
-                  <UserDashboard />
-                </UserRoute>
-              }
-            />
+            <Route path="/usuario/dashboard" element={<UserRoute><UserDashboard /></UserRoute>} />
 
             {/* Specialist Routes */}
             <Route path="/especialista/login" element={<SpecialistLogin />} />
-            <Route
-              path="/especialista/dashboard"
-              element={
-                <SpecialistRoute>
-                  <SpecialistDashboard />
-                </SpecialistRoute>
-              }
-            />
-            <Route
-              path="/especialista/perfil-publico"
-              element={
-                <SpecialistRoute>
-                  <ProfileEditor />
-                </SpecialistRoute>
-              }
-            />
-            <Route
-              path="/especialista/disponibilidade"
-              element={
-                <SpecialistRoute>
-                  <AvailabilityEditor />
-                </SpecialistRoute>
-              }
-            />
-            <Route
-              path="/especialista/artigos/novo"
-              element={
-                <SpecialistRoute>
-                  <ArticleEditor />
-                </SpecialistRoute>
-              }
-            />
-            <Route
-              path="/especialista/artigos/:id"
-              element={
-                <SpecialistRoute>
-                  <ArticleEditor />
-                </SpecialistRoute>
-              }
-            />
+            <Route path="/especialista/dashboard" element={<SpecialistRoute><SpecialistDashboard /></SpecialistRoute>} />
+            <Route path="/especialista/perfil" element={<SpecialistRoute><ProfileEditor /></SpecialistRoute>} />
+            <Route path="/especialista/artigos" element={<SpecialistRoute><ArticleEditor /></SpecialistRoute>} />
+            <Route path="/especialista/disponibilidade" element={<SpecialistRoute><AvailabilityEditor /></SpecialistRoute>} />
+
+            {/* Patient Routes */}
+            <Route path="/paciente/login" element={<UserLogin />} />
+            <Route path="/paciente/dashboard" element={<UserRoute><PatientDashboard /></UserRoute>} />
+            <Route path="/paciente/agendar" element={<UserRoute><ScheduleAppointment /></UserRoute>} />
+            <Route path="/paciente/exames" element={<UserRoute><Exams /></UserRoute>} />
+            <Route path="/paciente/historico" element={<UserRoute><MedicalHistory /></UserRoute>} />
+            <Route path="/paciente/perfil" element={<UserRoute><Profile /></UserRoute>} />
 
             {/* Catch all route - redirect to home */}
             <Route path="*" element={<Navigate to="/" replace />} />
