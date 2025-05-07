@@ -8,7 +8,7 @@ interface HeroParallaxProps {
   image: string;
   height?: string;
   overlayColor?: string;
-  typeSequence?: string[];
+  typeSequence?: (string | number)[];
 }
 
 const HeroParallax: React.FC<HeroParallaxProps> = ({

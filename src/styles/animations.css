@@ -54,6 +54,71 @@
   }
 }
 
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+@keyframes gradient-alternate {
+  0%, 100% {
+    background-image: linear-gradient(to right, rgba(105, 178, 105, 0.3), rgba(105, 178, 105, 0.85));
+  }
+  20%, 30% {
+    background-image: linear-gradient(to bottom right, rgba(105, 178, 105, 0.4), rgba(105, 178, 105, 0.9));
+  }
+  45%, 55% {
+    background-image: linear-gradient(to left, rgba(105, 178, 105, 0.3), rgba(105, 178, 105, 0.85));
+  }
+  70%, 80% {
+    background-image: linear-gradient(to top right, rgba(105, 178, 105, 0.4), rgba(105, 178, 105, 0.9));
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    filter: brightness(1) saturate(1);
+  }
+  50% {
+    filter: brightness(1.2) saturate(1.3);
+  }
+}
+
+@keyframes liquid-float {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-10px) translateX(5px);
+  }
+  50% {
+    transform: translateY(0) translateX(10px);
+  }
+  75% {
+    transform: translateY(10px) translateX(5px);
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+}
+
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
@@ -67,11 +132,18 @@
 }
 
 .shine-text {
-  background: linear-gradient(to right, #ffffff 20%, #a3c2a3 40%, #a3c2a3 60%, #ffffff 80%);
+  background: linear-gradient(
+    to right,
+    #408040 20%,
+    #50a050 40%,
+    #50a050 60%,
+    #408040 80%
+  );
   background-size: 200% auto;
-  color: transparent;
+  color: #000;
   background-clip: text;
   -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   animation: shine 3s linear infinite;
 }
 
@@ -81,4 +153,40 @@
 
 .pulse-dot {
   animation: pulse-dot 1.25s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+}
+
+/* Garantir que os gradientes animados tenham tamanho correto */
+.animate-gradient-slow {
+  background-size: 300% 300% !important;
+  animation: gradient-shift 20s ease infinite;
+}
+
+/* Ajustes para garantir que as linhas de grid fiquem no lugar certo */
+.bg-grid {
+  background-size: 40px 40px;
+  background-position: center center;
+}
+
+/* Permitir overflow adequado para elementos de background */
+[class*="fixed"] {
+  will-change: transform;
+}
+
+/* Estilo para animação de gradiente alternante */
+.animate-gradient-alternating {
+  animation: gradient-alternate 35s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+  transition: all 10s cubic-bezier(0.4, 0.0, 0.2, 1);
+  background-size: 200% 200%;
+}
+
+.animate-ripple {
+  animation: ripple 3s ease-out infinite;
+}
+
+.animate-glow {
+  animation: glow 4s ease-in-out infinite;
+}
+
+.animate-liquid-float {
+  animation: liquid-float 15s ease-in-out infinite;
 }

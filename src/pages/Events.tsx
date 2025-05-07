@@ -48,19 +48,17 @@ const Events = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <HeroParallax
         title="Eventos e Congressos"
-        description="Participe dos principais eventos da área da saúde"
-        image="https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?auto=format&fit=crop&w=2000"
+        description="Participe dos principais eventos do setor de saúde"
+        image="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=2000"
         typeSequence={[
           'Congressos Médicos',
           2000,
-          'Simpósios',
+          'Workshops e Palestras',
           2000,
-          'Workshops',
-          2000,
-          'Palestras',
+          'Networking Profissional',
           2000
         ]}
       />

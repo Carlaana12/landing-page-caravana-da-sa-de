@@ -332,9 +332,9 @@ export async function signUpProfessional(data: ProfessionalRegistration) {
         data: {
             full_name: validatedData.fullName,
             user_type: USER_TYPES.SPECIALIST
-          }
         }
-      });
+      }
+    });
 
       // Tratamento específico para erro de email duplicado do Auth
       if (authError) {

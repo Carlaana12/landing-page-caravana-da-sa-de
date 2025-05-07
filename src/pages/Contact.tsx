@@ -5,6 +5,13 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import HeroParallax from '@/components/HeroParallax';
 import 'leaflet/dist/leaflet.css';
 
+interface HeroParallaxProps {
+  title: string;
+  description: string;
+  image: string;
+  typeSequence: (string | number)[];
+}
+
 const contactInfo = {
   phone: '(61) 98192-6686',
   email: 'ciacomunicacaointegrada@gmail.com',
@@ -28,19 +35,17 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <HeroParallax
         title="Fale Conosco"
-        description="Estamos aqui para ajudar. Entre em contato conosco."
-        image="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&w=2000"
+        description="Entre em contato conosco para mais informações"
+        image="https://images.unsplash.com/photo-1624727828489-a1e03b79bba8?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D=2000"
         typeSequence={[
-          'Dúvidas?',
+          'Dúvidas e Sugestões',
           2000,
-          'Sugestões?',
+          'Parcerias',
           2000,
-          'Parcerias?',
-          2000,
-          'Fale Conosco',
+          'Suporte',
           2000
         ]}
       />

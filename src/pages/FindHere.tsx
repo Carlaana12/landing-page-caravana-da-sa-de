@@ -259,29 +259,23 @@ const FindHere = () => {
 
   // Auto-search when category is selected and no other filters are needed
   useEffect(() => {
-    if (selectedCategory && 
-        (selectedCategory === 'home-nurse' || 
-         selectedCategory === 'elderly-home' || 
-         selectedCategory === 'elderly-care' ||
-         searchTerm.length > 2)) {
+    if (searchTerm.length > 2) {
       handleSearch();
     }
-  }, [selectedCategory, searchTerm]);
+  }, [searchTerm]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <HeroParallax
         title="Encontre Aqui"
-        description="Encontre o profissional ou serviço ideal para suas necessidades"
-        image="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=2000"
+        description="Encontre profissionais de saúde e serviços médicos próximos a você"
+        image="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=2000"
         typeSequence={[
-          'Consultas Médicas',
+          'Profissionais de Saúde',
           2000,
-          'Teleconsultas',
+          'Clínicas e Hospitais',
           2000,
-          'Exames',
-          2000,
-          'Cuidados Especializados',
+          'Exames e Procedimentos',
           2000
         ]}
       />
@@ -430,7 +424,7 @@ const FindHere = () => {
         
         {!selectedCategory && !hasSearched && (
           <div className="text-center py-8">
-            <p className="text-gray-500">Selecione uma categoria acima para começar sua busca.</p>
+            <p className="text-white">Selecione uma categoria acima para começar sua busca.</p>
           </div>
         )}
       </section>

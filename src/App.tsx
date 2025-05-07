@@ -5,6 +5,7 @@ import AdBanner from './components/AdBanner';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import Background from './components/Background';
 
 // Pages
 import Home from './pages/Home';
@@ -95,12 +96,13 @@ function App() {
 
   return (
     <Router>
-      <div className="font-sans bg-gray-100 min-h-screen flex flex-col">
+      <div className="font-sans min-h-screen flex flex-col">
         <Toaster position="top-right" />
         <ScrollToTop />
         <AdBanner />
         <Navbar />
-        <main className="flex-grow">
+        <main className="flex-grow relative">
+          <Background />
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />

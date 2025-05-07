@@ -941,18 +941,18 @@ const Diseases = () => {
   const LetterIcon = selectedLetter ? diseaseIcons[selectedLetter] || Info : Info;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <HeroParallax
-        title="Doenças e Especialidades"
+        title="Doenças e Tratamentos"
         description="Encontre informações sobre diversas condições médicas"
-        image="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=2000"
+        image="https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D=2000"
         typeSequence={[
           'Busque por Sintomas',
-          '2000',
+          2000,
           'Encontre Tratamentos',
-          '2000',
+          2000,
           'Entenda sua Saúde',
-          '2000'
+          2000
         ]}
       />
 

@@ -14,7 +14,6 @@ const About = () => {
   const teamMembers = [
     { name: 'Fabio Rodrigues', role: 'Jornalista e fundador', image: 'https://i.imgur.com/nvVZDLe.jpeg' },
     { name: 'Ana Carla', role: 'Analista de sistemas', image: 'https://i.imgur.com/lC9VO6M.jpeg' },
-    { name: 'Pablo Cézar', role: 'Desenvolvedor', image: 'https://i.imgur.com/fSWp7am.jpeg' },
     { name: 'Larissa Rodrigues', role: 'Auxiliar de produção de conteúdos', image: 'https://i.imgur.com/iCq7UsT.jpeg' },
     { name: 'Bianca Bazemate', role: 'Auxiliar de produção de conteúdos', image: 'https://i.imgur.com/OnsWbYE.jpeg' },
     { name: 'Silvaneide Sérgia', role: 'Secretária', image: 'https://i.imgur.com/XNpLFs9.jpeg' },
@@ -22,18 +21,18 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <HeroParallax
         title="Sobre o Anuário & Saúde"
         description="Conectando profissionais de saúde e pacientes com excelência e inovação"
         image="https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?auto=format&fit=crop&w=2000"
         typeSequence={[
           'Excelência em Saúde',
-          '2000',
+          2000,
           'Inovação Constante',
-          '2000',
+          2000,
           'Compromisso com o Bem-estar',
-          '2000'
+          2000
         ]}
       />
 

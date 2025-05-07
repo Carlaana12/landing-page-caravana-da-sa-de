@@ -276,18 +276,18 @@ const PublicUtilities = () => {
   const [showPublicHospitals, setShowPublicHospitals] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <HeroParallax
         title="Utilidades Públicas"
-        description="Informações importantes e serviços de emergência"
-        image="https://images.unsplash.com/photo-1587574293340-e0011c4e8ecf?auto=format&fit=crop&w=2000"
+        description="Ferramentas e recursos úteis para profissionais de saúde e pacientes"
+        image="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=2000"
         typeSequence={[
-          'Serviços de Emergência',
-          '2000',
-          'Hospitais Próximos',
-          '2000',
-          'Farmácias de Plantão',
-          '2000'
+          'Calculadoras Médicas',
+          2000,
+          'Protocolos Clínicos',
+          2000,
+          'Recursos Úteis',
+          2000
         ]}
       />
 

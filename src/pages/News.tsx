@@ -407,18 +407,18 @@ const News = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <HeroParallax
         title="Notícias e Atualizações"
-        description="Fique por dentro das últimas novidades do mundo da saúde"
-        image="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=2000"
+        description="Fique por dentro das últimas notícias e novidades do mundo da saúde"
+        image="https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=2000"
         typeSequence={[
-          'Últimas Notícias',
-          '2000',
-          'Avanços Médicos',
-          '2000',
-          'Pesquisas Inovadoras',
-          '2000'
+          'Notícias da Saúde',
+          2000,
+          'Descobertas Médicas',
+          2000,
+          'Atualizações do Setor',
+          2000
         ]}
       />
 
