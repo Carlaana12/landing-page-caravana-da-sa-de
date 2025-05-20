@@ -32,7 +32,7 @@ const DoctorGrid = () => {
         <h2 className="text-4xl font-bold text-gray-800 mb-4 shine-text">
           Especialistas em Destaque
         </h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <p className="text-white max-w-2xl mx-auto">
           Conheça nossa equipe de profissionais altamente qualificados
         </p>
       </motion.div>

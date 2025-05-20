@@ -28,7 +28,7 @@ const news = [
     id: 3,
     title: 'Saúde Mental em Foco',
     excerpt: 'A importância do cuidado psicológico no mundo moderno...',
-    image: 'https://images.unsplash.com/photo-1576091160291-31957ab2724f?auto=format&fit=crop&w=800',
+    image: 'https://images.unsplash.com/photo-1604881991720-f91add269bed?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2F1ZGUlMjBtZW50YWx8ZW58MHx8MHx8fDA%3D=800',
     date: '13 Mar 2024',
     author: 'Dr. Pedro Costa',
     category: 'Saúde Mental',
@@ -47,8 +47,8 @@ const NewsSection = () => {
           className="flex justify-between items-center mb-8"
         >
           <div>
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">Últimas Notícias</h2>
-            <p className="text-gray-600">Fique por dentro das novidades da área da saúde</p>
+            <h2 className="text-4xl font-bold text-gray-800 mb-4 shine-text">Últimas Notícias</h2>
+            <p className="text-white">Fique por dentro das novidades da área da saúde</p>
           </div>
           <Link
             to="/noticias"

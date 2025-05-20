@@ -15,7 +15,7 @@ export interface Database {
           title: string
           description: string | null
           image_url: string
-          order: number
+          display_order: number
           active: boolean
           created_at: string
           updated_at: string
@@ -25,7 +25,7 @@ export interface Database {
           title: string
           description?: string | null
           image_url: string
-          order?: number
+          display_order?: number
           active?: boolean
           created_at?: string
           updated_at?: string
@@ -35,7 +35,7 @@ export interface Database {
           title?: string
           description?: string | null
           image_url?: string
-          order?: number
+          display_order?: number
           active?: boolean
           created_at?: string
           updated_at?: string

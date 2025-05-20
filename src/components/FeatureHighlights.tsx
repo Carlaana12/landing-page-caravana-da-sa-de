@@ -64,7 +64,7 @@ const features = [
 
 const FeatureHighlights = () => {
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-gradient-to-br from-verde-cia to-verde-cia-escuro text-white">
       <div className="max-w-7xl mx-auto px-4">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -72,10 +72,10 @@ const FeatureHighlights = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl font-bold text-gray-800 mb-4 shine-text">
+          <h2 className="text-4xl font-bold text-white mb-4 shine-text">
             Por Que Escolher o Anuário de Saúde
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-white/90 max-w-2xl mx-auto">
             Oferecemos ferramentas e recursos inovadores para conectar pacientes e profissionais de saúde
           </p>
         </motion.div>
@@ -88,13 +88,13 @@ const FeatureHighlights = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               whileHover={{ y: -5 }}
-              className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              className="bg-white/10 backdrop-blur-sm p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              <div className={`w-12 h-12 rounded-lg ${feature.color} flex items-center justify-center mb-4`}>
-                <feature.icon className="w-6 h-6" />
+              <div className={`w-12 h-12 rounded-lg bg-white/20 flex items-center justify-center mb-4`}>
+                <feature.icon className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-              <p className="text-gray-600">{feature.description}</p>
+              <h3 className="text-xl font-semibold mb-2 text-white">{feature.title}</h3>
+              <p className="text-white/90">{feature.description}</p>
             </motion.div>
           ))}
         </div>

@@ -43,11 +43,11 @@ const recentPosts = [
     title: 'Importância da Saúde Mental no Ambiente de Trabalho',
     slug: 'saude-mental-trabalho',
     excerpt: 'Como cuidar da saúde mental pode melhorar a produtividade e qualidade de vida.',
-    cover_image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=500',
+    cover_image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=800&q=80',
     published_at: '2024-03-30T15:00:00Z',
     author: {
       name: 'Dr. João Santos',
-      avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=150',
+      avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=150&q=80',
       specialty: 'Psiquiatra',
       bio: 'Especialista em saúde mental corporativa'
     },
@@ -60,17 +60,34 @@ const recentPosts = [
     title: 'Nutrição e Exercícios: A Combinação Perfeita',
     slug: 'nutricao-exercicios',
     excerpt: 'Descubra como alinhar sua alimentação com seus objetivos fitness.',
-    cover_image: 'https://images.unsplash.com/photo-1574689096264-2adf441c3f14?auto=format&fit=crop&w=500',
+    cover_image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=800&q=80',
     published_at: '2024-03-28T09:00:00Z',
     author: {
       name: 'Dra. Ana Costa',
-      avatar: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&q=80&w=150',
+      avatar: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=150&q=80',
       specialty: 'Nutricionista',
       bio: 'Especialista em nutrição esportiva'
     },
     likes: 156,
     comments: 19,
     shares: 12
+  },
+  {
+    id: '4',
+    title: 'Prevenção de Doenças Cardiovasculares',
+    slug: 'prevencao-doencas-cardiovasculares',
+    excerpt: 'Conheça as principais medidas para manter seu coração saudável e prevenir doenças cardiovasculares.',
+    cover_image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80',
+    published_at: '2024-03-25T14:00:00Z',
+    author: {
+      name: 'Dr. Carlos Mendes',
+      avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=150&q=80',
+      specialty: 'Cardiologista',
+      bio: 'Especialista em cardiologia preventiva'
+    },
+    likes: 198,
+    comments: 27,
+    shares: 21
   }
 ];
 
@@ -109,7 +126,7 @@ const BlogSection = () => {
           <h2 className="text-4xl font-bold text-gray-800 mb-4 shine-text">
             Blog da Saúde
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-white max-w-2xl mx-auto">
             Artigos e informações escritos por nossos especialistas
           </p>
         </div>

@@ -7,7 +7,6 @@ import PartnersSection from '@/components/PartnersSection';
 import ContactSection from '@/components/ContactSection';
 import DoctorGrid from '@/components/DoctorGrid';
 import PodcastSection from '@/components/PodcastSection';
-import PromotionalSections from '@/components/PromotionalSections';
 import BlogSection from '@/components/BlogSection';
 import FeatureHighlights from '@/components/FeatureHighlights';
 import FAQSection from '@/components/FAQSection';
@@ -25,7 +24,6 @@ const Home = () => {
         <PodcastSection />
         <EventsPreview />
         <NewsSection />
-        <PromotionalSections />
         <CTASection />
         <PartnersSection />
         <ContactSection />

@@ -14,7 +14,7 @@ const partners = [
 
 const PartnersSection = () => {
   return (
-    <section className="py-16 bg-gradient-to-br from-verde-cia/5 to-white rounded-xl">
+    <section className="py-16 rounded-xl">
       <div className="max-w-7xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -22,8 +22,8 @@ const PartnersSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">Nossos Parceiros</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-4xl font-bold text-gray-800 mb-4 shine-text">Nossos Parceiros</h2>
+          <p className="text-white max-w-2xl mx-auto">
             Contamos com uma rede de parceiros comprometidos com a excelência em saúde
           </p>
         </motion.div>
@@ -56,7 +56,7 @@ const PartnersSection = () => {
         >
           <Link
             to="/parceiros"
-            className="inline-flex items-center text-verde-cia hover:text-verde-cia-escuro transition-colors group"
+            className="inline-flex items-center text-white hover:text-verde-cia-escuro transition-colors group"
           >
             <span className="font-medium">Conheça todos os nossos parceiros</span>
             <ArrowRight className="ml-2 w-5 h-5 transform group-hover:translate-x-1 transition-transform" />

@@ -8,7 +8,7 @@ const events = [
     title: "Congresso Internacional de Cardiologia",
     date: "15-17 Abril, 2024",
     location: "Centro de Convenções, São Paulo",
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800",
+    image: "https://images.unsplash.com/photo-1690306816872-91063f6de36b?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D=800",
     description: "O maior evento de cardiologia da América Latina, reunindo especialistas mundiais."
   },
   {
@@ -16,7 +16,7 @@ const events = [
     title: "Simpósio de Medicina Preventiva",
     date: "22-23 Abril, 2024",
     location: "Hotel Grand Hyatt, Rio de Janeiro",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800",
+    image: "https://images.unsplash.com/photo-1581056771107-24ca5f033842?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D=800",
     description: "Discussões sobre as últimas tendências em prevenção de doenças."
   },
   {
@@ -24,8 +24,16 @@ const events = [
     title: "Workshop de Tecnologia na Saúde",
     date: "5 Maio, 2024",
     location: "Centro Médico, Curitiba",
-    image: "https://images.unsplash.com/photo-1576091160291-31957ab2724f?auto=format&fit=crop&w=800",
+    image: "https://images.unsplash.com/photo-1644088379091-d574269d422f?q=80&w=1093&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D=80",
     description: "Explorando as inovações tecnológicas no campo da medicina."
+  },
+  {
+    id: 4,
+    title: "Conferência de Saúde Mental",
+    date: "12-13 Maio, 2024",
+    location: "Centro de Eventos, Porto Alegre",
+    image: "https://images.unsplash.com/photo-1573497620053-ea5300f94f21?auto=format&fit=crop&w=800&q=80",
+    description: "Um encontro dedicado à discussão de temas relevantes sobre saúde mental e bem-estar."
   }
 ];
 
@@ -46,13 +54,13 @@ const EventsPreview = () => {
   }, []);
 
   return (
-    <section className="py-16 bg-gradient-to-br from-verde-cia/10 to-white rounded-xl shadow-md my-12">
+    <section className="py-16 rounded-xl shadow-md my-12">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-800 mb-4 shine-text">
             Próximos Eventos
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-white max-w-2xl mx-auto">
             Fique por dentro dos principais eventos da área da saúde
           </p>
         </div>
@@ -110,8 +118,8 @@ const EventsPreview = () => {
               onClick={() => setActiveEvent(index)}
               className={`w-3 h-3 rounded-full transition-all ${
                 index === activeEvent
-                  ? 'bg-verde-cia w-6'
-                  : 'bg-verde-cia/20 hover:bg-verde-cia/30'
+                  ? 'bg-white w-6'
+                  : 'bg-white/20 hover:bg-white/30'
               }`}
             />
           ))}

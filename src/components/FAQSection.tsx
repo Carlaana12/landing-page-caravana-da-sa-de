@@ -37,7 +37,7 @@ const FAQSection = () => {
   };
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-gradient-to-br from-verde-cia to-verde-cia-escuro text-white">
       <div className="max-w-4xl mx-auto px-4">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -45,13 +45,13 @@ const FAQSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <div className="inline-block p-3 bg-verde-cia/10 rounded-full mb-4">
-            <HelpCircle className="w-8 h-8 text-verde-cia" />
+          <div className="inline-block p-3 bg-white/10 rounded-full mb-4">
+            <HelpCircle className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-4xl font-bold text-gray-800 mb-4">
+          <h2 className="text-4xl font-bold text-white mb-4">
             Perguntas Frequentes
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-white/90 max-w-2xl mx-auto">
             Encontre respostas para as dúvidas mais comuns sobre o Anuário de Saúde
           </p>
         </motion.div>
@@ -63,17 +63,17 @@ const FAQSection = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="bg-white rounded-xl shadow-md overflow-hidden"
+              className="bg-white/10 backdrop-blur-sm rounded-xl shadow-md overflow-hidden"
             >
               <button
                 onClick={() => toggleFAQ(index)}
                 className="w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"
               >
-                <span className="font-medium text-gray-800">{faq.question}</span>
+                <span className="font-medium text-white">{faq.question}</span>
                 {openIndex === index ? (
-                  <ChevronUp className="w-5 h-5 text-verde-cia" />
+                  <ChevronUp className="w-5 h-5 text-white" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                  <ChevronDown className="w-5 h-5 text-white/70" />
                 )}
               </button>
               <AnimatePresence>
@@ -85,7 +85,7 @@ const FAQSection = () => {
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
-                    <div className="px-6 pb-4 text-gray-600">
+                    <div className="px-6 pb-4 text-white/90">
                       {faq.answer}
                     </div>
                   </motion.div>
