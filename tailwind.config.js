@@ -1,3 +1,5 @@
+import typography from '@tailwindcss/typography';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -7,8 +9,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        'verde-cia': 'rgb(var(--verde-cia) / <alpha-value>)',
-        'verde-cia-escuro': 'rgb(22 163 74)',
+        'verde-cia': '#408040',
+        'verde-cia-escuro': '#1a3d1a',
         'verde-cia-claro': '#e8f5e8',
         'verde-cia-pale': '#f0f7f0',
         'verde-cia-medio': '#5baa5b',
@@ -146,6 +148,6 @@ export default {
     },
   },
   plugins: [
-    require('@tailwindcss/typography'),
+    typography,
   ],
 }
