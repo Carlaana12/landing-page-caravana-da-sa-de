@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-const AdSidebar = () => {
+interface AdSidebarProps {
+  className?: string;
+}
+
+const AdSidebar: React.FC<AdSidebarProps> = ({ className = '' }) => {
   const [currentBanner, setCurrentBanner] = useState(0);
   const [currentText, setCurrentText] = useState(0);
   const [slideDirection, setSlideDirection] = useState('right');
@@ -47,7 +51,7 @@ const AdSidebar = () => {
   }, [currentText]);
 
   return (
-    <div className="absolute left-0 top-0 h-full w-[250px] bg-gradient-to-b from-[#1a1a1a] to-[#2a2a2a] text-white p-4 shadow-lg">
+    <div className={`absolute left-0 top-0 h-full w-[250px] bg-gradient-to-b from-[#1a1a1a] to-[#2a2a2a] text-white p-4 shadow-lg ${className}`}>
       <div className="sticky top-4">
         <div className="text-center mb-6">
           <div className="h-8 overflow-hidden">

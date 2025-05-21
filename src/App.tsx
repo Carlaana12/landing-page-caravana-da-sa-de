@@ -105,8 +105,8 @@ function App() {
         <main className="flex-grow relative">
           <Background />
           <div className="relative">
-            <AdSidebar />
-            <div className="ml-[250px]">
+            <AdSidebar className="hidden lg:block" />
+            <div className="lg:ml-[250px]">
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<Home />} />
