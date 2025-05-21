@@ -93,7 +93,7 @@ const AdSidebar: React.FC<AdSidebarProps> = ({ className = '' }) => {
           <div className="bg-[#2a2a2a] p-4 rounded-lg border border-[#00ff00]/20 text-center">
             <h3 className="text-lg font-bold text-[#00ff00] mb-2">QUER DIVULGAR?</h3>
             <button 
-              onClick={() => window.open('https://mail.google.com/mail/?view=cm&fs=1&to=ciacomunicacaointegrada@gmail.com&su=Divulgacao%20Anuario%20da%20Saude')}
+              onClick={() => window.open('https://mail.google.com/mail/?view=cm&fs=1&to=anuariodesaude@gmail.com&su=Divulgacao%20Anuario%20da%20Saude')}
               className="w-full bg-[#00ff00] text-black font-bold py-3 px-6 rounded-lg hover:bg-[#00ff00]/80 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-[#00ff00]/20"
             >
               FALE CONOSCO
