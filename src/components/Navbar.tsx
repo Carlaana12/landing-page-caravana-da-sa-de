@@ -58,21 +58,33 @@ const Navbar = () => {
         {/* Top bar */}
         <div className="border-b border-white/30">
           <div className="flex flex-col md:flex-row justify-between items-center py-2 px-4">
-            <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4 mb-2 md:mb-0">
+            <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 mb-2 md:mb-0">
               <a
                 href="mailto:anuariodesaude@gmail.com"
-                className="flex items-center text-sm hover:text-green-200 transition-all hover:scale-105"
+                className="flex items-center text-sm hover:text-green-200 transition-all hover:scale-105 whitespace-nowrap"
               >
                 <Mail className="h-4 w-4 mr-1" />
                 anuariodesaude@gmail.com
               </a>
               <a
                 href="tel:+556135228610"
-                className="flex items-center text-sm hover:text-green-200 transition-all hover:scale-105"
+                className="flex items-center text-sm hover:text-green-200 transition-all hover:scale-105 whitespace-nowrap"
               >
                 <Phone className="h-4 w-4 mr-1" />
                 (61) 3522-8610
               </a>
+              <Link
+                to="/sobre"
+                className="flex items-center text-sm hover:text-green-200 transition-all hover:scale-105 whitespace-nowrap"
+              >
+                Sobre Nós
+              </Link>
+              <Link
+                to="/contato"
+                className="flex items-center text-sm hover:text-green-200 transition-all hover:scale-105 whitespace-nowrap"
+              >
+                Fale Conosco
+              </Link>
             </div>
             
               {/* Auth Menu */}
@@ -176,42 +188,58 @@ const Navbar = () => {
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              <NavLink to="/" active={location.pathname === '/'}>
+            <div className="hidden md:flex items-center space-x-6">
+              <NavLink to="/" active={location.pathname === '/'} className="whitespace-nowrap">
                 Home
-              </NavLink>
-              <NavLink to="/sobre" active={location.pathname === '/sobre'}>
-                Sobre Nós
               </NavLink>
               <NavLink
                 to="/encontre-aqui"
                 active={location.pathname === '/encontre-aqui'}
+                className="whitespace-nowrap"
               >
                 Encontre Aqui
               </NavLink>
               <NavLink
+                to="/onde-encontrar"
+                active={location.pathname === '/onde-encontrar'}
+                className="whitespace-nowrap"
+              >
+                Onde Encontrar
+              </NavLink>
+              <NavLink
+                to="/procure-saber"
+                active={location.pathname === '/procure-saber'}
+                className="whitespace-nowrap"
+              >
+                Procure Saber
+              </NavLink>
+              <NavLink
                 to="/tratamentos"
                 active={location.pathname === '/tratamentos'}
+                className="whitespace-nowrap"
               >
                 Doenças e Tratamentos
               </NavLink>
               <NavLink
                 to="/noticias"
                 active={location.pathname === '/noticias'}
+                className="whitespace-nowrap"
               >
                 Notícias
               </NavLink>
-              <NavLink to="/eventos" active={location.pathname === '/eventos'}>
+              <NavLink 
+                to="/eventos" 
+                active={location.pathname === '/eventos'}
+                className="whitespace-nowrap"
+              >
                 Eventos
               </NavLink>
               <NavLink
                 to="/utilidades-publicas"
                 active={location.pathname === '/utilidades-publicas'}
+                className="whitespace-nowrap"
               >
                 Utilidades Públicas
-              </NavLink>
-              <NavLink to="/contato" active={location.pathname === '/contato'}>
-                Fale Conosco
               </NavLink>
             </div>
 
@@ -237,16 +265,22 @@ const Navbar = () => {
                 Home
               </MobileNavLink>
               <MobileNavLink
-                to="/sobre"
-                active={location.pathname === '/sobre'}
-              >
-                Sobre Nós
-              </MobileNavLink>
-              <MobileNavLink
                 to="/encontre-aqui"
                 active={location.pathname === '/encontre-aqui'}
               >
                 Encontre Aqui
+              </MobileNavLink>
+              <MobileNavLink
+                to="/onde-encontrar"
+                active={location.pathname === '/onde-encontrar'}
+              >
+                Onde Encontrar
+              </MobileNavLink>
+              <MobileNavLink
+                to="/procure-saber"
+                active={location.pathname === '/procure-saber'}
+              >
+                Procure Saber
               </MobileNavLink>
               <MobileNavLink
                 to="/tratamentos"
@@ -272,12 +306,6 @@ const Navbar = () => {
               >
                 Utilidades Públicas
               </MobileNavLink>
-              <MobileNavLink
-                to="/contato"
-                active={location.pathname === '/contato'}
-              >
-                Fale Conosco
-              </MobileNavLink>
             </div>
           </div>
         )}
@@ -290,16 +318,18 @@ const NavLink = ({
   to,
   children,
   active,
+  className = '',
 }: {
   to: string;
   children: React.ReactNode;
   active: boolean;
+  className?: string;
 }) => (
   <Link
     to={to}
     className={`text-sm font-medium transition-colors ${
       active ? 'text-white' : 'text-white/80 hover:text-white'
-    }`}
+    } ${className}`}
   >
     {children}
   </Link>
