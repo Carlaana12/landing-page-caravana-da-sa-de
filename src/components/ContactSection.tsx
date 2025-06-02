@@ -115,27 +115,7 @@ const ContactSection: React.FC = () => {
             </p>
             
             <div className="space-y-6">
-              {contactsToShow.map((contact: any) => {
-                const iconKey = typeof contact.icon === 'string' ? contact.icon : '';
-                const Icon = iconMap[iconKey as keyof typeof iconMap] || Phone;
-                return (
-                  <motion.div
-                    key={contact.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6, delay: contact.id * 0.1 }}
-                    className="flex items-center"
-                  >
-                    <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center mr-4">
-                      <Icon />
-                    </div>
-                    <div>
-                      <p className="text-sm text-white/70">{contact.label}</p>
-                      <p className="font-medium">{contact.value}</p>
-                    </div>
-                  </motion.div>
-                );
-              })}
+
             </div>
           </motion.div>
 

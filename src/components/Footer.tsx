@@ -19,7 +19,7 @@ const Footer = () => {
           <div className="float-animation">
             <h3 className="text-xl font-bold mb-4 shine-text">Sobre Nós</h3>
             <p className="text-green-100 mb-4">
-              "Conectamos profissionais de saúde e pacientes, promovendo informação de qualidade e inovação no setor há mais de 9 anos."
+              A revista digital Anuário de Saúde é uma plataforma diferenciada que oferece uma ampla variedade de conteúdos e informações essenciais sobre as diversas especialidades da área da saúde, além de apresentar serviços e preços acessíveis.
             </p>
             <div className="flex space-x-4">
               <SocialLink
@@ -60,11 +60,19 @@ const Footer = () => {
             <ul className="space-y-4">
               <li className="flex items-center hover:translate-x-2 transition-transform">
                 <Phone className="h-5 w-5 mr-2 text-green-300" />
-                <span>(61) 98192-6686</span>
+                <span>(61) 3522-8610</span>
+              </li>
+              <li className="flex items-center hover:translate-x-2 transition-transform">
+                <Phone className="h-5 w-5 mr-2 text-green-300" />
+                <span>(61) 3522-8618</span>
+              </li>
+              <li className="flex items-center hover:translate-x-2 transition-transform">
+                <Phone className="h-5 w-5 mr-2 text-green-300" />
+                <span>WhatsApp: (61) 98192-6686</span>
               </li>
               <li className="flex items-center hover:translate-x-2 transition-transform">
                 <Mail className="h-5 w-5 mr-2 text-green-300" />
-                <span>ciacomunicacaointegrada@gmail.com</span>
+                <span>anuariodesaude@gmail.com</span>
               </li>
               <li className="flex items-center hover:translate-x-2 transition-transform">
                 <MapPin className="h-5 w-5 mr-2 text-green-300" />
