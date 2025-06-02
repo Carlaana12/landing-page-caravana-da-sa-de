@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
-const faqs = [
+const faqsMock = [
   {
     question: 'Como posso encontrar um médico especialista?',
     answer: 'Você pode usar nossa ferramenta de busca na página "Encontre Aqui", filtrando por especialidade, localização ou nome do profissional. Também é possível ver avaliações e informações detalhadas sobre cada especialista.'
@@ -29,12 +30,61 @@ const faqs = [
   }
 ];
 
-const FAQSection = () => {
+const FAQSection: React.FC = () => {
+  const [faqsData, setFaqsData] = useState<any[]>([]);
+  const faqsToShow = faqsData.length > 0 ? faqsData : faqsMock;
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
+
+  useEffect(() => {
+    async function fetchFaqs() {
+      setLoading(true);
+      console.log('[FAQSection] Iniciando busca de FAQs do Supabase...');
+      const { data, error } = await supabase
+        .from('admin_faq')
+        .select('*')
+        .order('ordem', { ascending: true });
+      
+      if (error) {
+        console.error('[FAQSection] Erro ao buscar FAQs:', error);
+        setFaqsData([]); // Garante fallback para mock em caso de erro
+      } else if (data && data.length > 0) {
+        console.log('[FAQSection] FAQs recebidos do Supabase (total:', data.length, '):', data);
+        if (data[0]) {
+             console.log('[FAQSection] Estrutura do PRIMEIRO FAQ ORIGINAL:', JSON.stringify(data[0], null, 2));
+        }
+        
+        // Transformar os dados para corresponder à estrutura esperada pelo componente
+        const transformedFaqs = data.map(faq => ({
+          id: faq.id, // Manter o id original
+          question: faq.pergunta || '', // Mapear pergunta para question
+          answer: faq.resposta || '',   // Mapear resposta para answer
+          ordem: faq.ordem, // Manter ordem se usado para alguma lógica interna ou futura
+          created_at: faq.created_at // Manter created_at
+        }));
+
+        console.log('[FAQSection] FAQs TRANSFORMADOS:', transformedFaqs);
+        if (transformedFaqs.length > 0 && transformedFaqs[0]) {
+            console.log('[FAQSection] Estrutura do PRIMEIRO FAQ TRANSFORMADO:', JSON.stringify(transformedFaqs[0], null, 2));
+        }
+
+        setFaqsData(transformedFaqs); 
+      } else {
+        console.log('[FAQSection] Nenhum FAQ encontrado ou dados vazios. Usando mock.');
+        setFaqsData([]); // Garante fallback para mock
+      }
+      setLoading(false);
+    }
+    fetchFaqs();
+  }, []);
+
+  // Log para verificar o que será renderizado
+  console.log('[FAQSection] faqsData (do Supabase ou vazio se erro/nada):', faqsData);
+  console.log('[FAQSection] faqsToShow (decidido pela lógica de fallback):', faqsToShow);
 
   return (
     <section className="py-16 bg-gradient-to-br from-verde-cia to-verde-cia-escuro text-white">
@@ -57,9 +107,9 @@ const FAQSection = () => {
         </motion.div>
 
         <div className="space-y-4">
-          {faqs.map((faq, index) => (
+          {faqsToShow.map((faq: any, index: number) => (
             <motion.div
-              key={index}
+              key={faq.id || index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}

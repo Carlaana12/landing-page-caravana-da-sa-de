@@ -3,7 +3,24 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Stethoscope, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const CTASection = () => {
+interface CTASectionProps {
+  ctas?: any[];
+}
+
+const ctasMock = [
+  {
+    to: '/especialista/login',
+    label: 'Sou Profissional',
+  },
+  {
+    to: '/usuario/login',
+    label: 'Sou Paciente',
+  },
+];
+
+const CTASection: React.FC<CTASectionProps> = ({ ctas }) => {
+  const ctasToShow = ctas || ctasMock;
+
   return (
     <section className="py-16 bg-gradient-to-br from-verde-cia to-verde-cia-escuro text-white">
       <div className="max-w-7xl mx-auto px-4">
@@ -21,23 +38,17 @@ const CTASection = () => {
             </p>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Link
-                to="/especialista/login"
-                className="bg-white text-verde-cia-escuro px-6 py-3 rounded-lg font-medium flex items-center justify-center hover:bg-gray-100 transition-colors group"
-              >
-                <Stethoscope className="w-5 h-5 mr-2" />
-                <span>Sou Profissional</span>
-                <ArrowRight className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" />
-              </Link>
-              
-              <Link
-                to="/usuario/login"
-                className="bg-verde-cia-escuro text-white border border-white px-6 py-3 rounded-lg font-medium flex items-center justify-center hover:bg-verde-cia transition-colors group"
-              >
-                <User className="w-5 h-5 mr-2" />
-                <span>Sou Paciente</span>
-                <ArrowRight className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" />
-              </Link>
+              {ctasToShow.map((cta, index) => (
+                <Link
+                  key={index}
+                  to={cta.to}
+                  className="bg-white text-verde-cia-escuro px-6 py-3 rounded-lg font-medium flex items-center justify-center hover:bg-gray-100 transition-colors group"
+                >
+                  <Stethoscope className="w-5 h-5 mr-2" />
+                  <span>{cta.label}</span>
+                  <ArrowRight className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" />
+                </Link>
+              ))}
             </div>
           </motion.div>
           

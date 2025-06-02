@@ -2,42 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Radio, Play, Pause, Volume2, VolumeX, Clock, Calendar, Volume1, SkipBack, SkipForward, Maximize2, Minimize2, Heart, Star, Shield, Activity } from 'lucide-react';
 import ReactPlayer from 'react-player';
-
-const podcasts = [
-  {
-    id: 1,
-    title: "Saúde Mental no Trabalho",
-    description: "Como manter a saúde mental em um ambiente corporativo exigente",
-    type: "youtube",
-    videoId: "tQebuafo1ns",
-    duration: "12 min",
-    date: "15 Mar 2024",
-    thumbnail: "https://img.youtube.com/vi/tQebuafo1ns/maxresdefault.jpg"
-  },
-  {
-    id: 2,
-    title: "Alimentação Saudável",
-    description: "Dicas práticas para uma alimentação equilibrada no dia a dia",
-    type: "youtube",
-    videoId: "X71YbXctXeM",
-    duration: "8 min",
-    date: "10 Mar 2024",
-    thumbnail: "https://img.youtube.com/vi/X71YbXctXeM/maxresdefault.jpg"
-  },
-  {
-    id: 3,
-    title: "Exercícios em Casa",
-    description: "Rotinas de exercícios para fazer em casa sem equipamentos",
-    type: "youtube",
-    videoId: "ml6cT4AZdqI",
-    duration: "15 min",
-    date: "5 Mar 2024",
-    thumbnail: "https://img.youtube.com/vi/ml6cT4AZdqI/maxresdefault.jpg"
-  }
-];
+import { supabase } from '../lib/supabase';
 
 function getYoutubeId(url: string) {
-  // Extrai o ID do vídeo do YouTube a partir do link
+  if (!url || typeof url !== 'string') return null;
   const regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#&?]*).*/;
   const match = url.match(regExp);
   return (match && match[1].length === 11) ? match[1] : null;
@@ -51,7 +19,14 @@ const phrases = [
   { text: "Qualidade de vida começa com saúde", icon: Heart }
 ];
 
-const PodcastSection = () => {
+interface PodcastSectionProps {
+  episodes?: any[];
+}
+
+const PodcastSection: React.FC<PodcastSectionProps> = ({ episodes }) => {
+  const [podcasts, setPodcasts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const podcastsToShow = podcasts.length > 0 ? podcasts : episodes || [];
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedEpisode, setSelectedEpisode] = useState(1);
@@ -136,20 +111,95 @@ const PodcastSection = () => {
 
   const togglePlayPause = () => setIsPlaying(!isPlaying);
 
-  const selectedPodcast = podcasts.find(p => p.id === selectedEpisode);
+  useEffect(() => {
+    async function fetchPodcasts() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('admin_podcast')
+        .select('*')
+        .order('ordem', { ascending: true });
 
-  const getVideoUrl = (podcast: typeof podcasts[0]) => {
-    if (podcast.type === 'youtube') {
-      return `https://www.youtube.com/watch?v=${podcast.videoId}`;
+      if (error) {
+        setPodcasts([]);
+      } else if (data && data.length > 0) {
+        const transformedData = data.map(podcast => {
+          let videoId = null;
+          let type = null;
+          let thumbnailUrl = podcast.imagem_url;
+          // 1. Prioriza media_url para vídeo
+          const videoUrl = podcast.media_url || podcast.link || '';
+          // 2. Detecta tipo
+          if (videoUrl.match(/youtube\.com|youtu\.be/)) {
+            videoId = getYoutubeId(videoUrl);
+            type = 'youtube';
+            if (!thumbnailUrl && videoId) thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+          } else if (videoUrl.match(/vimeo\.com/)) {
+            type = 'vimeo';
+          } else if (videoUrl.match(/\.(mp4|webm|ogg)$/i)) {
+            type = 'file';
+          } else if (videoUrl.match(/\.(mp3|wav)$/i)) {
+            type = 'audio';
+          }
+          return {
+            id: podcast.id,
+            title: podcast.titulo || 'Título Indisponível',
+            description: podcast.descricao || '',
+            date: podcast.data,
+            duration: podcast.duracao || '00:00',
+            ordem: podcast.ordem,
+            created_at: podcast.created_at,
+            type,
+            videoId,
+            thumbnail_url: thumbnailUrl,
+            videoUrl,
+          };
+        });
+        if (transformedData.length > 0 && transformedData[0]) {
+          setSelectedEpisode(transformedData[0].id);
+        }
+        setPodcasts(transformedData);
+      } else {
+        setPodcasts([]);
+      }
+      setLoading(false);
     }
-    return `https://vimeo.com/${podcast.videoId}`;
+    fetchPodcasts();
+  }, []);
+
+  const selectedPodcast = podcastsToShow.find((p: any) => p.id === selectedEpisode);
+
+  console.log('[PodcastSection] Estado atual de podcasts:', podcasts);
+  console.log('[PodcastSection] podcastsToShow será:', podcastsToShow);
+  console.log('[PodcastSection] ID do episódio selecionado (selectedEpisode):', selectedEpisode);
+  console.log('[PodcastSection] Podcast selecionado (selectedPodcast):', selectedPodcast);
+
+  const getVideoUrl = (podcast: any) => {
+    if (!podcast) return '';
+    if (podcast.type === 'youtube' && podcast.videoId) {
+      return `https://www.youtube.com/embed/${podcast.videoId}`;
+    }
+    if (podcast.type === 'vimeo' && podcast.videoUrl) {
+      return podcast.videoUrl;
+    }
+    if (podcast.type === 'file' || podcast.type === 'audio') {
+      return podcast.videoUrl;
+    }
+    return '';
   };
 
-  const getThumbnailUrl = (podcast: typeof podcasts[0]) => {
-    if (podcast.type === 'youtube') {
+  const getThumbnailUrl = (podcast: any) => {
+    if (!podcast) return ''; 
+    // Prioriza o thumbnail_url transformado (que veio de imagem_url do Supabase)
+    if (podcast.thumbnail_url) return podcast.thumbnail_url;
+
+    // Fallback para construir a URL se type e videoId estiverem disponíveis mas thumbnail_url não
+    if (podcast.type === 'youtube' && podcast.videoId) {
       return `https://img.youtube.com/vi/${podcast.videoId}/maxresdefault.jpg`;
     }
+    if (podcast.type === 'vimeo' && podcast.videoId) {
     return `https://vumbnail.com/${podcast.videoId}.jpg`;
+    }
+    return ''; // Fallback se nenhuma URL puder ser determinada
   };
 
   const toggleFullscreen = () => {
@@ -256,50 +306,16 @@ const PodcastSection = () => {
                     playing={isPlaying}
                     volume={volume}
                     muted={isMuted}
-                    controls={false}
+                    controls={true}
                     onProgress={handleProgress}
                     onDuration={handleDuration}
                     onBuffer={handleBuffer}
                     onBufferEnd={handleBufferEnd}
                     onReady={handleReady}
                     config={{
-                      youtube: {
-                        playerVars: { 
-                          showinfo: 0,
-                          modestbranding: 1,
-                          rel: 0,
-                          hd: 1,
-                          vq: 'hd720',
-                          playsinline: 1,
-                          fs: 0,
-                          iv_load_policy: 3,
-                          cc_load_policy: 0,
-                          origin: window.location.origin,
-                          controls: 0,
-                          disablekb: 1,
-                          enablejsapi: 1,
-                          widget_referrer: window.location.origin
-                        }
-                      },
-                      vimeo: {
-                        playerOptions: { 
-                          byline: false, 
-                          portrait: false,
-                          title: false,
-                          quality: '720p',
-                          dnt: true,
-                          playsinline: true,
-                          background: false,
-                          pip: false,
-                          controls: false
-                        }
-                      },
-                      file: {
-                        attributes: {
-                          controlsList: 'nodownload',
-                          disablePictureInPicture: true
-                        }
-                      }
+                      youtube: { playerVars: { showinfo: 0, modestbranding: 1, rel: 0, hd: 1, vq: 'hd720', playsinline: 1, fs: 0, iv_load_policy: 3, cc_load_policy: 0, origin: window.location.origin, controls: 1, disablekb: 1, enablejsapi: 1, widget_referrer: window.location.origin } },
+                      vimeo: { playerOptions: { byline: false, portrait: false, title: false, quality: '720p', dnt: true, playsinline: true, background: false, pip: false, controls: true } },
+                      file: { attributes: { controlsList: 'nodownload', disablePictureInPicture: true } }
                     }}
                   />
 
@@ -445,7 +461,7 @@ const PodcastSection = () => {
 
           {/* Episodes List */}
           <div className="lg:col-span-4 space-y-3">
-            {podcasts.map((podcast) => (
+            {podcastsToShow.map((podcast: any) => (
           <motion.div
                 key={podcast.id}
             initial={{ opacity: 0, x: 20 }}

@@ -15,6 +15,7 @@ import {
   getAllExams
 } from '@/data/specialists';
 import { Specialist, Exam } from '@/lib/types';
+import { supabase } from '@/lib/supabase';
 
 type Category = 'consultations' | 'teleconsultations' | 'exams' | 'physiotherapy' | 'home-doctor' | 'home-nurse' | 'elderly-home' | 'elderly-care';
 type SubFilter = 'specialty' | 'city' | 'specialist' | 'clinic' | 'company' | 'individual';
@@ -42,6 +43,8 @@ const FindHere = () => {
     exams: []
   });
   const [hasSearched, setHasSearched] = useState(false);
+  const [allDoctors, setAllDoctors] = useState<Specialist[]>([]);
+  const [loadingDoctors, setLoadingDoctors] = useState(false);
   
   // Dynamically build categories with real data
   const [categories, setCategories] = useState<Record<Category, CategoryConfig>>({
@@ -222,6 +225,48 @@ const FindHere = () => {
     });
   }, []);
 
+  // Buscar médicos reais do banco ao carregar a página
+  useEffect(() => {
+    async function fetchDoctors() {
+      setLoadingDoctors(true);
+      const { data, error } = await supabase
+        .from('admin_doctor_profiles')
+        .select('*')
+        .eq('ativo', true)
+        .order('ordem', { ascending: true });
+      if (!error && data) {
+        // Adaptar para o formato Specialist
+        const formatted = data.map((doc: any) => ({
+          id: doc.id,
+          name: doc.name,
+          specialty: doc.specialty,
+          city: doc.city || '',
+          location: doc.location || '',
+          consultationType: doc.consultation_type || 'presencial',
+          teleconsultation: doc.teleconsultation || false,
+          exams: doc.exams || [],
+          imageUrl: doc.image_url,
+          rating: doc.rating || 0,
+          reviewCount: doc.review_count || 0,
+          address: doc.address || '',
+          phone: doc.phone || '',
+          email: doc.email || '',
+          bio: doc.bio || '',
+          availability: doc.availability || [],
+          languages: doc.languages || [],
+          insurance: doc.insurance || [],
+          experience: doc.experience || '',
+          education: doc.education || [],
+          achievements: doc.achievements || [],
+          slug: doc.slug || doc.name?.toLowerCase().replace(/\s+/g, '-') || ''
+        }));
+        setAllDoctors(formatted);
+      }
+      setLoadingDoctors(false);
+    }
+    fetchDoctors();
+  }, []);
+
   const handleFilterChange = (filterId: string, value: string) => {
     setSelectedFilters(prev => {
       // If value is empty, remove the filter
@@ -242,18 +287,41 @@ const FindHere = () => {
   const handleSearch = () => {
     let filteredSpecialists: Specialist[] = [];
     let filteredExams: Exam[] = [];
-    
+
     if (selectedCategory === 'exams') {
       filteredExams = filterExams(selectedFilters, searchTerm);
     } else {
-      filteredSpecialists = filterSpecialists(selectedCategory, selectedFilters, searchTerm);
+      // Filtrar os médicos reais
+      filteredSpecialists = allDoctors.filter((doc) => {
+        // Filtros por categoria
+        if (selectedCategory === 'consultations' && !(doc.consultationType === 'presencial' || doc.consultationType === 'ambos')) return false;
+        if (selectedCategory === 'teleconsultations' && !doc.teleconsultation) return false;
+        if (selectedCategory === 'physiotherapy' && doc.specialty !== 'Fisioterapia') return false;
+        if (selectedCategory === 'home-doctor' && doc.consultationType !== 'domiciliar') return false;
+        // Filtros específicos
+        for (const [filterId, values] of Object.entries(selectedFilters)) {
+          if (!values.length) continue;
+          if (filterId === 'specialty' && !values.includes(doc.specialty)) return false;
+          if (filterId === 'city' && !values.includes(doc.city)) return false;
+          if (filterId === 'specialist' && !values.includes(doc.name)) return false;
+        }
+        // Filtro de busca
+        if (searchTerm) {
+          const term = searchTerm.toLowerCase();
+          if (!doc.name.toLowerCase().includes(term) &&
+              !doc.specialty.toLowerCase().includes(term) &&
+              !doc.city.toLowerCase().includes(term)) {
+            return false;
+          }
+        }
+        return true;
+      });
     }
-    
+
     setSearchResults({
       specialists: filteredSpecialists,
       exams: filteredExams
     });
-    
     setHasSearched(true);
   };
 

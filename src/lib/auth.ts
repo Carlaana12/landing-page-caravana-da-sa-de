@@ -75,64 +75,6 @@ const getLockoutTime = (lastAttempt: string): number => {
   return Math.ceil((LOCKOUT_TIME_MINUTES * 60 * 1000 - (now.getTime() - last.getTime())) / (60 * 1000));
 };
 
-// Funções de controle de tentativas
-const incrementAttempts = async (email: string, table: 'login_attempts' | 'password_reset_attempts') => {
-  const { data: attempts } = await supabase
-    .from(table)
-    .select('count')
-    .eq('email', email)
-    .single();
-
-  await supabase
-    .from(table)
-    .upsert({
-      email,
-      count: attempts?.count ? attempts.count + 1 : 1,
-      last_attempt: new Date().toISOString()
-    });
-};
-
-const resetAttempts = async (email: string, table: 'login_attempts' | 'password_reset_attempts') => {
-  await supabase
-    .from(table)
-    .delete()
-    .eq('email', email);
-};
-
-const checkAttempts = async (email: string, table: 'login_attempts' | 'password_reset_attempts', maxAttempts: number) => {
-  const { data: attempts } = await supabase
-    .from(table)
-    .select('count, last_attempt')
-    .eq('email', email)
-    .single();
-
-  if (attempts && attempts.count >= maxAttempts) {
-    const remainingMinutes = getLockoutTime(attempts.last_attempt);
-    if (remainingMinutes > 0) {
-      throw new Error(ERROR_MESSAGES.TOO_MANY_ATTEMPTS.replace('{minutes}', remainingMinutes.toString()));
-      } else {
-      await resetAttempts(email, table);
-      }
-    }
-};
-
-// Logs
-const logLoginAttempt = async (userId: string | null, success: boolean, error?: string) => {
-  const ip = typeof window !== 'undefined' ? '' : (global as any).req?.ip || '';
-  const userAgent = typeof window !== 'undefined' ? window.navigator.userAgent : (global as any).req?.headers['user-agent'] || '';
-
-  await supabase
-    .from('login_logs')
-    .insert({
-      user_id: userId,
-      success,
-      error: error || null,
-      timestamp: new Date().toISOString(),
-      ip_address: ip,
-      user_agent: userAgent
-    });
-};
-
 // Autenticação do Portal do Paciente
 export async function signInPatient(email: string, password: string) {
   try {
@@ -140,17 +82,13 @@ export async function signInPatient(email: string, password: string) {
     emailSchema.parse(email);
     passwordSchema.parse(password);
 
-    // 2. Verificar tentativas
-    await checkAttempts(email, 'login_attempts', MAX_LOGIN_ATTEMPTS);
-
-    // 3. Autenticação
+    // 2. Autenticação
     const { data: authResponse, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password
     });
 
     if (authError) {
-      await incrementAttempts(email, 'login_attempts');
       if (authError.message.includes('Invalid login credentials')) {
         throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
       }
@@ -158,7 +96,6 @@ export async function signInPatient(email: string, password: string) {
     }
 
     if (!authResponse.user) {
-      await incrementAttempts(email, 'login_attempts');
       throw new Error(ERROR_MESSAGES.EMAIL_NOT_FOUND);
     }
 
@@ -170,12 +107,10 @@ export async function signInPatient(email: string, password: string) {
       .single();
 
     if (!userProfile) {
-      await incrementAttempts(email, 'login_attempts');
       throw new Error(ERROR_MESSAGES.PROFILE_NOT_FOUND);
     }
 
     if (userProfile.user_type !== USER_TYPES.PATIENT) {
-      await incrementAttempts(email, 'login_attempts');
       throw new Error(ERROR_MESSAGES.WRONG_USER_TYPE.replace('{type}', 'pacientes'));
     }
 
@@ -184,17 +119,12 @@ export async function signInPatient(email: string, password: string) {
       throw new Error(ERROR_MESSAGES.EMAIL_NOT_VERIFIED);
     }
 
-    // 6. Resetar tentativas e logar sucesso
-    await resetAttempts(email, 'login_attempts');
-    await logLoginAttempt(authResponse.user.id, true);
-
-    // 7. Atualizar estado
+    // 6. Atualizar estado
     useAuthStore.getState().setUser(authResponse.user);
     useAuthStore.getState().setUserType(USER_TYPES.PATIENT);
 
     return { ...authResponse, userType: USER_TYPES.PATIENT };
   } catch (error) {
-    await logLoginAttempt(null, false, error instanceof Error ? error.message : undefined);
     if (error instanceof z.ZodError) {
       throw new Error(ERROR_MESSAGES.INVALID_DATA);
     }
@@ -440,17 +370,13 @@ export async function signInProfessional(email: string, password: string) {
     emailSchema.parse(email);
     passwordSchema.parse(password);
 
-    // 2. Verificar tentativas
-    await checkAttempts(email, 'login_attempts', MAX_LOGIN_ATTEMPTS);
-
-    // 3. Autenticação
+    // 2. Autenticação
     const { data: authResponse, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password
     });
 
     if (authError) {
-      await incrementAttempts(email, 'login_attempts');
       if (authError.message.includes('Invalid login credentials')) {
         throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
       }
@@ -458,7 +384,6 @@ export async function signInProfessional(email: string, password: string) {
     }
 
     if (!authResponse.user) {
-      await incrementAttempts(email, 'login_attempts');
       throw new Error(ERROR_MESSAGES.EMAIL_NOT_FOUND);
     }
 
@@ -470,7 +395,6 @@ export async function signInProfessional(email: string, password: string) {
       .single();
 
     if (!userProfile) {
-      await incrementAttempts(email, 'login_attempts');
       throw new Error(ERROR_MESSAGES.PROFILE_NOT_FOUND);
     }
 
@@ -479,17 +403,12 @@ export async function signInProfessional(email: string, password: string) {
       throw new Error(ERROR_MESSAGES.EMAIL_NOT_VERIFIED);
     }
 
-    // 6. Resetar tentativas e logar sucesso
-    await resetAttempts(email, 'login_attempts');
-    await logLoginAttempt(authResponse.user.id, true);
-
-    // 7. Atualizar estado
+    // 6. Atualizar estado
     useAuthStore.getState().setUser(authResponse.user);
     useAuthStore.getState().setUserType(USER_TYPES.SPECIALIST);
 
     return { ...authResponse, userType: USER_TYPES.SPECIALIST };
   } catch (error) {
-    await logLoginAttempt(null, false, error instanceof Error ? error.message : undefined);
     if (error instanceof z.ZodError) {
       throw new Error(ERROR_MESSAGES.INVALID_DATA);
     }
@@ -503,13 +422,7 @@ export async function resetPasswordPatient(email: string) {
     // 1. Validação do email
     emailSchema.parse(email);
 
-    // 2. Verificar tentativas
-    await checkAttempts(email, 'password_reset_attempts', MAX_PASSWORD_RESET_ATTEMPTS);
-
-    // 3. Registrar tentativa
-    await incrementAttempts(email, 'password_reset_attempts');
-
-    // 4. Enviar email de recuperação
+    // 2. Enviar email de recuperação
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/usuario/reset-password`,
     });
@@ -534,13 +447,7 @@ export async function resetPasswordProfessional(email: string) {
     // 1. Validação do email
     emailSchema.parse(email);
 
-    // 2. Verificar tentativas
-    await checkAttempts(email, 'password_reset_attempts', MAX_PASSWORD_RESET_ATTEMPTS);
-
-    // 3. Registrar tentativa
-    await incrementAttempts(email, 'password_reset_attempts');
-
-    // 4. Enviar email de recuperação
+    // 2. Enviar email de recuperação
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/especialista/reset-password`,
     });
@@ -653,23 +560,18 @@ export async function signInAdmin(email: string, password: string) {
     emailSchema.parse(email);
     passwordSchema.parse(password);
 
-    // 2. Verificar tentativas
-    await checkAttempts(email, 'login_attempts', MAX_LOGIN_ATTEMPTS);
-
-    // 3. Verificar email autorizado
+    // 2. Verificar email autorizado
     if (email.toLowerCase() !== AUTHORIZED_ADMIN_EMAIL) {
-      await incrementAttempts(email, 'login_attempts');
       throw new Error(ERROR_MESSAGES.WRONG_USER_TYPE.replace('{type}', 'administradores'));
     }
 
-    // 4. Autenticação
+    // 3. Autenticação
     const { data: authResponse, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password
     });
 
     if (authError) {
-      await incrementAttempts(email, 'login_attempts');
       if (authError.message.includes('Invalid login credentials')) {
         throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
       }
@@ -677,7 +579,6 @@ export async function signInAdmin(email: string, password: string) {
     }
 
     if (!authResponse.user) {
-      await incrementAttempts(email, 'login_attempts');
       throw new Error(ERROR_MESSAGES.EMAIL_NOT_FOUND);
     }
 
@@ -686,18 +587,13 @@ export async function signInAdmin(email: string, password: string) {
       throw new Error(ERROR_MESSAGES.EMAIL_NOT_VERIFIED);
     }
 
-    // 6. Resetar tentativas e logar sucesso
-    await resetAttempts(email, 'login_attempts');
-    await logLoginAttempt(authResponse.user.id, true);
-
-    // 7. Atualizar estado
+    // 6. Atualizar estado
     useAuthStore.getState().setUser(authResponse.user);
     useAuthStore.getState().setUserType(USER_TYPES.ADMIN);
 
     return { ...authResponse, userType: USER_TYPES.ADMIN };
   } catch (error) {
     console.error('Erro de login admin:', error);
-    await logLoginAttempt(null, false, error instanceof Error ? error.message : undefined);
     if (error instanceof z.ZodError) { // Adicionado para consistência
       throw new Error(ERROR_MESSAGES.INVALID_DATA);
     }

@@ -5,7 +5,11 @@ import { Tilt } from 'react-tilt';
 import { Link } from 'react-router-dom';
 import { specialists } from '../data/specialists';
 
-const DoctorGrid = () => {
+interface DoctorGridProps {
+  doctors?: any[];
+}
+
+const DoctorGrid: React.FC<DoctorGridProps> = ({ doctors }) => {
   const [selectedDoctor, setSelectedDoctor] = useState<string | null>(null);
   const [hoveredDoctor, setHoveredDoctor] = useState<string | null>(null);
 
@@ -20,6 +24,8 @@ const DoctorGrid = () => {
     reset: true,
     easing: "cubic-bezier(.03,.98,.52,.99)",
   };
+
+  const doctorsToShow = doctors || specialists.slice(0, 6);
 
   return (
     <section className="py-16">
@@ -38,7 +44,7 @@ const DoctorGrid = () => {
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
-        {specialists.slice(0, 6).map((doctor, index) => (
+        {doctorsToShow.map((doctor, index) => (
           <Tilt key={doctor.id} options={defaultTiltOptions}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -140,7 +146,7 @@ const DoctorGrid = () => {
                 {/* Action Buttons */}
                 <div className="mt-6">
                   <Link
-                    to={`/medico/${doctor.name.toLowerCase().replace(/\s+/g, '-')}`}
+                    to={`/medico/${(doctor.name || '').toLowerCase().replace(/\s+/g, '-')}`}
                     className="w-full block text-center px-4 py-2 bg-verde-cia text-white rounded-lg hover:bg-verde-cia-escuro transition-colors"
                   >
                     Ver Perfil
@@ -181,7 +187,7 @@ const DoctorGrid = () => {
                   Veja mais informações sobre este profissional na página de perfil completa.
                 </p>
                 <Link
-                  to={`/medico/${specialists.find(d => d.id === selectedDoctor)?.name.toLowerCase().replace(/\s+/g, '-')}`}
+                  to={`/medico/${(doctorsToShow.find(d => d.id === selectedDoctor)?.name || '').toLowerCase().replace(/\s+/g, '-')}`}
                   className="w-full block text-center bg-verde-cia text-white py-2 rounded-lg hover:bg-verde-cia-escuro transition-colors"
                   onClick={() => setSelectedDoctor(null)}
                 >

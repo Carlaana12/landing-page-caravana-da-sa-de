@@ -251,9 +251,9 @@ const AvailabilityEditor: React.FC = () => {
       
       toast.success('Disponibilidade salva com sucesso!');
       
-      // Também atualizar a tabela public_profiles para sincronizar
+      // Também atualizar a tabela admin_doctor_profiles para sincronizar
       await supabase
-        .from('public_profiles')
+        .from('admin_doctor_profiles')
         .update({
           availability_slots: sortedSlots,
           consultation_duration: consultationDuration,

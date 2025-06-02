@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, Send, Clock } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
-const ContactSection = () => {
+const iconMap = { Phone, Mail, MapPin, Clock };
+
+const ContactSection: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -11,6 +14,70 @@ const ContactSection = () => {
   });
 
   const [sending, setSending] = useState(false);
+  const [contactsData, setContactsData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchContacts() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('admin_contacts')
+        .select('*')
+        .order('ordem', { ascending: true });
+      
+      if (error) {
+        console.error('[ContactSection] Erro ao buscar contatos:', error);
+        setContactsData([]);
+      } else if (data && data.length > 0) {
+        console.log('[ContactSection] Contato GERAL recebido do Supabase:', data[0]);
+        const contactDetails = data[0]; // Pegamos o primeiro (e único esperado) objeto
+        const transformedContacts = [];
+
+        if (contactDetails.telefone) {
+          transformedContacts.push({ 
+            id: 'phone_contact', 
+            icon: 'Phone', 
+            label: 'Telefone', 
+            value: contactDetails.telefone 
+          });
+        }
+        if (contactDetails.email) {
+          transformedContacts.push({ 
+            id: 'email_contact', 
+            icon: 'Mail', 
+            label: 'Email', 
+            value: contactDetails.email 
+          });
+        }
+        if (contactDetails.endereco) {
+          transformedContacts.push({ 
+            id: 'address_contact', 
+            icon: 'MapPin', 
+            label: 'Endereço', 
+            value: contactDetails.endereco 
+          });
+        }
+        // Adicione aqui outros campos como Horário, se existirem em contactDetails
+        // Exemplo: 
+        // if (contactDetails.horario) {
+        //   transformedContacts.push({ 
+        //     id: 'hours_contact', 
+        //     icon: 'Clock', 
+        //     label: 'Atendimento', 
+        //     value: contactDetails.horario 
+        //   });
+        // }
+
+        console.log('[ContactSection] Contatos TRANSFORMADOS para lista:', transformedContacts);
+        setContactsData(transformedContacts);
+      } else {
+        console.log('[ContactSection] Nenhum contato encontrado ou dados vazios.');
+        setContactsData([]);
+      }
+      setLoading(false);
+    }
+    fetchContacts();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +94,9 @@ const ContactSection = () => {
     });
     setSending(false);
   };
+
+  const contactsToShow = contactsData;
+  console.log('[ContactSection] contactsToShow:', contactsToShow);
 
   return (
     <section className="py-16">
@@ -45,65 +115,7 @@ const ContactSection = () => {
             </p>
             
             <div className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="flex items-center"
-              >
-                <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center mr-4">
-                  <Phone className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-sm text-white/70">Telefone</p>
-                  <p className="font-medium">(61) 3522-8610</p>
-                </div>
-              </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="flex items-center"
-              >
-                <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center mr-4">
-                  <Mail className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-sm text-white/70">Email</p>
-                  <p className="font-medium">anuariodesaude@gmail.com</p>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="flex items-center"
-              >
-                <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center mr-4">
-                  <MapPin className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-sm text-white/70">Endereço</p>
-                  <p className="font-medium">SIBIS Núcleo Bandeirante-DF</p>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="flex items-center"
-              >
-                <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center mr-4">
-                  <Clock className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-sm text-white/70">Horário de Atendimento</p>
-                  <p className="font-medium">Segunda a Sexta: 9h às 18h</p>
-                </div>
-              </motion.div>
             </div>
           </motion.div>
 

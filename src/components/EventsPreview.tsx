@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, MapPin } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 const events = [
   {
@@ -37,13 +38,34 @@ const events = [
   }
 ];
 
-const EventsPreview = () => {
+interface EventsPreviewProps {
+  events?: any[];
+}
+
+const EventsPreview: React.FC<EventsPreviewProps> = ({ events }) => {
+  const eventsToShow = events || events;
   const [activeEvent, setActiveEvent] = useState(0);
   const timerRef = useRef<number>();
+  const [loading, setLoading] = useState(true);
+  const [eventsData, setEvents] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchEvents() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('admin_events')
+        .select('*')
+        .order('ordem', { ascending: true });
+      if (!error && data) setEvents(data);
+      setLoading(false);
+    }
+    fetchEvents();
+  }, []);
 
   useEffect(() => {
     timerRef.current = window.setInterval(() => {
-      setActiveEvent((prev) => (prev + 1) % events.length);
+      const total = (eventsData || []).length;
+      setActiveEvent((prev) => total > 0 ? (prev + 1) % total : 0);
     }, 5000);
 
     return () => {
@@ -66,53 +88,57 @@ const EventsPreview = () => {
         </div>
 
         <div className="relative overflow-hidden rounded-xl shadow-lg">
-          {events.map((event, index) => (
-            <div
-              key={event.id}
-              className={`transition-all duration-500 ${
-                index === activeEvent
-                  ? 'opacity-100 transform translate-x-0'
-                  : 'opacity-0 absolute inset-0 transform translate-x-full'
-              }`}
-              onMouseEnter={() => setActiveEvent(index)}
-            >
-              <div className="relative h-[400px] group">
-                <img
-                  src={event.image}
-                  alt={event.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent">
-                  <div className="absolute bottom-0 left-0 right-0 p-8">
-                    <h3 className="text-3xl font-bold text-white mb-4 group-hover:text-verde-cia transition-colors">
-                      {event.title}
-                    </h3>
-                    <p className="text-white/90 mb-4">{event.description}</p>
-                    <div className="flex flex-wrap gap-4 mb-6">
-                      <div className="flex items-center text-white/80">
-                        <Calendar className="h-5 w-5 mr-2" />
-                        {event.date}
+          {loading ? (
+            <div>Loading events...</div>
+          ) : (
+            (eventsData || []).map((event: any, index: number) => (
+              <div
+                key={event.id}
+                className={`transition-all duration-500 ${
+                  index === activeEvent
+                    ? 'opacity-100 transform translate-x-0'
+                    : 'opacity-0 absolute inset-0 transform translate-x-full'
+                }`}
+                onMouseEnter={() => setActiveEvent(index)}
+              >
+                <div className="relative h-[400px] group">
+                  <img
+                    src={event.imagem_url}
+                    alt={event.titulo}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent">
+                    <div className="absolute bottom-0 left-0 right-0 p-8">
+                      <h3 className="text-3xl font-bold text-white mb-4 group-hover:text-verde-cia transition-colors">
+                        {event.titulo}
+                      </h3>
+                      <p className="text-white/90 mb-4">{event.descricao}</p>
+                      <div className="flex flex-wrap gap-4 mb-6">
+                        <div className="flex items-center text-white/80">
+                          <Calendar className="h-5 w-5 mr-2" />
+                          {event.data}
+                        </div>
+                        <div className="flex items-center text-white/80">
+                          <MapPin className="h-5 w-5 mr-2" />
+                          {event.local}
+                        </div>
                       </div>
-                      <div className="flex items-center text-white/80">
-                        <MapPin className="h-5 w-5 mr-2" />
-                        {event.location}
-                      </div>
+                      <Link
+                        to="/eventos"
+                        className="inline-block bg-verde-cia text-white px-6 py-2 rounded-full hover:bg-verde-cia-escuro transition-all transform hover:scale-105"
+                      >
+                        Saiba mais
+                      </Link>
                     </div>
-                    <Link
-                      to="/eventos"
-                      className="inline-block bg-verde-cia text-white px-6 py-2 rounded-full hover:bg-verde-cia-escuro transition-all transform hover:scale-105"
-                    >
-                      Saiba mais
-                    </Link>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         <div className="flex justify-center space-x-2 mt-4">
-          {events.map((_, index) => (
+          {(eventsData || []).map((_: any, index: number) => (
             <button
               key={index}
               onClick={() => setActiveEvent(index)}

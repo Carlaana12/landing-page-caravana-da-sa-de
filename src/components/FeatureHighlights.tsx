@@ -62,7 +62,13 @@ const features = [
   }
 ];
 
-const FeatureHighlights = () => {
+interface FeatureHighlightsProps {
+  highlights?: any[];
+}
+
+const FeatureHighlights: React.FC<FeatureHighlightsProps> = ({ highlights }) => {
+  const featuresToShow = highlights || features;
+
   return (
     <section className="py-16 bg-gradient-to-br from-verde-cia to-verde-cia-escuro text-white">
       <div className="max-w-7xl mx-auto px-4">
@@ -81,7 +87,7 @@ const FeatureHighlights = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {features.map((feature, index) => (
+          {featuresToShow.map((feature, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
