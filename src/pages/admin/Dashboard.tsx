@@ -12,6 +12,7 @@ import {
   Calendar,
   Bell,
   Settings,
+  Phone,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -48,6 +49,14 @@ const Dashboard = () => {
       link: '/admin/ads',
       items: 2,
       lastUpdate: '5 dias atrás'
+    },
+    {
+      title: 'Contatos',
+      description: 'Gerencie informações de contato',
+      icon: Phone,
+      link: '/admin/contacts',
+      items: 1,
+      lastUpdate: '1 dia atrás'
     }
   ];
 

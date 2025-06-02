@@ -60,18 +60,18 @@ const Navbar = () => {
           <div className="flex flex-col md:flex-row justify-between items-center py-2 px-4">
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4 mb-2 md:mb-0">
               <a
-                href="mailto:ciacomunicacaointegrada@gmail.com"
+                href="mailto:anuariodesaude@gmail.com"
                 className="flex items-center text-sm hover:text-green-200 transition-all hover:scale-105"
               >
                 <Mail className="h-4 w-4 mr-1" />
-                ciacomunicacaointegrada@gmail.com
+                anuariodesaude@gmail.com
               </a>
               <a
-                href="tel:+556133995266"
+                href="tel:+556135228610"
                 className="flex items-center text-sm hover:text-green-200 transition-all hover:scale-105"
               >
                 <Phone className="h-4 w-4 mr-1" />
-                (61)98192-6686
+                (61) 3522-8610
               </a>
             </div>
             

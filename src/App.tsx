@@ -30,6 +30,7 @@ import CarouselManager from './pages/admin/CarouselManager';
 import HighlightsManager from './pages/admin/HighlightsManager';
 import EventsManager from './pages/admin/EventsManager';
 import AdsManager from './pages/admin/AdsManager';
+import AdminContacts from './pages/admin/AdminContacts';
 
 // User Pages
 import UserLogin from './pages/Login';
@@ -127,6 +128,7 @@ function AppRoutes() {
               <Route path="/arearestrita/carrossel" element={<AdminRoute><CarouselManager /></AdminRoute>} />
               <Route path="/arearestrita/destaques" element={<AdminRoute><HighlightsManager /></AdminRoute>} />
               <Route path="/arearestrita/eventos" element={<AdminRoute><EventsManager /></AdminRoute>} />
+              <Route path="/arearestrita/contatos" element={<AdminRoute><AdminContacts /></AdminRoute>} />
               <Route path="/arearestrita/anuncios" element={<AdminRoute><AdsManager /></AdminRoute>}>
                 <Route index element={<Navigate to="home" replace />} />
                 <Route path="home" element={<HomeAdmin />} />

@@ -14,8 +14,8 @@ interface HeroParallaxProps {
 }
 
 const contactInfo = {
-  phone: '(61) 98192-6686',
-  email: 'ciacomunicacaointegrada@gmail.com',
+  phone: '(61) 3522-8610',
+  email: 'anuariodesaude@gmail.com',
   address: 'SIBIS Núcleo Bandeirante DF',
   hours: 'Segunda a Sexta: 9h às 18h'
 };

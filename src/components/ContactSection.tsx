@@ -16,65 +16,68 @@ const ContactSection: React.FC = () => {
   const [sending, setSending] = useState(false);
   const [contactsData, setContactsData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchContacts() {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('admin_contacts')
-        .select('*')
-        .order('ordem', { ascending: true });
-      
-      if (error) {
-        console.error('[ContactSection] Erro ao buscar contatos:', error);
-        setContactsData([]);
-      } else if (data && data.length > 0) {
-        console.log('[ContactSection] Contato GERAL recebido do Supabase:', data[0]);
-        const contactDetails = data[0]; // Pegamos o primeiro (e único esperado) objeto
-        const transformedContacts = [];
+      try {
+        setLoading(true);
+        setError(null);
+        const { data, error } = await supabase
+          .from('admin_contacts')
+          .select('*')
+          .order('ordem', { ascending: true });
+        
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          const contactDetails = data[0];
+          const transformedContacts = [];
 
-        if (contactDetails.telefone) {
-          transformedContacts.push({ 
-            id: 'phone_contact', 
-            icon: 'Phone', 
-            label: 'Telefone', 
-            value: contactDetails.telefone 
-          });
-        }
-        if (contactDetails.email) {
-          transformedContacts.push({ 
-            id: 'email_contact', 
-            icon: 'Mail', 
-            label: 'Email', 
-            value: contactDetails.email 
-          });
-        }
-        if (contactDetails.endereco) {
-          transformedContacts.push({ 
-            id: 'address_contact', 
-            icon: 'MapPin', 
-            label: 'Endereço', 
-            value: contactDetails.endereco 
-          });
-        }
-        // Adicione aqui outros campos como Horário, se existirem em contactDetails
-        // Exemplo: 
-        // if (contactDetails.horario) {
-        //   transformedContacts.push({ 
-        //     id: 'hours_contact', 
-        //     icon: 'Clock', 
-        //     label: 'Atendimento', 
-        //     value: contactDetails.horario 
-        //   });
-        // }
+          if (contactDetails.telefone) {
+            transformedContacts.push({ 
+              id: 'phone_contact', 
+              icon: 'Phone', 
+              label: 'Telefone', 
+              value: contactDetails.telefone 
+            });
+          }
+          if (contactDetails.email) {
+            transformedContacts.push({ 
+              id: 'email_contact', 
+              icon: 'Mail', 
+              label: 'Email', 
+              value: contactDetails.email 
+            });
+          }
+          if (contactDetails.endereco) {
+            transformedContacts.push({ 
+              id: 'address_contact', 
+              icon: 'MapPin', 
+              label: 'Endereço', 
+              value: contactDetails.endereco 
+            });
+          }
+          if (contactDetails.horario) {
+            transformedContacts.push({ 
+              id: 'hours_contact', 
+              icon: 'Clock', 
+              label: 'Horário de Atendimento', 
+              value: contactDetails.horario 
+            });
+          }
 
-        console.log('[ContactSection] Contatos TRANSFORMADOS para lista:', transformedContacts);
-        setContactsData(transformedContacts);
-      } else {
-        console.log('[ContactSection] Nenhum contato encontrado ou dados vazios.');
+          setContactsData(transformedContacts);
+        } else {
+          setContactsData([]);
+        }
+      } catch (err) {
+        console.error('[ContactSection] Erro ao buscar contatos:', err);
+        setError('Não foi possível carregar as informações de contato.');
         setContactsData([]);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     fetchContacts();
   }, []);
@@ -83,20 +86,25 @@ const ContactSection: React.FC = () => {
     e.preventDefault();
     setSending(true);
     
-    // Simulate sending
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      message: ''
-    });
-    setSending(false);
+    try {
+      // Aqui você pode adicionar a lógica para enviar o formulário para o backend
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        message: ''
+      });
+      
+      // Adicionar feedback de sucesso aqui
+    } catch (err) {
+      console.error('Erro ao enviar mensagem:', err);
+      // Adicionar feedback de erro aqui
+    } finally {
+      setSending(false);
+    }
   };
-
-  const contactsToShow = contactsData;
-  console.log('[ContactSection] contactsToShow:', contactsToShow);
 
   return (
     <section className="py-16">
@@ -115,27 +123,24 @@ const ContactSection: React.FC = () => {
             </p>
             
             <div className="space-y-6">
-              {contactsToShow.map((contact: any) => {
-                const iconKey = typeof contact.icon === 'string' ? contact.icon : '';
-                const Icon = iconMap[iconKey as keyof typeof iconMap] || Phone;
-                return (
-                  <motion.div
-                    key={contact.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6, delay: contact.id * 0.1 }}
-                    className="flex items-center"
-                  >
-                    <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center mr-4">
-                      <Icon />
+              {loading ? (
+                <div className="text-white/90">Carregando informações...</div>
+              ) : error ? (
+                <div className="text-red-200">{error}</div>
+              ) : (
+                contactsData.map((contact) => {
+                  const Icon = iconMap[contact.icon as keyof typeof iconMap];
+                  return (
+                    <div key={contact.id} className="flex items-start space-x-4">
+                      <Icon className="w-6 h-6 text-white/90 mt-1" />
+                      <div>
+                        <h3 className="font-semibold">{contact.label}</h3>
+                        <p className="text-white/90">{contact.value}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm text-white/70">{contact.label}</p>
-                      <p className="font-medium">{contact.value}</p>
-                    </div>
-                  </motion.div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           </motion.div>
 

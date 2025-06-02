@@ -26,7 +26,7 @@ const faqsMock = [
   },
   {
     question: 'Como posso entrar em contato com o suporte?',
-    answer: 'Você pode entrar em contato conosco através da página "Fale Conosco", pelo e-mail ciacomunicacaointegrada@gmail.com ou pelo telefone (61) 98192-6686.'
+    answer: 'Você pode entrar em contato conosco através da página "Fale Conosco", pelo e-mail anuariodesaude@gmail.com ou pelo telefone (61) 3522-8610.'
   }
 ];
 
