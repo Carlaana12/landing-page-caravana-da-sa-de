@@ -4,6 +4,7 @@ import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import HeroParallax from '@/components/HeroParallax';
 import 'leaflet/dist/leaflet.css';
+import ContactSection from '../componentes/ContactSection';
 
 interface HeroParallaxProps {
   title: string;
@@ -36,6 +37,7 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen">
+      <ContactSection />
       <HeroParallax
         title="Fale Conosco"
         description="Entre em contato conosco para mais informações"
