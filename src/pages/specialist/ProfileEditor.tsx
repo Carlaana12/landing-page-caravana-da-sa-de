@@ -97,7 +97,7 @@ const ProfileEditor = () => {
           
           // Buscar dados do perfil público
           const { data: publicProfile, error: publicProfileError } = await supabase
-            .from('public_profiles')
+            .from('admin_doctor_profiles')
             .select('*')
             .eq('user_id', user.id)
             .single();
@@ -167,7 +167,7 @@ const ProfileEditor = () => {
 
       // Verificar se o perfil público já existe
       const { data: existingProfile } = await supabase
-        .from('public_profiles')
+        .from('admin_doctor_profiles')
         .select('id')
         .eq('user_id', user.id)
         .single();
@@ -175,7 +175,7 @@ const ProfileEditor = () => {
       if (existingProfile) {
         // Atualizar perfil existente
         const { error } = await supabase
-          .from('public_profiles')
+          .from('admin_doctor_profiles')
           .update({
             name: formData.name,
             specialty: formData.specialty,
@@ -206,7 +206,7 @@ const ProfileEditor = () => {
       } else {
         // Criar novo perfil
         const { error } = await supabase
-          .from('public_profiles')
+          .from('admin_doctor_profiles')
           .insert([{
             user_id: user.id,
             name: formData.name,

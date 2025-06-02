@@ -182,6 +182,48 @@ const About = () => {
         </div>
       </section>
 
+      {/* Equipe */}
+      <section className="py-8 bg-gray-50">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="text-center mb-10">
+            <h2 className="text-4xl font-bold mb-4">Nossos Colaboradores</h2>
+            <div className="w-20 h-1 bg-[#00ff00] mx-auto mb-2" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {/* Card 1 */}
+            <div className="bg-white rounded-xl shadow p-5 flex flex-col items-center text-center hover:shadow-lg transition-all">
+              <span className="text-lg font-bold text-gray-800 mb-1">Ana Carla</span>
+              <span className="text-sm text-[#00ff00]">analista e desenvolvedora de sistemas</span>
+            </div>
+            {/* Card 2 */}
+            <div className="bg-white rounded-xl shadow p-5 flex flex-col items-center text-center hover:shadow-lg transition-all">
+              <span className="text-lg font-bold text-gray-800 mb-1">Pablo Cézar</span>
+              <span className="text-sm text-[#00ff00]">desenvolvedor</span>
+            </div>
+            {/* Card 3 */}
+            <div className="bg-white rounded-xl shadow p-5 flex flex-col items-center text-center hover:shadow-lg transition-all">
+              <span className="text-lg font-bold text-gray-800 mb-1">Silvaneide Sérgia</span>
+              <span className="text-sm text-[#00ff00]">auxiliar geral</span>
+            </div>
+            {/* Card 4 */}
+            <div className="bg-white rounded-xl shadow p-5 flex flex-col items-center text-center hover:shadow-lg transition-all">
+              <span className="text-lg font-bold text-gray-800 mb-1">Larissa Rodrigues</span>
+              <span className="text-sm text-[#00ff00]">auxiliar de suporte de conteúdo</span>
+            </div>
+            {/* Card 5 */}
+            <div className="bg-white rounded-xl shadow p-5 flex flex-col items-center text-center hover:shadow-lg transition-all">
+              <span className="text-lg font-bold text-gray-800 mb-1">Bianca Bazemate</span>
+              <span className="text-sm text-[#00ff00]">auxiliar de suporte de conteúdo</span>
+            </div>
+            {/* Card 6 */}
+            <div className="bg-white rounded-xl shadow p-5 flex flex-col items-center text-center hover:shadow-lg transition-all">
+              <span className="text-lg font-bold text-gray-800 mb-1">Emilly Lorrany</span>
+              <span className="text-sm text-[#00ff00]">estagiária</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Missão e Valores */}
       <section className="py-20 bg-white relative overflow-hidden">
         <motion.div

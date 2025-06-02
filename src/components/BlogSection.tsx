@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -14,6 +14,7 @@ import {
   Send
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 // Mock data with additional fields
 const weeklyArticle = {
@@ -91,11 +92,14 @@ const recentPosts = [
   }
 ];
 
-const BlogSection = () => {
+const BlogSection: React.FC = () => {
+  const [postsData, setPostsData] = useState<any[]>([]);
+  const postsToShow = postsData.length > 0 ? postsData : recentPosts;
   const [showComments, setShowComments] = useState(false);
   const [comment, setComment] = useState('');
   const [likedPosts, setLikedPosts] = useState<string[]>([]);
   const [savedPosts, setSavedPosts] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const handleLike = (postId: string) => {
     setLikedPosts(prev => 
@@ -118,6 +122,64 @@ const BlogSection = () => {
     // Handle comment submission
     setComment('');
   };
+
+  useEffect(() => {
+    async function fetchPosts() {
+      setLoading(true);
+      console.log('[BlogSection] Iniciando busca de posts do Supabase...');
+      const { data, error } = await supabase
+        .from('admin_blog')
+        .select('*')
+        .order('ordem', { ascending: true });
+
+      if (error) {
+        console.error('[BlogSection] Erro ao buscar posts do Supabase:', error);
+        setPostsData([]); // Define como vazio para garantir fallback para mock se houver erro
+      } else if (data && data.length > 0) {
+        console.log('[BlogSection] Posts originais recebidos do Supabase (total:', data.length, '):', data);
+        if (data[0]) {
+          console.log('[BlogSection] Estrutura do PRIMEIRO post ORIGINAL:', JSON.stringify(data[0], null, 2));
+        }
+
+        // Transformar os dados para corresponder à estrutura esperada pelo componente
+        const transformedData = data.map(post => {
+          const authorData = typeof post.autor === 'string' ? post.autor : (typeof post.autor === 'object' ? post.autor : { name: 'Autor Desconhecido', avatar: '' });
+          return {
+            id: post.id,
+            slug: post.link || post.slug || post.id.toString(), // Usar link, ou slug do BD, ou id como fallback
+            cover_image: post.imagem_url || '', // Renomear imagem_url para cover_image
+            title: post.titulo || 'Título Indisponível', // Renomear titulo para title
+            author: authorData, // autor já tratado (string ou objeto)
+            published_at: post.data || post.created_at, // Renomear data para published_at, fallback para created_at
+            likes: post.likes || 0, // Adicionar likes, default para 0 se não existir
+            excerpt: post.resumo || '', // Assumindo que resumo pode ser o excerpt
+            comments: post.comments || 0, 
+            shares: post.shares || 0,
+            // Outros campos originais que podem ser úteis manter:
+            ordem: post.ordem,
+            created_at: post.created_at,
+            // Adicionar campos específicos do mock se necessário para outras lógicas, mas priorizar dados do Supabase
+            // Se o componente usa `post.author.name` e `post.author.avatar` explicitamente, 
+            // e `post.autor` do Supabase é uma string, a lógica de exibição no JSX já está ajustada.
+          };
+        });
+        if (transformedData.length > 0 && transformedData[0]) {
+            console.log('[BlogSection] Estrutura do PRIMEIRO post TRANSFORMADO:', JSON.stringify(transformedData[0], null, 2));
+        }
+        setPostsData(transformedData);
+      } else {
+        console.log('[BlogSection] Nenhum post encontrado no Supabase ou dados vazios:', data);
+        setPostsData([]); // Define como vazio para garantir fallback para mock
+      }
+      setLoading(false);
+    }
+    fetchPosts();
+  }, []);
+
+  // Logs para depuração fora do useEffect para ver o valor atual no ciclo de renderização
+  console.log('[BlogSection] Estado atual de postsData:', postsData);
+  console.log('[BlogSection] postsToShow será:', postsToShow);
+  console.log('[BlogSection] mock recentPosts:', recentPosts);
 
   return (
     <section className="py-16">
@@ -153,13 +215,13 @@ const BlogSection = () => {
                 <div className="p-6">
                   <div className="flex items-center mb-4">
                     <img
-                      src={weeklyArticle.author.avatar}
-                      alt={weeklyArticle.author.name}
+                      src={weeklyArticle.author?.avatar || ''}
+                      alt={weeklyArticle.author?.name || ''}
                       className="w-12 h-12 rounded-full border-2 border-white mr-4"
                     />
                     <div>
-                      <h4 className="font-medium">{weeklyArticle.author.name}</h4>
-                      <p className="text-gray-600 text-sm">{weeklyArticle.author.specialty}</p>
+                      <h4 className="font-medium">{weeklyArticle.author?.name}</h4>
+                      <p className="text-gray-600 text-sm">{weeklyArticle.author?.specialty}</p>
                     </div>
                   </div>
 
@@ -179,7 +241,9 @@ const BlogSection = () => {
                   <div className="flex flex-wrap items-center gap-4 text-gray-500">
                     <div className="flex items-center">
                       <Calendar className="w-4 h-4 mr-2" />
-                      {format(new Date(weeklyArticle.published_at), 'dd MMM yyyy', { locale: ptBR })}
+                      {weeklyArticle.published_at && !isNaN(new Date(weeklyArticle.published_at).getTime())
+                        ? format(new Date(weeklyArticle.published_at), 'dd MMM yyyy', { locale: ptBR })
+                        : 'Data indisponível'}
                     </div>
                   </div>
                 </div>
@@ -252,7 +316,7 @@ const BlogSection = () => {
               <h3 className="text-xl font-bold mb-6">Artigos Recentes</h3>
               <div className="space-y-6">
                 <AnimatePresence>
-                  {recentPosts.map((post, index) => (
+                  {postsToShow.map((post, index) => (
                     <motion.div
                       key={post.id}
                       initial={{ opacity: 0, x: -20 }}
@@ -271,12 +335,16 @@ const BlogSection = () => {
                           </div>
                           <div>
                             <div className="flex items-center mb-2">
-                              <img
-                                src={post.author.avatar}
-                                alt={post.author.name}
-                                className="w-6 h-6 rounded-full mr-2"
-                              />
-                              <span className="text-sm text-gray-600">{post.author.name}</span>
+                              {typeof post.author === 'object' && post.author?.avatar && (
+                                <img
+                                  src={post.author.avatar}
+                                  alt={post.author.name || ''}
+                                  className="w-6 h-6 rounded-full mr-2"
+                                />
+                              )}
+                              <span className="text-sm text-gray-600">
+                                {typeof post.author === 'object' ? post.author.name : typeof post.author === 'string' ? post.author : ''}
+                              </span>
                             </div>
                             <h4 className="font-semibold text-gray-800 group-hover:text-verde-cia transition-colors line-clamp-2">
                               {post.title}
@@ -284,7 +352,9 @@ const BlogSection = () => {
                             <div className="flex items-center space-x-4 text-sm text-gray-500 mt-2">
                               <div className="flex items-center">
                                 <Calendar className="w-4 h-4 mr-1" />
-                                {format(new Date(post.published_at), 'dd MMM yyyy', { locale: ptBR })}
+                                {post.published_at && !isNaN(new Date(post.published_at).getTime())
+                                  ? format(new Date(post.published_at), 'dd MMM yyyy', { locale: ptBR })
+                                  : 'Data indisponível'}
                               </div>
                               <div className="flex items-center">
                                 <Heart className="w-4 h-4 mr-1" />
@@ -294,7 +364,7 @@ const BlogSection = () => {
                           </div>
                         </div>
                       </Link>
-                      {index < recentPosts.length - 1 && (
+                      {index < postsToShow.length - 1 && (
                         <div className="border-b my-4" />
                       )}
                     </motion.div>

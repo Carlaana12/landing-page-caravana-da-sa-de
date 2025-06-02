@@ -48,17 +48,17 @@ const DoctorProfile = () => {
 
   const fetchDoctorFromDB = async (doctorSlug: string) => {
     try {
-      // Primeiro, verificar se há um perfil público no Supabase com este slug
+      // Buscar apenas médicos ativos
       const { data, error } = await supabase
-        .from('public_profiles')
+        .from('admin_doctor_profiles')
         .select('*')
         .eq('slug', doctorSlug)
+        .eq('ativo', true)
         .single();
 
-      if (error) {
+      if (error || !data) {
         console.error("Erro ao buscar médico no banco de dados:", error);
-        
-        // Fallback para dados mockados se não encontrar no banco
+        // Só usar mock se realmente não houver no banco
         const fallbackDoctor = getSpecialistBySlug(doctorSlug);
         if (fallbackDoctor) {
           setDoctor(fallbackDoctor);
@@ -97,11 +97,12 @@ const DoctorProfile = () => {
 
         setDoctor(formattedDoctor);
 
-        // Buscar médicos relacionados pela especialidade
+        // Buscar médicos relacionados pela especialidade e ativos
         const { data: relatedData, error: relatedError } = await supabase
-          .from('public_profiles')
+          .from('admin_doctor_profiles')
           .select('*')
           .eq('specialty', data.specialty)
+          .eq('ativo', true)
           .neq('id', data.id)
           .limit(3);
 
@@ -128,7 +129,6 @@ const DoctorProfile = () => {
             languages: doc.languages,
             slug: doc.slug || doc.name?.toLowerCase().replace(/\s+/g, '-') || ''
           })) as Specialist[];
-          
           setRelatedDoctors(formattedRelated);
         } else {
           // Fallback para dados mockados se não encontrar relacionados

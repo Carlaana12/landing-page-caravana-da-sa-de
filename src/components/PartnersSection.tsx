@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Building2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 const partners = [
   { id: 1, name: 'Hospital São Lucas', logo: 'https://via.placeholder.com/150' },
@@ -12,7 +13,29 @@ const partners = [
   { id: 6, name: 'Centro de Diagnósticos', logo: 'https://via.placeholder.com/150' },
 ];
 
-const PartnersSection = () => {
+interface PartnersSectionProps {
+  partners?: any[];
+}
+
+const PartnersSection: React.FC<PartnersSectionProps> = ({ partners }) => {
+  const [loading, setLoading] = useState(true);
+  const [partnersData, setPartners] = useState([]);
+
+  useEffect(() => {
+    async function fetchPartners() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('admin_partners')
+        .select('*')
+        .order('ordem', { ascending: true });
+      if (!error && data) setPartners(data);
+      setLoading(false);
+    }
+    fetchPartners();
+  }, []);
+
+  const partnersToShow = partners || partnersData;
+
   return (
     <section className="py-16 rounded-xl">
       <div className="max-w-7xl mx-auto px-4">
@@ -29,21 +52,24 @@ const PartnersSection = () => {
         </motion.div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-          {partners.map((partner, index) => (
+          {partnersToShow.slice(0, 6).map((partner) => (
             <motion.div
               key={partner.id}
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
+              transition={{ duration: 0.6, delay: partner.id * 0.1 }}
               whileHover={{ scale: 1.05 }}
               className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all"
             >
-              <div className="aspect-square rounded-lg bg-gray-50 flex items-center justify-center mb-4">
+              <div className="aspect-square rounded-lg bg-white flex items-center justify-center mb-4 border border-gray-200">
                 <Building2 className="w-12 h-12 text-verde-cia" />
               </div>
               <h3 className="text-center font-medium text-gray-800 text-sm">
-                {partner.name}
+                {partner.nome}
               </h3>
+              <p className="text-center text-gray-500 text-sm">
+                {partner.descricao}
+              </p>
             </motion.div>
           ))}
         </div>

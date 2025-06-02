@@ -16,10 +16,14 @@ interface CarouselItem {
   updated_at: string;
 }
 
-const AdCarousel = () => {
+interface AdCarouselProps {
+  slides?: CarouselItem[];
+}
+
+const AdCarousel: React.FC<AdCarouselProps> = ({ slides }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
-  const [items, setItems] = useState<CarouselItem[]>([]);
+  const [items, setItems] = useState<CarouselItem[]>(slides || []);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
@@ -70,70 +74,41 @@ const AdCarousel = () => {
   );
 
   useEffect(() => {
-    console.log('Iniciando componente AdCarousel');
+    if (slides) {
+      setItems(slides);
+      setLoading(false);
+      return;
+    }
     fetchCarouselItems();
-  }, []);
+  }, [slides]);
 
   const fetchCarouselItems = async () => {
     try {
       setLoading(true);
-      console.log('Iniciando busca dos itens do carrossel...');
-      
       const { data, error } = await supabase
-        .from('carousel_items')
+        .from('admin_carousel')
         .select('*')
-        .eq('active', true)
-        .order('display_order', { ascending: true });
-
+        .order('ordem', { ascending: true });
       if (error) {
-        console.error('Erro ao buscar itens do carrossel:', error);
-        throw error;
-      }
-
-      console.log('Itens do carrossel carregados:', data);
-      
-      if (!data || data.length === 0) {
-        console.warn('Nenhum item do carrossel encontrado');
-        // Adicionar dados de exemplo para teste
-        const sampleData: CarouselItem[] = [
-          {
-            id: '1',
-            title: 'Cuidando da Sua Saúde',
-            description: 'Encontre os melhores profissionais de saúde para cuidar de você e sua família',
-            image_url: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?auto=format&fit=crop&w=2000&q=80',
-            display_order: 1,
-            active: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          },
-          {
-            id: '2',
-            title: 'Especialistas Qualificados',
-            description: 'Uma rede completa de médicos e especialistas à sua disposição',
-            image_url: 'https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?auto=format&fit=crop&w=2000&q=80',
-            display_order: 2,
-            active: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          },
-          {
-            id: '3',
-            title: 'Tecnologia e Saúde',
-            description: 'Utilizando o que há de mais moderno para seu atendimento',
-            image_url: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=2000&q=80',
-            display_order: 3,
-            active: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          }
-        ];
-        setItems(sampleData);
+        setError('Falha ao carregar itens do carrossel');
+        setLoading(false);
         return;
       }
-
-      setItems(data);
+      if (!data || data.length === 0) {
+        setItems([]);
+        setLoading(false);
+        return;
+      }
+      // Adaptar campos para o formato esperado pelo componente
+      setItems(data.map((item: any) => ({
+        ...item,
+        title: item.titulo,
+        description: item.descricao,
+        image_url: item.imagem_url,
+        display_order: item.ordem,
+        active: true
+      })));
     } catch (err) {
-      console.error('Erro ao carregar itens do carrossel:', err);
       setError('Falha ao carregar itens do carrossel');
     } finally {
       setLoading(false);
