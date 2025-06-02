@@ -120,22 +120,22 @@ const AdsManager = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    if (editing) {
+      if (editing) {
       await supabase
         .from('admin_ads')
         .update({ ...formData, atualizado_em: new Date().toISOString() })
-        .eq('id', editing);
+          .eq('id', editing);
       toast.success('Anúncio atualizado!');
-    } else {
+      } else {
       await supabase
         .from('admin_ads')
         .insert([{ ...formData, criado_em: new Date().toISOString(), atualizado_em: new Date().toISOString(), divulgado: false }]);
       toast.success('Anúncio criado!');
     }
-    setEditing(null);
+      setEditing(null);
     setFormData({ ...defaultForm });
-    fetchAds();
-    setLoading(false);
+      fetchAds();
+      setLoading(false);
   };
 
   const handleEdit = (ad: AdminAd) => {
@@ -168,7 +168,7 @@ const AdsManager = () => {
     // Ativa o escolhido
     await supabase.from('admin_ads').update({ divulgado: true }).eq('id', id);
     toast.success('Anúncio divulgado!');
-    fetchAds();
+      fetchAds();
     setLoading(false);
   };
 
