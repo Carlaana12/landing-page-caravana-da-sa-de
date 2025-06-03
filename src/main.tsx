@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import { ThemeProvider } from './components/ThemeProvider';
 import { useAuth } from './lib/auth';
+import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 
 // Enable React concurrent features
@@ -18,7 +19,9 @@ function AppWrapper() {
   return (
     <StrictMode>
       <ThemeProvider>
-        <App />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
       </ThemeProvider>
     </StrictMode>
   );

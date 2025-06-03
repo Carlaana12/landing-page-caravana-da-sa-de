@@ -15,7 +15,13 @@ const NewsSection: React.FC = () => {
         .from('admin_news')
         .select('*')
         .order('ordem', { ascending: true });
-      if (!error && data) setNews(data);
+      if (!error && data) {
+        const transformed = data.map(item => ({
+          ...item,
+          slug: item.slug || item.link || item.id
+        }));
+        setNews(transformed);
+      }
       setLoading(false);
     }
     fetchNews();
@@ -86,7 +92,7 @@ const NewsSection: React.FC = () => {
                 
                 <div className="flex justify-between items-center">
                   <Link
-                    to={item.link}
+                    to={item.slug ? `/noticias/${item.slug}` : '#'}
                     className="text-verde-cia hover:text-verde-cia-escuro font-medium inline-flex items-center group"
                   >
                     Ler mais

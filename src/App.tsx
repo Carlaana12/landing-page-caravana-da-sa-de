@@ -65,6 +65,9 @@ import EventosAdmin from './pages/admin/ads/EventosAdmin';
 import UtilidadesAdmin from './pages/admin/ads/UtilidadesAdmin';
 import ContatoAdmin from './pages/admin/ads/ContatoAdmin';
 
+import BlogPost from './pages/BlogPost';
+import Noticia from './pages/Noticia';
+
 function AppRoutes() {
   const location = useLocation();
   // Protected route wrapper for admin routes
@@ -118,7 +121,9 @@ function AppRoutes() {
               <Route path="/utilidades-publicas" element={<PublicUtilities />} />
               <Route path="/contato" element={<Contact />} />
               <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/medico/:slug" element={<DoctorProfile />} />
+              <Route path="/noticias/:slug" element={<Noticia />} />
               {/* Admin Routes */}
               <Route path="/arearestrita/login" element={<AdminLogin />} />
               <Route path="/arearestrita" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
@@ -169,11 +174,7 @@ function AppRoutes() {
 }
 
 function App() {
-  return (
-    <Router>
-      <AppRoutes />
-    </Router>
-  );
+  return <AppRoutes />;
 }
 
 export default App;

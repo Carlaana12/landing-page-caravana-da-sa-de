@@ -4,69 +4,44 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Search, Filter, Calendar, Heart } from 'lucide-react';
 import HeroParallax from '@/components/HeroParallax';
+import { supabase } from '../lib/supabase';
+import { Link } from 'react-router-dom';
 
 const categories = ['Todos', 'Saúde', 'Bem-estar', 'Medicina', 'Pesquisa', 'Tecnologia'];
-
-const posts = [
-  {
-    id: '1',
-    title: 'Os Avanços da Medicina Moderna no Tratamento do Câncer',
-    slug: 'avancos-medicina-moderna-cancer',
-    excerpt: 'Novas descobertas e tecnologias estão revolucionando a forma como tratamos o câncer, trazendo esperança para milhões de pacientes em todo o mundo.',
-    cover_image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=2000',
-    published_at: '2024-04-01T10:00:00Z',
-    author: {
-      name: 'Dra. Maria Silva',
-      avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=150',
-      specialty: 'Oncologista'
-    },
-    category: 'Medicina',
-    likes: 245
-  },
-  {
-    id: '2',
-    title: 'Importância da Saúde Mental no Ambiente de Trabalho',
-    slug: 'saude-mental-trabalho',
-    excerpt: 'Como cuidar da saúde mental pode melhorar a produtividade e qualidade de vida.',
-    cover_image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=500',
-    published_at: '2024-03-30T15:00:00Z',
-    author: {
-      name: 'Dr. João Santos',
-      avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=150',
-      specialty: 'Psiquiatra'
-    },
-    category: 'Saúde',
-    likes: 183
-  },
-  {
-    id: '3',
-    title: 'Nutrição e Exercícios: A Combinação Perfeita',
-    slug: 'nutricao-exercicios',
-    excerpt: 'Descubra como alinhar sua alimentação com seus objetivos fitness.',
-    cover_image: 'https://images.unsplash.com/photo-1574689096264-2adf441c3f14?auto=format&fit=crop&w=500',
-    published_at: '2024-03-28T09:00:00Z',
-    author: {
-      name: 'Dra. Ana Costa',
-      avatar: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&q=80&w=150',
-      specialty: 'Nutricionista'
-    },
-    category: 'Bem-estar',
-    likes: 156
-  }
-];
 
 const Blog = () => {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [searchTerm, setSearchTerm] = useState('');
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  useEffect(() => {
+    async function fetchPosts() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('admin_blog')
+        .select('*')
+        .eq('is_published', true)
+        .lte('published_at', new Date().toISOString())
+        .order('published_at', { ascending: false });
+      if (!error && data) {
+        setPosts(data);
+      } else {
+        setPosts([]);
+      }
+      setLoading(false);
+    }
+    fetchPosts();
+  }, []);
+
   const filteredPosts = posts.filter(post => {
-    const matchesCategory = selectedCategory === 'Todos' || post.category === selectedCategory;
-    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'Todos' || (post.category && post.category === selectedCategory);
+    const matchesSearch = (post.titulo || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (post.resumo || '').toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -120,61 +95,49 @@ const Blog = () => {
       </section>
 
       {/* Posts Grid */}
-      <section className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {filteredPosts.map((post) => (
-            <motion.article
-              key={post.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              <div className="relative h-48">
-                <img
-                  src={post.cover_image}
-                  alt={post.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-4 right-4 bg-verde-cia text-white px-3 py-1 rounded-full text-sm">
-                  {post.category}
-                </div>
-              </div>
-
-              <div className="p-6">
-                <div className="flex items-center mb-4">
+      <section className="max-w-7xl mx-auto px-4 pb-16">
+        {loading ? (
+          <div className="text-center py-12">Carregando artigos...</div>
+        ) : filteredPosts.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">Nenhum artigo encontrado.</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredPosts.map((post) => (
+              <motion.article
+                key={post.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
+              >
+                <Link to={`/blog/${post.slug}`}>
                   <img
-                    src={post.author.avatar}
-                    alt={post.author.name}
-                    className="w-10 h-10 rounded-full mr-3"
+                    src={post.imagem_url || post.cover_image}
+                    alt={post.titulo}
+                    className="w-full h-56 object-cover"
                   />
-                  <div>
-                    <h4 className="font-medium">{post.author.name}</h4>
-                    <p className="text-sm text-gray-600">{post.author.specialty}</p>
+                </Link>
+                <div className="p-6">
+                  <div className="flex items-center mb-4">
+                    {/* Se tiver avatar do autor, pode exibir aqui */}
+                  </div>
+                  <h3 className="text-xl font-bold mb-3 line-clamp-2 hover:text-verde-cia transition-colors">
+                    <Link to={`/blog/${post.slug}`}>{post.titulo}</Link>
+                  </h3>
+                  <p className="text-gray-600 mb-4 line-clamp-3">{post.resumo}</p>
+                  <div className="flex items-center justify-between text-sm text-gray-500">
+                    <div className="flex items-center space-x-4">
+                      <span className="flex items-center">
+                        <Calendar className="w-4 h-4 mr-1" />
+                        {post.published_at ? format(new Date(post.published_at), 'dd MMM yyyy', { locale: ptBR }) : 'Data indisponível'}
+                      </span>
+                    </div>
+                    {/* Se quiser exibir likes, pode colocar aqui */}
                   </div>
                 </div>
-
-                <h3 className="text-xl font-bold mb-3 line-clamp-2 hover:text-verde-cia transition-colors">
-                  {post.title}
-                </h3>
-                <p className="text-gray-600 mb-4 line-clamp-3">{post.excerpt}</p>
-
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <div className="flex items-center space-x-4">
-                    <span className="flex items-center">
-                      <Calendar className="w-4 h-4 mr-1" />
-                      {format(new Date(post.published_at), 'dd MMM yyyy', { locale: ptBR })}
-                    </span>
-                  </div>
-                  <span className="flex items-center">
-                    <Heart className="w-4 h-4 mr-1" />
-                    {post.likes}
-                  </span>
-                </div>
-              </div>
-            </motion.article>
-          ))}
-        </div>
+              </motion.article>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );
