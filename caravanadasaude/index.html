@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmação de Parceria Médica - Caravana da Saúde</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="images/logocia.png">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Poppins', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#498367',
+                        secondary: '#FFD700',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', 'Poppins', system-ui, sans-serif;
+            background: linear-gradient(180deg, #fff9f7 0%, #f2fff8 35%, #fff5f7 70%, #f6fff9 100%);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .background-ornaments {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -2;
+            background-image:
+                radial-gradient(circle at 10% 15%, rgba(236, 0, 61, 0.12) 0, rgba(236, 0, 61, 0) 45%),
+                radial-gradient(circle at 85% 20%, rgba(14, 99, 65, 0.12) 0, rgba(14, 99, 65, 0) 45%),
+                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.12) 0, rgba(255, 215, 0, 0) 40%),
+                radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.2) 0, rgba(255, 255, 255, 0) 55%);
+            backdrop-filter: blur(0);
+        }
+
+        .background-ornaments::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: repeating-linear-gradient(
+                120deg,
+                rgba(255, 255, 255, 0.12) 0,
+                rgba(255, 255, 255, 0.12) 12px,
+                rgba(206, 17, 65, 0.12) 12px,
+                rgba(206, 17, 65, 0.12) 18px,
+                rgba(29, 99, 77, 0.12) 18px,
+                rgba(29, 99, 77, 0.12) 24px
+            );
+            opacity: 0.45;
+        }
+
+        .background-ornaments::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle, rgba(255, 255, 255, 0.25) 1px, transparent 2px),
+                radial-gradient(circle, rgba(255, 215, 0, 0.25) 1px, transparent 2px);
+            background-size: 80px 80px, 120px 120px;
+            opacity: 0.35;
+        }
+
+        .santa-container {
+            position: fixed;
+            bottom: 3.5rem;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            pointer-events: none;
+            z-index: 40;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .santa-container.active {
+            opacity: 1;
+        }
+
+        .santa {
+            font-size: clamp(2.5rem, 4vw, 3.75rem);
+            text-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+            transform: translateX(-120%);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .santa.run {
+            animation: santaRun 6s ease-in-out forwards;
+        }
+
+        @keyframes santaRun {
+            0% {
+                transform: translateX(-120%);
+            }
+            10% {
+                transform: translateX(-40%) rotate(-2deg);
+            }
+            50% {
+                transform: translateX(30%) rotate(1deg);
+            }
+            90% {
+                transform: translateX(105%) rotate(-1deg);
+            }
+            100% {
+                transform: translateX(120%);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen relative overflow-x-hidden">
+    <div class="background-ornaments"></div>
+    <!-- Header Section -->
+    <header class="bg-white shadow-sm py-6 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row items-center justify-center md:justify-between gap-6 mb-8">
+                <!-- Logo Caravana da Saúde -->
+                <div class="flex-shrink-0">
+                    <img id="logoCaravana" 
+                         src="images/logocaravana.png" 
+                         alt="Logo Caravana da Saúde" 
+                         class="h-16 md:h-20 w-auto rounded-lg"
+                         onerror="tryAlternativeImage(this, 'logocaravana')">
+                </div>
+                <!-- Logo Cia de Marketing -->
+                <div class="flex-shrink-0">
+                    <img id="logoCia" 
+                         src="images/logocia.png" 
+                         alt="Logo Cia de Marketing" 
+                         class="h-16 md:h-20 w-auto rounded-lg"
+                         onerror="tryAlternativeImage(this, 'logocia')">
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight">
+                    Confirmação de Parceria Médica
+                </h1>
+                <p class="text-base md:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                    Preencha o formulário abaixo para confirmar sua participação como parceiro médico do projeto Caravana da Saúde e liberar seus benefícios exclusivos.
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 py-8 md:py-12">
+        <!-- Form Section -->
+        <section class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
+            <form id="partnershipForm" class="space-y-6">
+                <!-- Nome Completo -->
+                <div>
+                    <label for="nomeCompleto" class="block text-sm font-medium text-gray-700 mb-2">
+                        Nome completo <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="nomeCompleto" 
+                        name="nomeCompleto" 
+                        required
+                        placeholder="Ex: Dr. João da Silva"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
+                </div>
+
+                <!-- CRM -->
+                <div>
+                    <label for="crm" class="block text-sm font-medium text-gray-700 mb-2">
+                        CRM <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="crm" 
+                        name="crm" 
+                        required
+                        placeholder="Ex: 12345/SP"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
+                </div>
+
+                <!-- Especialidade Médica -->
+                <div>
+                    <label for="especialidade" class="block text-sm font-medium text-gray-700 mb-2">
+                        Especialidade médica <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="especialidade" 
+                        name="especialidade" 
+                        required
+                        placeholder="Ex: Cardiologia"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
+                </div>
+
+                <!-- Telefone / WhatsApp -->
+                <div>
+                    <label for="telefone" class="block text-sm font-medium text-gray-700 mb-2">
+                        Telefone / WhatsApp <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="tel" 
+                        id="telefone" 
+                        name="telefone" 
+                        required
+                        placeholder="(99) 99999-9999"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
+                </div>
+
+                <!-- E-mail -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                        E-mail <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        required
+                        placeholder="nome@clinica.com"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
+                </div>
+
+                <!-- Cidade / Estado -->
+                <div>
+                    <label for="cidadeEstado" class="block text-sm font-medium text-gray-700 mb-2">
+                        Cidade / Estado <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="cidadeEstado" 
+                        name="cidadeEstado" 
+                        required
+                        placeholder="Ex: Salvador / BA"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
+                </div>
+
+                <!-- Instituição ou Clínica -->
+                <div>
+                    <label for="instituicao" class="block text-sm font-medium text-gray-700 mb-2">
+                        Instituição ou clínica representada
+                    </label>
+                    <input 
+                        type="text" 
+                        id="instituicao" 
+                        name="instituicao"
+                        placeholder="Ex: Clínica Bem Estar"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
+                </div>
+
+                <!-- Observações -->
+                <div>
+                    <label for="observacoes" class="block text-sm font-medium text-gray-700 mb-2">
+                        Observações
+                    </label>
+                    <textarea 
+                        id="observacoes" 
+                        name="observacoes"
+                        rows="4"
+                        placeholder="Mensagens extras para a coordenação."
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"></textarea>
+                </div>
+
+                <!-- Checkbox de Confirmação -->
+                <div class="flex items-start">
+                    <input 
+                        type="checkbox" 
+                        id="confirmacao" 
+                        name="confirmacao" 
+                        required
+                        class="mt-1 h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary">
+                    <label for="confirmacao" class="ml-3 text-sm text-gray-700">
+                        Confirmo que sou parceiro(a) oficial do projeto Caravana da Saúde e concordo com os termos de participação. <span class="text-red-500">*</span>
+                    </label>
+                </div>
+
+                <!-- Mensagem de Erro/Sucesso -->
+                <div id="messageContainer" class="hidden"></div>
+
+                <!-- Botão de Envio -->
+                <button 
+                    type="submit" 
+                    id="submitButton"
+                    class="w-full bg-primary hover:bg-opacity-90 text-white font-semibold py-4 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                    <span id="buttonText">Confirmar Parceria e Ativar Benefícios</span>
+                    <span id="buttonLoading" class="hidden">Carregando...</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- Benefits Section -->
+        <section class="bg-gradient-to-br from-primary to-primary/90 rounded-xl shadow-lg p-6 md:p-8 text-white">
+            <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center tracking-tight">
+                Benefícios Exclusivos da Parceria Médica
+            </h2>
+            
+            <div class="space-y-6">
+                <!-- Pacote de Marketing -->
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-12 h-12 bg-secondary rounded-full flex items-center justify-center text-primary font-bold text-xl">
+                            📦
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-semibold mb-3 text-secondary">
+                                Pacote de Marketing Gratuito (2 Meses)
+                            </h3>
+                            <p class="text-sm mb-2 text-white/90">Oferecido pela Cia de Marketing:</p>
+                            <ul class="space-y-2 text-sm text-white/90 ml-4">
+                                <li class="flex items-start gap-2">
+                                    <span class="text-secondary mt-1">•</span>
+                                    <span>Divulgação profissional nas redes sociais.</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-secondary mt-1">•</span>
+                                    <span>Estratégias de posicionamento e visibilidade online.</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-secondary mt-1">•</span>
+                                    <span>Suporte básico de marketing digital.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Geração de Leads -->
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-12 h-12 bg-secondary rounded-full flex items-center justify-center text-primary font-bold text-xl">
+                            🎯
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-semibold mb-3 text-secondary">
+                                Geração de Leads Exclusiva
+                            </h3>
+                            <p class="text-sm text-white/90">
+                                Recebimento de todos os contatos (leads) dos pacientes atendidos durante o evento para acompanhamento pós-atendimento.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nota de Exclusividade -->
+            <div class="mt-6 pt-6 border-t border-white/20 text-center">
+                <p class="text-sm font-medium text-white/90 italic">
+                    Estes benefícios são exclusivos para os profissionais que completarem o cadastro acima.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-6 px-4 mt-12">
+        <div class="max-w-7xl mx-auto text-center text-sm text-gray-600">
+            <p>&copy; 2024 Caravana da Saúde. Todos os direitos reservados.
+                                      criação carla4na
+            </p>
+        </div>
+    </footer>
+
+    <div id="santaContainer" class="santa-container hidden">
+        <div id="santaElement" class="santa">🎅🛷✨</div>
+    </div>
+
+    <script>
+        // Função para tentar diferentes variações de nome de arquivo
+        function tryAlternativeImage(imgElement, baseName) {
+            const variations = [
+                `images/${baseName}.png`,
+                `images/${baseName}.PNG`,
+                `images/${baseName}.jpg`,
+                `images/${baseName}.JPG`,
+                `images/${baseName}.jpeg`,
+                `images/${baseName}.JPEG`,
+                `images/${baseName}.svg`,
+                `images/${baseName}.SVG`,
+                `./images/${baseName}.png`,
+                `./images/${baseName}.PNG`
+            ];
+            
+            let currentIndex = 0;
+            const originalSrc = imgElement.src;
+            
+            function tryNext() {
+                if (currentIndex < variations.length) {
+                    const testImg = new Image();
+                    testImg.onload = function() {
+                        imgElement.src = variations[currentIndex];
+                        imgElement.onerror = null; // Remove o handler de erro se funcionar
+                    };
+                    testImg.onerror = function() {
+                        currentIndex++;
+                        tryNext();
+                    };
+                    testImg.src = variations[currentIndex];
+                } else {
+                    // Se nenhuma variação funcionar, mantém o alt text visível
+                    console.warn(`Não foi possível carregar a imagem: ${baseName}`);
+                }
+            }
+            
+            tryNext();
+        }
+
+        // Verificar se as imagens carregaram ao carregar a página
+        window.addEventListener('load', function() {
+            const logoCaravana = document.getElementById('logoCaravana');
+            const logoCia = document.getElementById('logoCia');
+            
+            // Verificar logo Caravana
+            if (logoCaravana && !logoCaravana.complete) {
+                logoCaravana.onerror = function() {
+                    tryAlternativeImage(logoCaravana, 'logocaravana');
+                };
+            }
+            
+            // Verificar logo Cia
+            if (logoCia && !logoCia.complete) {
+                logoCia.onerror = function() {
+                    tryAlternativeImage(logoCia, 'logocia');
+                };
+            }
+        });
+
+        const GOOGLE_SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwnTVLD4nrv4f4JDiuajzTRsFtJ0g2xLzFLjpKoJxv1/exec';
+        const form = document.getElementById('partnershipForm');
+        const submitButton = document.getElementById('submitButton');
+        const buttonText = document.getElementById('buttonText');
+        const buttonLoading = document.getElementById('buttonLoading');
+        const messageContainer = document.getElementById('messageContainer');
+        const santaContainer = document.getElementById('santaContainer');
+        const santaElement = document.getElementById('santaElement');
+        let santaHasRun = false;
+
+        function triggerSantaAnimation() {
+            if (!santaContainer || !santaElement || santaHasRun) return;
+
+            santaHasRun = true;
+            santaContainer.classList.remove('hidden');
+            santaContainer.classList.add('active');
+
+            // Reinicia animação
+            void santaElement.offsetWidth;
+            santaElement.classList.add('run');
+
+            setTimeout(() => {
+                santaElement.classList.remove('run');
+                santaContainer.classList.remove('active');
+                santaContainer.classList.add('hidden');
+            }, 6500);
+        }
+
+        if (santaContainer) {
+            const footerSection = document.querySelector('footer');
+            if (footerSection) {
+                const observer = new IntersectionObserver((entries, observerInstance) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            triggerSantaAnimation();
+                            observerInstance.disconnect();
+                        }
+                    });
+                }, { threshold: 0.4 });
+
+                observer.observe(footerSection);
+            }
+        }
+
+        form.addEventListener('submit', handleSubmit);
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+
+            // Reset message container
+            messageContainer.classList.add('hidden');
+            messageContainer.innerHTML = '';
+
+            // Validate required fields
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                if (field.type === 'checkbox') {
+                    if (!field.checked) {
+                        isValid = false;
+                    }
+                } else {
+                    if (!field.value.trim()) {
+                        isValid = false;
+                    }
+                }
+            });
+
+            if (!isValid) {
+                showMessage('Por favor, preencha todos os campos obrigatórios.', 'error');
+                return;
+            }
+
+            // Collect form data
+            const formData = {
+                nomeCompleto: document.getElementById('nomeCompleto').value,
+                crm: document.getElementById('crm').value,
+                especialidade: document.getElementById('especialidade').value,
+                telefone: document.getElementById('telefone').value,
+                email: document.getElementById('email').value,
+                cidadeEstado: document.getElementById('cidadeEstado').value,
+                instituicao: document.getElementById('instituicao').value || '',
+                observacoes: document.getElementById('observacoes').value || '',
+                confirmacao: document.getElementById('confirmacao').checked
+            };
+
+            // Show loading state
+            setLoadingState(true);
+
+            try {
+                if (!GOOGLE_SHEETS_WEB_APP_URL || GOOGLE_SHEETS_WEB_APP_URL.includes('PASTE_YOUR_WEB_APP_URL_HERE')) {
+                    throw new Error('WEB_APP_URL_NOT_CONFIGURED');
+                }
+
+                const response = await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json().catch(() => ({}));
+
+                const isSuccessResponse = response.ok && (!result.status || String(result.status).toLowerCase() === 'success');
+
+                if (!isSuccessResponse) {
+                    const serverMessage = result.message || 'Não foi possível registrar sua confirmação.';
+                    throw new Error(serverMessage);
+                }
+
+                showMessage('✅ Obrigado! Sua confirmação foi registrada com sucesso.', 'success');
+                form.reset();
+
+            } catch (error) {
+                if (error.message === 'WEB_APP_URL_NOT_CONFIGURED') {
+                    showMessage('❌ Integração com Google Sheets não configurada. Atualize o arquivo com o link do seu Web App e tente novamente.', 'error');
+                } else {
+                    showMessage(`❌ Ocorreu um erro. ${error.message || 'Tente novamente mais tarde.'}`, 'error');
+                }
+            } finally {
+                setLoadingState(false);
+            }
+        }
+
+        function setLoadingState(isLoading) {
+            if (isLoading) {
+                submitButton.disabled = true;
+                buttonText.classList.add('hidden');
+                buttonLoading.classList.remove('hidden');
+            } else {
+                submitButton.disabled = false;
+                buttonText.classList.remove('hidden');
+                buttonLoading.classList.add('hidden');
+            }
+        }
+
+        function showMessage(message, type) {
+            messageContainer.classList.remove('hidden');
+            const bgColor = type === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800';
+            messageContainer.innerHTML = `
+                <div class="${bgColor} border rounded-xl p-4 text-sm font-medium">
+                    ${message}
+                </div>
+            `;
+            
+            // Scroll to message
+            messageContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>
+
