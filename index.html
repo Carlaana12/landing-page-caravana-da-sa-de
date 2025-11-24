@@ -434,7 +434,11 @@
             }
         });
 
-        const GOOGLE_SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby2Kw72p7Al-YmUn9CTTvreBK7RYdsFJPNaXHKYoI6sV5x9nwXfhwrX9qrG6mV5g8k_0Q/exec';
+        // Usar endpoint do Netlify Functions quando estiver em produção, senão usar diretamente o Google Apps Script
+        const isProduction = window.location.hostname.includes('netlify.app') || window.location.hostname.includes('netlify.com');
+        const SUBMIT_ENDPOINT = isProduction 
+            ? '/.netlify/functions/submit'
+            : 'https://script.google.com/macros/s/AKfycby2Kw72p7Al-YmUn9CTTvreBK7RYdsFJPNaXHKYoI6sV5x9nwXfhwrX9qrG6mV5g8k_0Q/exec';
         const form = document.getElementById('partnershipForm');
         const submitButton = document.getElementById('submitButton');
         const buttonText = document.getElementById('buttonText');
@@ -525,11 +529,11 @@
             setLoadingState(true);
 
             try {
-                if (!GOOGLE_SHEETS_WEB_APP_URL || GOOGLE_SHEETS_WEB_APP_URL.includes('PASTE_YOUR_WEB_APP_URL_HERE')) {
+                if (!SUBMIT_ENDPOINT || SUBMIT_ENDPOINT.includes('PASTE_YOUR_WEB_APP_URL_HERE')) {
                     throw new Error('WEB_APP_URL_NOT_CONFIGURED');
                 }
 
-                const response = await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
+                const response = await fetch(SUBMIT_ENDPOINT, {
                     method: 'POST',
                     mode: 'cors',
                     headers: {
