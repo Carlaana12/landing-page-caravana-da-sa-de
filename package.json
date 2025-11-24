@@ -1,0 +1,24 @@
+{
+  "name": "landing-page-caravana",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build-css": "tailwindcss -i ./src/input.css -o ./css/output.css --minify",
+    "watch-css": "tailwindcss -i ./src/input.css -o ./css/output.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Carlaana12/landing-page-caravana-da-sa-de.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Carlaana12/landing-page-caravana-da-sa-de/issues"
+  },
+  "homepage": "https://github.com/Carlaana12/landing-page-caravana-da-sa-de#readme",
+  "description": "",
+  "devDependencies": {
+    "tailwindcss": "^4.1.17"
+  }
+}
